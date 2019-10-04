@@ -1,0 +1,39 @@
+{
+  "name": "kf-download-data",
+  "version": "0.0.1",
+  "description": "The Kids First Download Clinical Data API offers an endpoint to generate a report of clinical data based on a query built using the Kids First Portal.",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node index",
+    "watch": "nodemon index",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kids-first/kf-download-data.git"
+  },
+  "author": "Kids First DRC",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/kids-first/kf-download-data/issues"
+  },
+  "homepage": "https://github.com/kids-first/kf-download-data#readme",
+  "devDependencies": {
+    "nodemon": "^1.19.3"
+  },
+  "dependencies": {
+    "@babel/core": "^7.6.2",
+    "@babel/plugin-proposal-object-rest-spread": "^7.6.2",
+    "@babel/plugin-proposal-optional-chaining": "^7.6.0",
+    "@babel/preset-env": "^7.6.2",
+    "@babel/register": "^7.6.2",
+    "@kfarranger/middleware": "^1.3.2",
+    "body-parser": "^1.19.0",
+    "core-js": "^3.2.1",
+    "cors": "^2.8.5",
+    "dotenv": "^8.1.0",
+    "express": "^4.17.1",
+    "kfego-token-middleware": "^1.1.0",
+    "regenerator-runtime": "^0.13.3"
+  }
+}

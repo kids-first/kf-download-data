@@ -1,0 +1,10 @@
+# Port of this service (leave blank to use default 4000)
+PORT=4000
+
+# ElasticSearch host
+# Must go through Bastion, so we'll use a local redirection through a ssh tunnel
+ES_HOST=kf-arranger-es-qa.kids-first.io:9200
+#ES_HOST=localhost:9100
+
+# Ego host
+EGO_URL=https://ego-qa.kids-first.io
