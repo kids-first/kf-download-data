@@ -51,9 +51,15 @@ const addCellByType = (ws, rowIndex, resultRow) => {
 };
 
 /**
- *
+ * Generate and stream a report to `res`.
+ * @param {object} es - an `elasticsearch.Client` instance.
+ * @param {object} res - the `http.ServerResponse` in which to stream the report.
+ * @param {string} projectId - the id of the arranger project.
+ * @param {object} sqon - the sqon used to filter the results.
+ * @param {object} reportConfigs - the raw report configuration.
+ * @returns {Promise<void>} - A `Promise` that resolve to `void` once the report has been sent.
  */
-export default async (es, res, projectId, sqon, reportConfigs) => {
+export default async function generateReport(es, res, projectId, sqon, reportConfigs) {
   // create the Excel Workbook
   const wb = new xl.Workbook();
 
@@ -66,7 +72,10 @@ export default async (es, res, projectId, sqon, reportConfigs) => {
       const ws = wb.addWorksheet(sheetConfig.sheetName);
 
       // prepare the ES query
+      console.time(`getExtendedConfigs-${projectId}-${sheetConfig.sheetName}`);
       const extendedConfig = await getExtendedConfigs(es, projectId, sheetConfig.indexName);
+      console.timeEnd(`getExtendedConfigs-${projectId}-${sheetConfig.sheetName}`);
+
       const searchParams = makeReportQuery(extendedConfig, sqon, sheetConfig);
 
       // add the header row
@@ -76,6 +85,7 @@ export default async (es, res, projectId, sqon, reportConfigs) => {
       // row index is one based, 1 is the header row
       const wrapper = { rowIndex: 2 };
       try {
+        console.time(`executeSearchAfterQuery ${sheetConfig.sheetName}`);
         await executeSearchAfterQuery(es, sheetConfig.alias, searchParams, {
           onPageFetched: chunk => {
             // bring back nested nodes to the root document to have a flat array to handle
@@ -92,6 +102,7 @@ export default async (es, res, projectId, sqon, reportConfigs) => {
           },
           pageSize: env.ES_PAGESIZE,
         });
+        console.timeEnd(`executeSearchAfterQuery ${sheetConfig.sheetName}`);
       } catch (err) {
         console.error(`Error while fetching the data for sheet "${sheetConfig.sheetName}"`);
         throw err;
@@ -100,6 +111,7 @@ export default async (es, res, projectId, sqon, reportConfigs) => {
   );
 
   // finalize the file here and stream it back
-  // TODO : REMOVE dependency on `res` : return a readable stream instead
+  console.time(`write report`);
   wb.write('ExcelFile.xlsx', res);
-};
+  console.timeEnd(`write report`);
+}

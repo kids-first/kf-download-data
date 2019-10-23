@@ -18,8 +18,6 @@ import esToSafeJsInt from '@kfarranger/middleware/dist/utils/esToSafeJsInt';
  *  If a `size` property is provided in the query, it has precedence over this option.
  */
 export const executeSearchAfterQuery = async (es, index, query, opts = {}) => {
-  console.time('executeSearchAfterQuery');
-
   opts = defaults(opts, {
     onPageFetched: noop,
     onFinish: noop,
@@ -33,8 +31,6 @@ export const executeSearchAfterQuery = async (es, index, query, opts = {}) => {
   };
 
   const fetchNextPage = async (sort = null) => {
-    console.time(`fetchNextPage ${sort}`);
-
     const searchParams = {
       index,
       body: {
@@ -71,7 +67,6 @@ export const executeSearchAfterQuery = async (es, index, query, opts = {}) => {
       return;
     }
 
-    console.timeEnd(`fetchNextPage ${sort}`);
     await fetchNextPage(page.hits.hits[pageSize - 1].sort);
   };
 
@@ -80,11 +75,9 @@ export const executeSearchAfterQuery = async (es, index, query, opts = {}) => {
     otherPagesPromise = await fetchNextPage();
   } catch (err) {
     console.error(`Failed to search ES for index: ${index}, query: ${JSON.stringify(query)}`, err);
-    console.timeEnd('executeSearchAfterQuery');
     throw err;
   }
 
-  console.timeEnd('executeSearchAfterQuery');
   return otherPagesPromise;
 };
 

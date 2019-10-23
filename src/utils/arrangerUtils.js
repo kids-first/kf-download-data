@@ -64,8 +64,6 @@ const _internalCache = new AsyncCache();
 const fetchProject = (es, projectId, indexName) => {
   const key = generateCacheKey(projectId, indexName);
 
-  console.time(`getExtendedConfigs-${key}`);
-
   return es
     .search({
       index: `arranger-projects-${projectId}`,
@@ -85,7 +83,6 @@ const fetchProject = (es, projectId, indexName) => {
           `Found more than one config matching "projectId: ${projectId}, indexName: ${indexName}", picking the first one.`,
         );
       }
-      console.timeEnd(`getExtendedConfigs-${key}`);
       return extendedConfigs[0];
     })
     .catch(err => {
@@ -94,7 +91,6 @@ const fetchProject = (es, projectId, indexName) => {
         `Error while fetching project for "projectId: ${projectId}, indexName: ${indexName}"`,
         err,
       );
-      console.timeEnd(`getExtendedConfigs-${key}`);
       throw err;
     });
 };
