@@ -3,15 +3,15 @@ import xl from 'excel4node';
 import flattenDeep from 'lodash/flattenDeep';
 import uniq from 'lodash/uniq';
 
-import * as env from '../../env';
+import * as env from '../env';
 import {
   getExtendedConfigs,
   getNestedFields,
   findValueInField,
   reduceAndMerge,
-} from '../../utils/arrangerUtils';
-import { executeSearchAfterQuery } from '../../utils/esUtils';
-import { normalizeConfigs } from '../../utils/configUtils';
+} from '../utils/arrangerUtils';
+import { executeSearchAfterQuery } from '../utils/esUtils';
+import { normalizeConfigs } from '../utils/configUtils';
 
 const EMPTY_HEADER = '--';
 
@@ -50,6 +50,9 @@ const addCellByType = (ws, rowIndex, resultRow) => {
   };
 };
 
+/**
+ *
+ */
 export default async (es, res, projectId, sqon, reportConfigs) => {
   // create the Excel Workbook
   const wb = new xl.Workbook();
@@ -87,7 +90,7 @@ export default async (es, res, projectId, sqon, reportConfigs) => {
               wrapper.rowIndex += 1;
             });
           },
-          size: env.ES_PAGESIZE,
+          pageSize: env.ES_PAGESIZE,
         });
       } catch (err) {
         console.error(`Error while fetching the data for sheet "${sheetConfig.sheetName}"`);

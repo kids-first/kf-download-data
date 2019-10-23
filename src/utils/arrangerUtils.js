@@ -1,12 +1,9 @@
-import esToSafeJsInt from '@kfarranger/middleware/dist/utils/esToSafeJsInt';
 import flatten from 'lodash/flatten';
 
-import { logToFileAndStdOut } from '../debugHelpers';
-
 /**
- * An in-memory cache
+ * An in-memory, asynchronous cache.
  */
-class Cache {
+class AsyncCache {
   /**
    * Time to live of an item in the cache
    */
@@ -14,26 +11,38 @@ class Cache {
   _entries = {};
 
   /**
-   * Get an entry from the cache.
+   * Get an entry from the cache, and populate it if missing.
    * @param {string} key - the unique identifier of that item
-   * @returns {any} the entry matching the `key`, or null if not found.
+   * @param {function(string)} fetch - a function that will populated this entry if it is missing.
+   * @returns {Promise<any>} a promise to the entry matching the `key`, or a rejected promise if not found.
    */
-  get(key) {
-    return this._entries[key] || null;
+  get(key, fetch) {
+    if (!this._entries[key]) {
+      this.add(key, fetch(key));
+    }
+    return this._entries[key].entry;
   }
 
   /**
    * Add an entry to the cache.
    * @param {string} key - the unique identifier of that item.
-   * @param {any} entry - the entry to be added to the cache.
+   * @param {Promise<any>} entry - a Promise of the entry to be added to the cache.
    */
-  add(key, entry) {
+  add(key, value) {
     this._entries[key] = {
       key,
-      entry,
+      entry: typeof value.then === 'function' ? value : Promise.resolve(value),
       expiry: Date.now() + this._ttl,
     };
     this.clean();
+  }
+
+  /**
+   *
+   * @param {string} key - voids an entry in the cache.
+   */
+  remove(key) {
+    delete this._entries[key];
   }
 
   /**
@@ -41,9 +50,8 @@ class Cache {
    */
   clean() {
     const now = Date.now();
-    this._entries = Object.keys(this._entries).reduce((freshEntries, key) => {
-      const entry = this._entries[key];
-      if (entry.expiry < now) {
+    this._entries = Object.entries(this._entries).reduce((freshEntries, [key, entry]) => {
+      if (entry.expiry > now) {
         freshEntries[key] = entry;
       }
       return freshEntries;
@@ -51,84 +59,67 @@ class Cache {
   }
 }
 
-const _internalCache = new Cache();
+const _internalCache = new AsyncCache();
+
+const fetchProject = (es, projectId, indexName) => {
+  const key = generateCacheKey(projectId, indexName);
+
+  console.time(`getExtendedConfigs-${key}`);
+
+  return es
+    .search({
+      index: `arranger-projects-${projectId}`,
+      type: `arranger-projects-${projectId}`,
+      q: `name:${indexName}`,
+    })
+    .then(result => result.hits.hits.map(hit => hit._source))
+    .then(sources => sources.map(source => source.config.extended))
+    .then(extendedConfigs => {
+      if (extendedConfigs.length === 0) {
+        throw new Error(
+          `Could not find project for "projectId: ${projectId}, indexName: ${indexName}"`,
+        );
+      }
+      if (extendedConfigs.length > 1) {
+        console.warn(
+          `Found more than one config matching "projectId: ${projectId}, indexName: ${indexName}", picking the first one.`,
+        );
+      }
+      console.timeEnd(`getExtendedConfigs-${key}`);
+      return extendedConfigs[0];
+    })
+    .catch(err => {
+      _internalCache.remove(key);
+      console.error(
+        `Error while fetching project for "projectId: ${projectId}, indexName: ${indexName}"`,
+        err,
+      );
+      console.timeEnd(`getExtendedConfigs-${key}`);
+      throw err;
+    });
+};
+
+const generateCacheKey = (projectId, indexName) => `${projectId} ${indexName}`;
 
 /**
  * Get an arranger project's extended configs.
  * @param {object} es - an `elasticsearch.Client` instance.
  * @param {string} projectId - the id of the arranger project.
  * @param {string} indexName - the value of `name` in the arranger project indices. Usually `participant` or `file`.
- * @returns {object} - the arranger project configurations for the given `indexName`.
+ * @returns {Promise<object>} - the arranger project configurations for the given `indexName`.
  */
 export const getExtendedConfigs = async (es, projectId, indexName) => {
-  console.time('getExtendedConfigs');
-
-  const key = `${es} ${projectId} ${indexName}`;
-  let extendedConfigs = _internalCache.get(key);
-  if (!extendedConfigs) {
-    extendedConfigs = await es
-      .search({
-        index: `arranger-projects-${projectId}`,
-        type: `arranger-projects-${projectId}`,
-        q: `name:${indexName}`,
-      })
-      .then(result => result.hits.hits.map(hit => hit._source))
-      .then(sources => sources.map(source => source.config.extended));
-
-    _internalCache.add(key, extendedConfigs);
-  }
-
-  if (extendedConfigs.length === 0) {
-    throw new Error(
-      `Could not find project for "projectId: ${projectId}, indexName: ${indexName}"`,
-    );
-  }
-  if (extendedConfigs.length > 1) {
-    console.warn(
-      `Found more than one config matching "projectId: ${projectId}, indexName: ${indexName}", picking the first one.`,
-    );
-  }
-
-  console.timeEnd('getExtendedConfigs');
-  return extendedConfigs[0];
+  const key = generateCacheKey(projectId, indexName);
+  return _internalCache.get(key, () => fetchProject(es, projectId, indexName));
 };
 
-export const getNestedFields = extendedConfig => {
-  return extendedConfig.filter(({ type }) => type === 'nested').map(({ field }) => field);
-};
-
-const defaultBoolTransform = value => {
-  switch (String(value).toLowerCase()) {
-    case 'true':
-      return 'Yes';
-    case 'false':
-      return 'No';
-    case 'null':
-      return '';
-    default:
-      return String(value);
-  }
-};
-
-export const getDefaultTransformPerType = (type, field) => {
-  switch (type) {
-    case 'boolean':
-      return defaultBoolTransform;
-    case 'id':
-    case 'keyword':
-    case 'text':
-      return x => (x === null ? '' : String(x));
-    case 'float':
-    case 'integer':
-    case 'long':
-      return x => esToSafeJsInt(x);
-    // case 'date':
-    // case 'nested':
-    // case 'object':
-    default:
-      console.warn(`Unsupported type "${type}" encountered in field "${field}"`);
-      return x => x;
-  }
+/**
+ * Extracts the fields path for fields of type "nested".
+ * @param {Object} extendedConfigs - the extended configurations from the mappings.
+ * @returns {string[]} - an array of fields path.
+ */
+export const getNestedFields = extendedConfigs => {
+  return extendedConfigs.filter(({ type }) => type === 'nested').map(({ field }) => field);
 };
 
 /**

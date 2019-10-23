@@ -2,8 +2,6 @@
 import { expect } from 'chai';
 
 import { findValueInField, reduceAndMerge } from './arrangerUtils';
-import { logToFileAndStdOut } from '../debugHelpers';
-import { levels } from 'log4js';
 
 const getMockData = () => ({
   study: {

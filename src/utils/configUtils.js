@@ -1,4 +1,5 @@
-import { getExtendedConfigs, getDefaultTransformPerType } from './arrangerUtils';
+import { getExtendedConfigs } from './arrangerUtils';
+import { getDefaultTransformPerType } from './esUtils';
 
 /**
  * Decorates the raw reports configs with default values, values from arranger's project, etc...
