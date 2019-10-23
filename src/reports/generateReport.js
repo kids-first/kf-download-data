@@ -51,15 +51,29 @@ const addCellByType = (ws, rowIndex, resultRow) => {
 };
 
 /**
+ * Returns a default filename for the report, in case none was provided.
+ * @param {object} reportConfigs - the raw report configuration.
+ */
+const getDefaultFilename = () => {
+  // report_YYYYMMDD.xlsx
+  const dateStamp = new Date()
+    .toISOString()
+    .slice(0, 10)
+    .replace(/-/g, '');
+  return `report_${dateStamp}.xlsx`;
+};
+
+/**
  * Generate and stream a report to `res`.
  * @param {object} es - an `elasticsearch.Client` instance.
  * @param {object} res - the `http.ServerResponse` in which to stream the report.
  * @param {string} projectId - the id of the arranger project.
  * @param {object} sqon - the sqon used to filter the results.
+ * @param {string} filename - the desired filename for the report.
  * @param {object} reportConfigs - the raw report configuration.
  * @returns {Promise<void>} - A `Promise` that resolve to `void` once the report has been sent.
  */
-export default async function generateReport(es, res, projectId, sqon, reportConfigs) {
+export default async function generateReport(es, res, projectId, sqon, filename, reportConfigs) {
   // create the Excel Workbook
   const wb = new xl.Workbook();
 
@@ -112,6 +126,7 @@ export default async function generateReport(es, res, projectId, sqon, reportCon
 
   // finalize the file here and stream it back
   console.time(`write report`);
-  wb.write('ExcelFile.xlsx', res);
+  const reportFilename = filename || getDefaultFilename();
+  wb.write(reportFilename, res);
   console.timeEnd(`write report`);
 }
