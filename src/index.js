@@ -1,15 +1,22 @@
-import express from "express";
-import bodyParser from "body-parser";
-import cors from "cors";
+import express from 'express';
+import cors from 'cors';
+import { Server } from 'http';
 
 import egoTokenMiddleware from 'kfego-token-middleware';
 import * as env from './env';
-import { version, name, description } from '../package.json';
+
+import statusEndpoint from './status';
+import reportsEndpoint from './reports';
 
 const app = express();
+const http = Server(app);
 
 // CORS middleware
-app.use(cors());
+app.use(
+  cors({
+    exposedHeaders: ['Content-Length', 'Content-Type', 'Content-Disposition'],
+  }),
+);
 
 // Ego authentication
 app.use(
@@ -28,13 +35,13 @@ app.use(
       },
       {
         type: 'allow',
-        route: [`/(.*)/download`],
+        route: [`/(.*)/reports/(.*)`],
         status: ['approved'],
         role: 'user',
       },
       {
         type: 'allow',
-        route: [`/(.*)/ping`, '/status'],
+        route: ['/status', '/'],
         tokenExempt: true,
       },
     ],
@@ -42,25 +49,14 @@ app.use(
 );
 
 // Health check endpoint
-app.get('/status', (req, res) =>
-  res.send({
-    name,
-    version,
-    description,
-    elasticsearch: env.ES_HOST,
-  }),
-);
+app.get('/status', statusEndpoint);
+app.get('/', statusEndpoint);
 
-app.get("/", (req, res) => {
-  res.send("OK");
-});
-
-app.get("/download", (req, res) => {
-  res.send("download...");
-});
-
+// endpoints to generate the reports
+app.use('/reports', reportsEndpoint(env.ES_HOST));
 
 // start to listen
-app.listen(env.PORT, () => {
+http.listen(env.PORT, () => {
   console.log(`app is listening to port ${env.PORT}`);
+  console.log('env', JSON.stringify(env, null, 2));
 });
