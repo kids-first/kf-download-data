@@ -42,7 +42,7 @@ export const executeSearchAfterQuery = async (es, index, query, opts = {}) => {
 
     // omit "search_after" on first call
     if (sort) {
-      searchParams.body.search_after = sort;
+      searchParams.body.search_after = sort.map(toSafeESValue);
     }
 
     let page;
@@ -79,6 +79,36 @@ export const executeSearchAfterQuery = async (es, index, query, opts = {}) => {
   }
 
   return otherPagesPromise;
+};
+
+/**
+ * Cleans a value so it can be accepted by ES.
+ * e.g. Numbers below Number.MAX_SAFE_INTEGER have to be capped and represented in string, to avoid precision loss.
+ * @see https://github.com/elastic/elasticsearch-js/issues/662
+ * @param {any} value - any value to be validated.
+ * @returns {any} the clean value. Might be of a different type than the input.
+ */
+export const toSafeESValue = value => {
+  // Cap unsafe number
+  if (
+    typeof value === 'string' &&
+    Number.isInteger(Number.parseFloat(value)) &&
+    !Number.isSafeInteger(value)
+  ) {
+    const bigValue = BigInt(value);
+    const bigMaxValue = BigInt(2 ** 63 - 1);
+    const bigMinValue = BigInt(-(2 ** 63 - 1));
+    if (bigValue < bigMinValue) {
+      return String(bigMinValue);
+    }
+    if (bigValue > bigMaxValue) {
+      return String(bigMaxValue);
+    }
+    return String(bigValue);
+  }
+
+  // Value is already safe
+  return value;
 };
 
 /**
