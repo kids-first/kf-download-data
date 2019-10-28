@@ -90,11 +90,7 @@ export const executeSearchAfterQuery = async (es, index, query, opts = {}) => {
  */
 export const toSafeESValue = value => {
   // Cap unsafe number
-  if (
-    typeof value === 'string' &&
-    Number.isInteger(Number.parseFloat(value)) &&
-    !Number.isSafeInteger(value)
-  ) {
+  if (Number.isInteger(Number.parseFloat(value)) && !Number.isSafeInteger(value)) {
     const bigValue = BigInt(value);
     const bigMaxValue = BigInt(2 ** 63 - 1);
     const bigMinValue = BigInt(-(2 ** 63 - 1));

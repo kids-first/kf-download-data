@@ -118,6 +118,8 @@ const histologicalDiagnoses = {
     { field: 'kf_id' },
     { field: 'is_proband' },
     {
+      // This allows to do a cell with a static value.
+      // The value will be formatted like the value of `field` would have.
       field: 'kf_id',
       header: 'Diagnosis Type',
       transform: () => 'Histological',
@@ -139,23 +141,20 @@ const histologicalDiagnoses = {
     { field: 'biospecimens.composition' },
     { field: 'biospecimens.method_of_sample_procurement' },
     { field: 'biospecimens.analyte_type' },
-    { field: 'biospecimens.diagnoses.age_at_event_days' },
   ],
   sort: [
     { kf_id: 'asc' },
-    // TODO support for sort on biospecimens.diagnoses
-    // ===> biospecimens.diagnoses is not declared as a nested field
-    // {
-    //   'biospecimens.diagnoses.age_at_event_days': {
-    //     order: 'desc',
-    //     nested: {
-    //       path: 'biospecimens',
-    //       nested: {
-    //         path: 'biospecimens.diagnoses',
-    //       },
-    //     },
-    //   },
-    // },
+    {
+      'biospecimens.diagnoses.age_at_event_days': {
+        order: 'desc',
+        nested: {
+          path: 'biospecimens',
+          nested: {
+            path: 'biospecimens.diagnoses',
+          },
+        },
+      },
+    },
   ],
 };
 
