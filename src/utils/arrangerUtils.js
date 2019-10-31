@@ -70,7 +70,7 @@ const fetchProject = (es, projectId, indexName) => {
       type: `arranger-projects-${projectId}`,
       q: `name:${indexName}`,
     })
-    .then(result => result.hits.hits.map(hit => hit._source))
+    .then(({ body }) => body.hits.hits.map(hit => hit._source))
     .then(sources => sources.map(source => source.config.extended))
     .then(extendedConfigs => {
       if (extendedConfigs.length === 0) {

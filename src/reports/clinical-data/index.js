@@ -1,4 +1,4 @@
-import elasticsearch from 'elasticsearch';
+import { Client } from '@elastic/elasticsearch';
 import generateReport from '../generateReport';
 
 const clinicalDataReport = (esHost, reportConfigs) => async (req, res) => {
@@ -12,7 +12,7 @@ const clinicalDataReport = (esHost, reportConfigs) => async (req, res) => {
   let es = null;
   try {
     // prepare the ES client
-    es = new elasticsearch.Client({ host: esHost });
+    es = new Client({ node: esHost });
     // Generate the report
     await generateReport(es, res, projectId, sqon, filename, reportConfigs);
     es.close();
