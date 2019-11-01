@@ -11,3 +11,13 @@
 # Kids First Portal Reports API
 
 The Kids First Portal Reports API offers an endpoint to generate reports based on queries built using the Kids First Portal.
+
+## Adding a report
+
+### Preparing the report
+
+Add a directory in `src/reports/` whose name match the path in the url, along with a `config.js` file, detailed below.
+
+> i.e. Create `src/reports/clinical-data/config.js` contains the reports accessible at the url `/reports/clinical-data`.
+
+### `config.js` file

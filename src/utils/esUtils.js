@@ -52,22 +52,22 @@ export const executeSearchAfterQuery = async (es, index, query, opts = {}) => {
       console.error(`Error searching ES with params ${JSON.stringify(searchParams)}`, err);
       throw err;
     }
-    progress.total = page.hits.total;
-    const pageSize = page.hits.hits.length;
+    progress.total = page.body.hits.total;
+    const pageSize = page.body.hits.hits.length;
     progress.fetched += pageSize;
 
     // a page may be empty if data has been removed from the search results in between two calls,
     //  preventing this search from reaching fetched = total.
     // Be sure not to go in an infinite loop if that happen.
     if (pageSize > 0) {
-      opts.onPageFetched(page.hits.hits.map(hit => hit._source), progress.total);
+      opts.onPageFetched(page.body.hits.hits.map(hit => hit._source), progress.total);
     }
     if (progress.fetched >= progress.total || pageSize === 0) {
       opts.onFinish(progress.total);
       return;
     }
 
-    await fetchNextPage(page.hits.hits[pageSize - 1].sort);
+    await fetchNextPage(page.body.hits.hits[pageSize - 1].sort);
   };
 
   let otherPagesPromise;
