@@ -5,7 +5,8 @@ import { getDefaultTransformPerType } from './esUtils';
  * Decorates the raw reports configs with default values, values from arranger's project, etc...
  * @param {object} es - an `elasticsearch.Client` instance
  * @param {string} projectId - the id of the arranger project
- * @param {Object} reportConfigs - the raw report configurations
+ * @param {object} reportConfigs - the raw report configurations
+ * @returns {ReportConfigs}
  */
 export const normalizeConfigs = async (es, projectId, reportConfigs) => {
   return await Promise.all(

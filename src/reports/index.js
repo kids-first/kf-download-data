@@ -3,6 +3,7 @@ import bodyParser from 'body-parser';
 
 import clinicalDataReport from './clinical-data';
 
+import familyClinicalDataReport from './family-clinical-data';
 
 export default esHost => {
   const router = express.Router();
@@ -11,5 +12,6 @@ export default esHost => {
 
   // declare a route for each report
   router.use('/clinical-data', clinicalDataReport(esHost));
+  router.use('/family-clinical-data', familyClinicalDataReport(esHost));
   return router;
 };
