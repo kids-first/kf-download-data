@@ -1,7 +1,5 @@
 // TODO : comment all the fields to document it, also put it in README.md
 const participants = {
-  indexName: 'participant',
-  alias: 'participant_centric',
   sheetName: 'Participants',
   root: null,
   columns: [
@@ -45,8 +43,6 @@ const participants = {
 };
 
 const phenotypes = {
-  indexName: 'participant',
-  alias: 'participant_centric',
   sheetName: 'Phenotypes',
   root: 'phenotype',
   columns: [
@@ -84,8 +80,6 @@ const phenotypes = {
 };
 
 const diagnoses = {
-  indexName: 'participant',
-  alias: 'participant_centric',
   sheetName: 'Diagnoses',
   root: 'diagnoses',
   columns: [
@@ -110,8 +104,6 @@ const diagnoses = {
 };
 
 const histologicalDiagnoses = {
-  indexName: 'participant',
-  alias: 'participant_centric',
   sheetName: 'Histological Diagnoses',
   root: 'biospecimens.diagnoses',
   columns: [
@@ -156,6 +148,11 @@ const histologicalDiagnoses = {
       },
     },
   ],
+};
+
+export const queryConfigs = {
+  indexName: 'participant',
+  alias: 'participant_centric',
 };
 
 export const sheetConfigs = [participants, phenotypes, diagnoses, histologicalDiagnoses];

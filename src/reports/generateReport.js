@@ -87,7 +87,7 @@ export default async function generateReport(es, res, projectId, sqon, filename,
 
       // prepare the ES query
       console.time(`getExtendedConfigs-${projectId}-${sheetConfig.sheetName}`);
-      const extendedConfig = await getExtendedConfigs(es, projectId, sheetConfig.indexName);
+      const extendedConfig = await getExtendedConfigs(es, projectId, normalizedConfigs.indexName);
       console.timeEnd(`getExtendedConfigs-${projectId}-${sheetConfig.sheetName}`);
 
       const searchParams = makeReportQuery(extendedConfig, sqon, sheetConfig);
@@ -100,7 +100,7 @@ export default async function generateReport(es, res, projectId, sqon, filename,
       const wrapper = { rowIndex: 2 };
       try {
         console.time(`executeSearchAfterQuery ${sheetConfig.sheetName}`);
-        await executeSearchAfterQuery(es, sheetConfig.alias, searchParams, {
+        await executeSearchAfterQuery(es, normalizedConfigs.alias, searchParams, {
           onPageFetched: chunk => {
             // bring back nested nodes to the root document to have a flat array to handle
             const effectiveRows = sheetConfig.root

@@ -10,14 +10,19 @@ import { getDefaultTransformPerType } from './esUtils';
 export const normalizeConfigs = async (es, projectId, reportConfigs) => {
   return await Promise.all(
     reportConfigs.sheetConfigs.map(async sheetConfigs => {
-      const extendedConfigs = await getExtendedConfigs(es, projectId, sheetConfigs.indexName);
+      const extendedConfigs = await getExtendedConfigs(
+        es,
+        projectId,
+        reportConfigs.queryConfigs.indexName,
+      );
       return new ReportSheetConfigs(sheetConfigs, extendedConfigs);
     }),
-  ).then(sheets => new ReportConfigs(sheets));
+  ).then(sheets => new ReportConfigs(reportConfigs, sheets));
 };
 
 class ReportConfigs {
-  constructor(sheets) {
+  constructor(reportConfigs, sheets) {
+    this._query = reportConfigs.queryConfigs;
     this._sheets = sheets;
   }
 
@@ -27,6 +32,20 @@ class ReportConfigs {
    */
   get sheets() {
     return this._sheets;
+  }
+
+  /**
+   * @returns {string} the 'name' field in the arranger project document
+   */
+  get indexName() {
+    return this._query.indexName;
+  }
+
+  /**
+   * @returns {string} the alias of the indices containing relevant data
+   */
+  get alias() {
+    return this._query.alias;
   }
 }
 
@@ -57,14 +76,14 @@ class ReportSheetConfigs {
    * @returns {string} the 'name' field in the arranger project document
    */
   get indexName() {
-    return this._sheetConfigs.indexName;
+    throw new Error('"indexName" has been moved');
   }
 
   /**
    * @returns {string} the alias of the indices containing relevant data
    */
   get alias() {
-    return this._sheetConfigs.alias;
+    throw new Error('"alias" has been moved');
   }
 
   /**

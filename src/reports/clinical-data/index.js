@@ -1,7 +1,8 @@
 import { Client } from '@elastic/elasticsearch';
 import generateReport from '../generateReport';
+import * as reportConfigs from './config';
 
-const clinicalDataReport = (esHost, reportConfigs) => async (req, res) => {
+const clinicalDataReport = esHost => async (req, res) => {
   console.time('clinical-data');
 
   const { sqon, projectId, filename = null } = req.body;
