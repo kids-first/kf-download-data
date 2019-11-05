@@ -23,7 +23,6 @@ const clinicalDataReport = esHost => async (req, res) => {
 
     // generate a new sqon containing the id of all family members for the current sqon
     const familySqon = await generateFamilySqon(es, projectId, sqon, normalizedConfigs);
-    console.log(`Family sqon:`, JSON.stringify(familySqon, null, 2));
 
     // Generate the report
     await generateReport(es, res, projectId, familySqon, filename, normalizedConfigs);
