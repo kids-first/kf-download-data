@@ -82,6 +82,29 @@ export const executeSearchAfterQuery = async (es, index, query, opts = {}) => {
 };
 
 /**
+ * Calls the `search` on the given elasticsearch.Client to get a single page of results.
+ * @param {Object} es - an elasticsearch.Client object.
+ * @param {String} index - the name of the index (or alias) on which to search.
+ * @param {Object} query - an object containing the query,
+ */
+export const executeSearch = async (es, index, query) => {
+  const searchParams = {
+    index,
+    body: {
+      ...query,
+      size: typeof query.size === 'number' ? query.size : 0,
+    },
+  };
+
+  try {
+    return await es.search(searchParams);
+  } catch (err) {
+    console.error(`Error searching ES with params ${JSON.stringify(searchParams)}`, err);
+    throw err;
+  }
+};
+
+/**
  * Cleans a value so it can be accepted by ES.
  * e.g. Numbers below Number.MAX_SAFE_INTEGER have to be capped and represented in string, to avoid precision loss.
  * @see https://github.com/elastic/elasticsearch-js/issues/662

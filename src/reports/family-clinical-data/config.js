@@ -1,4 +1,3 @@
-// TODO : comment all the fields to document it, also put it in README.md
 const participants = {
   sheetName: 'Participants',
   root: null,
@@ -48,6 +47,7 @@ const phenotypes = {
   columns: [
     { field: 'kf_id' },
     { field: 'is_proband' },
+    { field: 'family_id' },
     {
       field: 'phenotype.hpo_phenotype_observed_text',
       header: 'Phenotype (HPO)',
@@ -76,7 +76,7 @@ const phenotypes = {
     },
     { field: 'phenotype.age_at_event_days', header: 'Age at Phenotype Assignment (Days)' },
   ],
-  sort: [{ kf_id: 'asc' }],
+  sort: [{ family_id: 'asc' }, { kf_id: 'asc' }],
 };
 
 const diagnoses = {
@@ -85,6 +85,7 @@ const diagnoses = {
   columns: [
     { field: 'kf_id' },
     { field: 'is_proband' },
+    { field: 'family_id' },
     {
       field: 'kf_id',
       header: 'Diagnosis Type',
@@ -100,54 +101,7 @@ const diagnoses = {
     },
     { field: 'diagnoses.source_text_tumor_location' },
   ],
-  sort: [{ kf_id: 'asc' }],
-};
-
-const histologicalDiagnoses = {
-  sheetName: 'Histological Diagnoses',
-  root: 'biospecimens.diagnoses',
-  columns: [
-    { field: 'kf_id' },
-    { field: 'is_proband' },
-    {
-      // This allows to do a cell with a static value.
-      // The value will be formatted like the value of `field` would have.
-      field: 'kf_id',
-      header: 'Diagnosis Type',
-      transform: () => 'Histological',
-    },
-    { field: 'biospecimens.diagnoses.diagnosis_category' },
-    { field: 'biospecimens.diagnoses.mondo_id_diagnosis' },
-    { field: 'biospecimens.diagnoses.ncit_id_diagnosis' },
-    { field: 'biospecimens.diagnoses.source_text_diagnosis' },
-    {
-      field: 'biospecimens.diagnoses.age_at_event_days',
-      header: 'Age at Diagnosis (Days)',
-    },
-    { field: 'biospecimens.diagnoses.source_text_tumor_location' },
-    { field: 'biospecimens.kf_id' },
-    { field: 'biospecimens.external_sample_id' },
-    { field: 'biospecimens.source_text_anatomical_site' },
-    { field: 'biospecimens.ncit_id_tissue_type' },
-    { field: 'biospecimens.source_text_tissue_type' },
-    { field: 'biospecimens.composition' },
-    { field: 'biospecimens.method_of_sample_procurement' },
-    { field: 'biospecimens.analyte_type' },
-  ],
-  sort: [
-    { kf_id: 'asc' },
-    {
-      'biospecimens.diagnoses.age_at_event_days': {
-        order: 'desc',
-        nested: {
-          path: 'biospecimens',
-          nested: {
-            path: 'biospecimens.diagnoses',
-          },
-        },
-      },
-    },
-  ],
+  sort: [{ family_id: 'asc' }, { kf_id: 'asc' }],
 };
 
 export const queryConfigs = {
@@ -155,4 +109,4 @@ export const queryConfigs = {
   alias: 'participant_centric',
 };
 
-export const sheetConfigs = [participants, phenotypes, diagnoses, histologicalDiagnoses];
+export const sheetConfigs = [participants, phenotypes, diagnoses];

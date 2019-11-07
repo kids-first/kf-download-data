@@ -2,7 +2,8 @@ import express from 'express';
 import bodyParser from 'body-parser';
 
 import clinicalDataReport from './clinical-data';
-import * as clinicalDataReportConfigs from './clinical-data/config';
+
+import familyClinicalDataReport from './family-clinical-data';
 
 export default esHost => {
   const router = express.Router();
@@ -10,6 +11,7 @@ export default esHost => {
   router.use(bodyParser.json({ limit: '10mb' }));
 
   // declare a route for each report
-  router.use('/clinical-data', clinicalDataReport(esHost, clinicalDataReportConfigs));
+  router.use('/clinical-data', clinicalDataReport(esHost));
+  router.use('/family-clinical-data', familyClinicalDataReport(esHost));
   return router;
 };

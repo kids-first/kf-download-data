@@ -11,7 +11,6 @@ import {
   reduceAndMerge,
 } from '../utils/arrangerUtils';
 import { executeSearchAfterQuery } from '../utils/esUtils';
-import { normalizeConfigs } from '../utils/configUtils';
 
 const EMPTY_HEADER = '--';
 
@@ -70,15 +69,19 @@ const getDefaultFilename = () => {
  * @param {string} projectId - the id of the arranger project.
  * @param {object} sqon - the sqon used to filter the results.
  * @param {string} filename - the desired filename for the report.
- * @param {object} reportConfigs - the raw report configuration.
+ * @param {object} normalizedConfigs - the normalized report configuration.
  * @returns {Promise<void>} - A `Promise` that resolve to `void` once the report has been sent.
  */
-export default async function generateReport(es, res, projectId, sqon, filename, reportConfigs) {
+export default async function generateReport(
+  es,
+  res,
+  projectId,
+  sqon,
+  filename,
+  normalizedConfigs,
+) {
   // create the Excel Workbook
   const wb = new xl.Workbook();
-
-  // decorated the configs with default values , values from arranger's project, etc...
-  const normalizedConfigs = await normalizeConfigs(es, projectId, reportConfigs);
 
   // generate the report for each sheet
   await Promise.all(
@@ -87,7 +90,7 @@ export default async function generateReport(es, res, projectId, sqon, filename,
 
       // prepare the ES query
       console.time(`getExtendedConfigs-${projectId}-${sheetConfig.sheetName}`);
-      const extendedConfig = await getExtendedConfigs(es, projectId, sheetConfig.indexName);
+      const extendedConfig = await getExtendedConfigs(es, projectId, normalizedConfigs.indexName);
       console.timeEnd(`getExtendedConfigs-${projectId}-${sheetConfig.sheetName}`);
 
       const searchParams = makeReportQuery(extendedConfig, sqon, sheetConfig);
@@ -100,7 +103,7 @@ export default async function generateReport(es, res, projectId, sqon, filename,
       const wrapper = { rowIndex: 2 };
       try {
         console.time(`executeSearchAfterQuery ${sheetConfig.sheetName}`);
-        await executeSearchAfterQuery(es, sheetConfig.alias, searchParams, {
+        await executeSearchAfterQuery(es, normalizedConfigs.alias, searchParams, {
           onPageFetched: chunk => {
             // bring back nested nodes to the root document to have a flat array to handle
             const effectiveRows = sheetConfig.root
