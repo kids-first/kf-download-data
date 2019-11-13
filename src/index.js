@@ -35,7 +35,7 @@ app.use(
       },
       {
         type: 'allow',
-        route: [`/(.*)/reports/(.*)`],
+        route: [`/reports/(.*)`],
         status: ['approved'],
         role: 'user',
       },
