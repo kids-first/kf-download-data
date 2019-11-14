@@ -21,7 +21,7 @@ const participants = {
     { field: 'affected_status' },
   ],
   sort: [
-    // does not work:
+    // `family.family_id` would not work.
     // see https://www.elastic.co/guide/en/elasticsearch/reference/current/fielddata.html
     {
       'family.family_id.keyword': {
