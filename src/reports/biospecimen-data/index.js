@@ -3,8 +3,6 @@ import generateReport from '../generateReport';
 import * as reportConfigs from './config';
 import { normalizeConfigs } from '../../utils/configUtils';
 
-// import generateFamilySqon from './generateFamilySqon';
-
 const clinicalDataReport = esHost => async (req, res) => {
   console.time('biospecimen-data');
 
