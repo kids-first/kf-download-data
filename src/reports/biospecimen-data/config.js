@@ -2,11 +2,11 @@ const biospecimens = {
   sheetName: 'Biospecimens',
   root: 'biospecimens',
   columns: [
+    { field: 'kf_id' },
+    { field: 'external_id' },
     { field: 'biospecimens.kf_id' },
     { field: 'biospecimens.external_sample_id' },
     { field: 'biospecimens.external_aliquot_id' },
-    { field: 'kf_id' },
-    { field: 'external_id' },
     { field: 'biospecimens.age_at_event_days' },
     { field: 'biospecimens.composition' },
     { field: 'biospecimens.analyte_type' },
