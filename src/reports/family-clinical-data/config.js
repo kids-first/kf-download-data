@@ -4,9 +4,9 @@ const participants = {
   columns: [
     { field: 'kf_id' },
     { field: 'external_id' },
+    { field: 'family_id' },
     { field: 'is_proband' },
     { field: 'study.short_name' },
-    { field: 'family.family_id' },
     { field: 'family.family_compositions.composition' },
     { field: 'diagnoses.diagnosis_category' },
     { field: 'gender' },
@@ -24,7 +24,7 @@ const participants = {
     // `family.family_id` would not work.
     // see https://www.elastic.co/guide/en/elasticsearch/reference/current/fielddata.html
     {
-      'family.family_id.keyword': {
+      family_id: {
         order: 'asc',
       },
     },
@@ -46,8 +46,9 @@ const phenotypes = {
   root: 'phenotype',
   columns: [
     { field: 'kf_id' },
-    { field: 'is_proband' },
+    { field: 'external_id' },
     { field: 'family_id' },
+    { field: 'is_proband' },
     {
       field: 'phenotype.hpo_phenotype_observed_text',
       header: 'Phenotype (HPO)',
@@ -84,8 +85,9 @@ const diagnoses = {
   root: 'diagnoses',
   columns: [
     { field: 'kf_id' },
-    { field: 'is_proband' },
+    { field: 'external_id' },
     { field: 'family_id' },
+    { field: 'is_proband' },
     {
       field: 'kf_id',
       header: 'Diagnosis Type',

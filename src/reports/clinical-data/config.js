@@ -5,9 +5,9 @@ const participants = {
   columns: [
     { field: 'kf_id' },
     { field: 'external_id' },
+    { field: 'family_id' },
     { field: 'is_proband' },
     { field: 'study.short_name' },
-    { field: 'family.family_id' },
     { field: 'family.family_compositions.composition' },
     { field: 'diagnoses.diagnosis_category' },
     { field: 'gender' },
@@ -25,7 +25,7 @@ const participants = {
     // does not work:
     // see https://www.elastic.co/guide/en/elasticsearch/reference/current/fielddata.html
     {
-      'family.family_id.keyword': {
+      family_id: {
         order: 'asc',
       },
     },
@@ -47,6 +47,7 @@ const phenotypes = {
   root: 'phenotype',
   columns: [
     { field: 'kf_id' },
+    { field: 'external_id' },
     { field: 'is_proband' },
     {
       field: 'phenotype.hpo_phenotype_observed_text',
@@ -79,11 +80,13 @@ const phenotypes = {
   sort: [{ kf_id: 'asc' }],
 };
 
+//<Biospecimen ID> <External Sample ID> <External Aliquot ID>
 const diagnoses = {
   sheetName: 'Diagnoses',
   root: 'diagnoses',
   columns: [
     { field: 'kf_id' },
+    { field: 'external_id' },
     { field: 'is_proband' },
     {
       field: 'kf_id',
@@ -108,6 +111,10 @@ const histologicalDiagnoses = {
   root: 'biospecimens.diagnoses',
   columns: [
     { field: 'kf_id' },
+    { field: 'external_id' },
+    { field: 'biospecimens.kf_id' },
+    { field: 'biospecimens.external_sample_id' },
+    { field: 'biospecimens.external_aliquot_id' },
     { field: 'is_proband' },
     {
       // This allows to do a cell with a static value.
@@ -125,8 +132,6 @@ const histologicalDiagnoses = {
       header: 'Age at Diagnosis (Days)',
     },
     { field: 'biospecimens.diagnoses.source_text_tumor_location' },
-    { field: 'biospecimens.kf_id' },
-    { field: 'biospecimens.external_sample_id' },
     { field: 'biospecimens.source_text_anatomical_site' },
     { field: 'biospecimens.ncit_id_tissue_type' },
     { field: 'biospecimens.source_text_tissue_type' },
