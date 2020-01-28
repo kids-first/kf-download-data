@@ -155,9 +155,22 @@ const histologicalDiagnoses = {
   ],
 };
 
+const familyRelationship = {
+  sheetName: 'Family Relationship',
+  root: 'family.family_compositions.family_members',
+  columns: [
+    { field: 'kf_id' },
+    { field: 'family.family_compositions.family_members.kf_id' },
+    { field: 'family.family_compositions.family_members.relationship', header: 'Relationship' },
+  ],
+  sort: [
+    { kf_id: 'asc' },
+  ],
+};
+
 export const queryConfigs = {
   indexName: 'participant',
   alias: 'participant_centric',
 };
 
-export const sheetConfigs = [participants, phenotypes, diagnoses, histologicalDiagnoses];
+export const sheetConfigs = [participants, phenotypes, diagnoses, histologicalDiagnoses, familyRelationship];
