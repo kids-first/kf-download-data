@@ -167,7 +167,7 @@ export const findValueInField = (source, path, defaultValue = null) => {
  * @returns {object[]}
  *
  */
-const deepMapEachTargetNodeElIntoSource = (source, currentLevel, segments) => {
+const deepObjectMapFromNode = (source, currentLevel, segments) => {
   const currentPathName = segments.slice(0, 1);
   const nextPath = segments.slice(1);
   const hasNextPath = nextPath.length > 0;
@@ -175,7 +175,7 @@ const deepMapEachTargetNodeElIntoSource = (source, currentLevel, segments) => {
   const currentValues = currentLevel[currentPathName];
 
   const flattenUntilIrreducibility = currentNode => {
-    const irreducible = deepMapEachTargetNodeElIntoSource(
+    const irreducible = deepObjectMapFromNode(
       source,
       currentNode,
       nextPath
@@ -212,5 +212,5 @@ const deepMapEachTargetNodeElIntoSource = (source, currentLevel, segments) => {
  */
 export const generateColumnsForProperty = (source, path) => {
   const pathSegments = path.split(".");
-  return deepMapEachTargetNodeElIntoSource(source, source, pathSegments);
+  return deepObjectMapFromNode(source, source, pathSegments);
 };
