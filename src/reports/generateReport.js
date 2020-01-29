@@ -8,7 +8,7 @@ import {
   getExtendedConfigs,
   getNestedFields,
   findValueInField,
-  reduceAndMerge,
+  generateColumnsForProperty,
 } from '../utils/arrangerUtils';
 import { executeSearchAfterQuery } from '../utils/esUtils';
 
@@ -107,7 +107,7 @@ export default async function generateReport(
           onPageFetched: chunk => {
             // bring back nested nodes to the root document to have a flat array to handle
             const effectiveRows = sheetConfig.root
-              ? chunk.reduce((rows, row) => rows.concat(reduceAndMerge(row, sheetConfig.root)), [])
+              ? chunk.reduce((rows, row) => rows.concat(generateColumnsForProperty(row, sheetConfig.root)), [])
               : chunk;
 
             // add data to the worksheet
