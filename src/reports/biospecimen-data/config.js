@@ -21,11 +21,10 @@ const biospecimens = {
     { field: 'biospecimens.source_text_tumor_descriptor' },
     { field: 'biospecimens.ncit_id_anatomical_site' },
     { field: 'biospecimens.ncit_id_tissue_type' },
-    { field: 'biospecimens.ncit_id_tissue_type' },
     { field: 'biospecimens.source_text_anatomical_site' },
     { field: 'biospecimens.source_text_tissue_type' },
     { field: 'biospecimens.uberon_id_anatomical_site' },
-    { field: 'biospecimens.spatial_descriptor' }
+    { field: 'biospecimens.spatial_descriptor' },
   ],
   sort: [
     // TODO : SORT BY biospecimens.kf_id
