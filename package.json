@@ -1,6 +1,6 @@
 {
   "name": "kf-api-portal-reports",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "The Kids First Download Clinical Data API offers an endpoint to generate a report of clinical data based on a query built using the Kids First Portal.",
   "main": "index.js",
   "scripts": {
