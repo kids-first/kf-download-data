@@ -4,7 +4,6 @@ import bodyParser from 'body-parser';
 import clinicalDataReport from './clinical-data';
 import familyClinicalDataReport from './family-clinical-data';
 import biospecimenDataReport from './biospecimen-data';
-import clinicalDataParticipantsOnlyReport from './clinical-data-participants-only';
 
 export default esHost => {
   const router = express.Router();
@@ -15,9 +14,5 @@ export default esHost => {
   router.use('/clinical-data', clinicalDataReport(esHost));
   router.use('/family-clinical-data', familyClinicalDataReport(esHost));
   router.use('/biospecimen-data', biospecimenDataReport(esHost));
-  router.use(
-    '/clinical-data-participants-only',
-    clinicalDataParticipantsOnlyReport(esHost)
-  );
   return router;
 };
