@@ -42,9 +42,9 @@ const patchChunkIfNeeded = (sheetConfig, chunk) => {
 };
 // ===== //
 
-const makeReportQuery = (extendedConfig, rawSqon, sheetConfig) => {
+const makeReportQuery = (extendedConfig, sqon, sheetConfig) => {
   const nestedFields = getNestedFields(extendedConfig);
-  const query = buildQuery({ nestedFields, filters: rawSqon });
+  const query = buildQuery({ nestedFields, filters: sqon });
   const source = uniq(
     flattenDeep(
       sheetConfig.columns.map(col => col.additionalFields.concat(col.field))
