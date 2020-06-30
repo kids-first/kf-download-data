@@ -9,7 +9,7 @@ const participants = {
     { field: 'is_proband' },
     { field: 'study.short_name' },
     { field: 'family.family_compositions.composition' },
-    { field: 'diagnoses.diagnosis_category' },
+    { field: 'diagnosis_category' },
     { field: 'gender' },
     { field: 'race' },
     { field: 'ethnicity' },
