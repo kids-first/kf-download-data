@@ -9,7 +9,7 @@ ecs_service_type_1_standard {
     entrypoint_command      = "node index.js"
     quick_deploy            = "true"
     container_port          = "443"
-    health_check_path       = "/endpoint-health"
+    health_check_path       = "/"
     external_config_repo    = "false"
     dependencies            = "ecr"
 }
