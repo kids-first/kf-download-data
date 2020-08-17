@@ -8,7 +8,7 @@ ecs_service_type_1_standard {
     create_default_iam_role = "1"
     entrypoint_command      = "node index.js"
     quick_deploy            = "true"
-    container_port          = "443"
+    container_port          = "80"
     health_check_path       = "/status"
     external_config_repo    = "false"
     dependencies            = "ecr"
