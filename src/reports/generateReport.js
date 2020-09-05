@@ -8,20 +8,50 @@ import {
   getExtendedConfigs,
   getNestedFields,
   findValueInField,
-  reduceAndMerge,
+  generateColumnsForProperty,
 } from '../utils/arrangerUtils';
 import { executeSearchAfterQuery } from '../utils/esUtils';
 
 const EMPTY_HEADER = '--';
 
+// ========= //
+/*
+ * FIXME Data model for mondo dxs changed. It contains, for a given participant, dxs that do not belong to the participant.
+ * Only those tagged "is_tagged": true are wanted. For now, we'll use a patch waiting for the model to be changed.
+ * */
+const isTaggedDxPatchNeeded = sheetConfig =>
+  sheetConfig.sheetName === 'Diagnoses' &&
+  sheetConfig.columns.some(c => c.field === 'diagnoses.mondo_id_diagnosis');
+
+const patchSourceIfNeeded = (source, sheetConfig) =>
+  isTaggedDxPatchNeeded(sheetConfig)
+    ? [...source, 'diagnoses.is_tagged']
+    : source;
+
+const patchChunkIfNeeded = (sheetConfig, chunk) => {
+  if (!isTaggedDxPatchNeeded(sheetConfig)) {
+    return chunk;
+  }
+  return chunk.reduce((acc, sourceOutput) => {
+    if (Array.isArray(sourceOutput.diagnoses)) {
+      const taggedDiagnoses = sourceOutput.diagnoses.filter(dx => dx.is_tagged);
+      return [...acc, { ...sourceOutput, diagnoses: taggedDiagnoses }];
+    }
+    return [...acc, sourceOutput];
+  }, []);
+};
+// ===== //
+
 const makeReportQuery = (extendedConfig, sqon, sheetConfig) => {
   const nestedFields = getNestedFields(extendedConfig);
   const query = buildQuery({ nestedFields, filters: sqon });
   const source = uniq(
-    flattenDeep(sheetConfig.columns.map(col => col.additionalFields.concat(col.field))),
+    flattenDeep(
+      sheetConfig.columns.map(col => col.additionalFields.concat(col.field))
+    )
   );
-  const sort = sheetConfig.sort; // "sort" is necessary to activate "search_after"
-  return { query, _source: source, sort };
+  const { sort } = sheetConfig; // "sort" is necessary to activate "search_after"
+  return { query, _source: patchSourceIfNeeded(source, sheetConfig), sort };
 };
 
 const addHeaderCellByType = ws => (columnConfig, columnIndex) => {
@@ -44,7 +74,10 @@ const addCellByType = (ws, rowIndex, resultRow) => {
     const rawValue = findValueInField(resultRow, columnConfig.field);
     const value = columnConfig.transform(rawValue, resultRow);
     const cell = ws.cell(rowIndex, columnIndex + 1);
-    const setter = value === null ? emptyCell : setCellValueByType[typeof value] || emptyCell;
+    const setter =
+      value === null
+        ? emptyCell
+        : setCellValueByType[typeof value] || emptyCell;
     setter(value, cell);
   };
 };
@@ -78,7 +111,7 @@ export default async function generateReport(
   projectId,
   sqon,
   filename,
-  normalizedConfigs,
+  normalizedConfigs
 ) {
   // create the Excel Workbook
   const wb = new xl.Workbook();
@@ -90,8 +123,14 @@ export default async function generateReport(
 
       // prepare the ES query
       console.time(`getExtendedConfigs-${projectId}-${sheetConfig.sheetName}`);
-      const extendedConfig = await getExtendedConfigs(es, projectId, normalizedConfigs.indexName);
-      console.timeEnd(`getExtendedConfigs-${projectId}-${sheetConfig.sheetName}`);
+      const extendedConfig = await getExtendedConfigs(
+        es,
+        projectId,
+        normalizedConfigs.indexName
+      );
+      console.timeEnd(
+        `getExtendedConfigs-${projectId}-${sheetConfig.sheetName}`
+      );
 
       const searchParams = makeReportQuery(extendedConfig, sqon, sheetConfig);
 
@@ -103,28 +142,40 @@ export default async function generateReport(
       const wrapper = { rowIndex: 2 };
       try {
         console.time(`executeSearchAfterQuery ${sheetConfig.sheetName}`);
-        await executeSearchAfterQuery(es, normalizedConfigs.alias, searchParams, {
-          onPageFetched: chunk => {
-            // bring back nested nodes to the root document to have a flat array to handle
-            const effectiveRows = sheetConfig.root
-              ? chunk.reduce((rows, row) => rows.concat(reduceAndMerge(row, sheetConfig.root)), [])
-              : chunk;
-
-            // add data to the worksheet
-            effectiveRows.forEach(row => {
-              const cellAppender = addCellByType(ws, wrapper.rowIndex, row);
-              sheetConfig.columns.forEach(cellAppender);
-              wrapper.rowIndex += 1;
-            });
-          },
-          pageSize: env.ES_PAGESIZE,
-        });
+        await executeSearchAfterQuery(
+          es,
+          normalizedConfigs.alias,
+          searchParams,
+          {
+            onPageFetched: rawChunk => {
+              // bring back nested nodes to the root document to have a flat array to handle
+              const chunk = patchChunkIfNeeded(sheetConfig, rawChunk);
+              const effectiveRows = sheetConfig.root
+                ? chunk.reduce((rows, row) => {
+                    const result = rows.concat(
+                      generateColumnsForProperty(row, sheetConfig.root)
+                    );
+                    return result;
+                  }, [])
+                : chunk;
+              // add data to the worksheet
+              effectiveRows.forEach(row => {
+                const cellAppender = addCellByType(ws, wrapper.rowIndex, row);
+                sheetConfig.columns.forEach(cellAppender);
+                wrapper.rowIndex += 1;
+              });
+            },
+            pageSize: env.ES_PAGESIZE,
+          }
+        );
         console.timeEnd(`executeSearchAfterQuery ${sheetConfig.sheetName}`);
       } catch (err) {
-        console.error(`Error while fetching the data for sheet "${sheetConfig.sheetName}"`);
+        console.error(
+          `Error while fetching the data for sheet "${sheetConfig.sheetName}"`
+        );
         throw err;
       }
-    }),
+    })
   );
 
   // finalize the file here and stream it back

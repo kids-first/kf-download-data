@@ -9,7 +9,7 @@ const participants = {
     { field: 'is_proband' },
     { field: 'study.short_name' },
     { field: 'family.family_compositions.composition' },
-    { field: 'diagnoses.diagnosis_category' },
+    { field: 'diagnosis_category' },
     { field: 'gender' },
     { field: 'race' },
     { field: 'ethnicity' },
@@ -75,12 +75,15 @@ const phenotypes = {
       header: 'Interpretation',
       transform: (value, row) => (value ? 'Observed' : 'Not Observed'),
     },
-    { field: 'phenotype.age_at_event_days', header: 'Age at Phenotype Assignment (Days)' },
+    {
+      field: 'phenotype.age_at_event_days',
+      header: 'Age at Phenotype Assignment (Days)',
+    },
   ],
   sort: [{ kf_id: 'asc' }],
 };
 
-//<Biospecimen ID> <External Sample ID> <External Aliquot ID>
+// <Biospecimen ID> <External Sample ID> <External Aliquot ID>
 const diagnoses = {
   sheetName: 'Diagnoses',
   root: 'diagnoses',
@@ -155,9 +158,30 @@ const histologicalDiagnoses = {
   ],
 };
 
+const familyRelationship = {
+  sheetName: 'Family Relationship',
+  root: 'family.family_compositions.family_members',
+  columns: [
+    { field: 'kf_id' },
+    { field: 'family.family_compositions.family_members.kf_id' },
+    {
+      field: 'family.family_compositions.family_members.relationship',
+      header: 'Relationship',
+      transform: value => value || 'self',
+    },
+  ],
+  sort: [{ kf_id: 'asc' }],
+};
+
 export const queryConfigs = {
   indexName: 'participant',
   alias: 'participant_centric',
 };
 
-export const sheetConfigs = [participants, phenotypes, diagnoses, histologicalDiagnoses];
+export const sheetConfigs = [
+  participants,
+  phenotypes,
+  diagnoses,
+  histologicalDiagnoses,
+  familyRelationship,
+];

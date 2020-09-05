@@ -7,5 +7,5 @@ export const ES_HOST = process.env.ES_HOST || 'kf-arranger-es-prd.kids-first.io:
 export const ES_PAGESIZE = process.env.ES_PAGESIZE || 1000;
 
 // Ego host
-export const EGO_URL = process.env.EGO_URL || 'https://ego.kids-first.io';
+export const EGO_URL = process.env.EGO_URL || 'https://ego.kidsfirstdrc.org';
 
