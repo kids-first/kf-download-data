@@ -12,4 +12,5 @@ ecs_service_type_1_standard {
     health_check_path       = "/status"
     external_config_repo    = "false"
     dependencies            = "ecr"
+    internal_app            = "false"
 }
