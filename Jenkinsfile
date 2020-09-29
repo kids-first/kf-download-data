@@ -13,4 +13,5 @@ ecs_service_type_1_standard {
     external_config_repo    = "false"
     dependencies            = "ecr"
     internal_app            = "false"
+    additional_ssl_cert_domain_name = "*.kidsfirstdrc.org"
 }
