@@ -18,4 +18,5 @@ ecs_service_type_1_standard {
     vcpu_task               = "2048"
     memory_task             = "4096"
     additional_ssl_cert_domain_name = "*.kidsfirstdrc.org"
+    publish_to_public_repo = "true"
 }
