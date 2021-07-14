@@ -2,7 +2,7 @@
 FROM node:16.5.0-alpine AS build-image
 WORKDIR /app
 COPY . .
-RUN npm install
+RUN npm ci
 RUN npm run clean
 RUN npm run build
 
@@ -12,4 +12,4 @@ WORKDIR /app
 COPY --from=build-image ./app/dist ./dist
 COPY package* ./
 RUN npm ci --production
-CMD [ "node", "dist/index.js" ]
+CMD [ "node", "./dist/index.js" ]
