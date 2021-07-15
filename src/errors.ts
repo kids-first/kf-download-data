@@ -1,6 +1,9 @@
 import { Client } from '@elastic/elasticsearch';
 import { Request, Response, NextFunction } from 'express';
 
+const NOT_FOUND_STATUS_CODE = 404;
+const INTERNAL_ERROR_STATUS_CODE = 500;
+
 export class ApplicationError extends Error {
     readonly statusCode: number;
     constructor(message: string, statusCode: number) {
@@ -16,11 +19,11 @@ export class ApplicationError extends Error {
 export const reportGenerationErrorHandler = (err: any, es: Client): void => {
     console.error(`An error occurs while generating the report`, err);
     es && es.close();
-    throw new ApplicationError(err.message || err.details || 'An unknown error occurred.', 500);
+    throw new ApplicationError(err.message || err.details || 'An unknown error occurred.', INTERNAL_ERROR_STATUS_CODE);
 };
 
 export const unknownEndpointHandler = (_req: Request, _res: Response): void => {
-    const notFoundErr = new ApplicationError('Not Found', 404);
+    const notFoundErr = new ApplicationError('Not Found', NOT_FOUND_STATUS_CODE);
     throw notFoundErr;
 };
 
@@ -30,7 +33,7 @@ export const globalErrorHandler = (
     res: Response,
     _next: NextFunction,
 ): void => {
-    const statusCode = err instanceof ApplicationError ? err.statusCode : 500;
+    const statusCode = err instanceof ApplicationError ? err.statusCode : INTERNAL_ERROR_STATUS_CODE;
     res.status(statusCode);
     res.send({
         message: req.app.get('env') === 'development' ? err.message : {},
