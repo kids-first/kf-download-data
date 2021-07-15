@@ -5,6 +5,7 @@ import reportConfig from './config';
 import { normalizeConfigs } from '../../utils/configUtils';
 
 import generateFamilySqon from './generateFamilySqon';
+import { reportGenerationErrorHandler } from '../../errors';
 
 const clinicalDataReport = (esHost: string) => async (req: Request, res: Response) => {
     console.time('family-clinical-data');
@@ -29,9 +30,7 @@ const clinicalDataReport = (esHost: string) => async (req: Request, res: Respons
         await generateReport(es, res, projectId, familySqon, filename, normalizedConfigs);
         es.close();
     } catch (err) {
-        console.error(`Unhandled error while generating the report`, err);
-        res.status(500).send(err.message || err.details || 'An unknown error occurred.');
-        es && es.close();
+        reportGenerationErrorHandler(err, es);
     }
 
     console.timeEnd('family-clinical-data');

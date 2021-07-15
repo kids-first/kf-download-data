@@ -18,9 +18,9 @@ type Entries = {
  */
 class AsyncCache {
     /**
-     * Time to live of an item in the cache
+     * Time to live of an item in the cache (24 hours)
      */
-    ttl = 24 * 60 * 60 * 1000;
+    TTL_24H_IN_MILLIS = 24 * 60 * 60 * 1000;
 
     // a day in ms
     entries: Entries = {};
@@ -47,7 +47,7 @@ class AsyncCache {
         this.entries[key] = {
             key,
             entry: typeof value.then === 'function' ? value : Promise.resolve(value),
-            expiry: Date.now() + this.ttl,
+            expiry: Date.now() + this.TTL_24H_IN_MILLIS,
         };
         this.clean();
     }

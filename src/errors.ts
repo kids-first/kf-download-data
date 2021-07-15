@@ -1,9 +1,11 @@
+import { Client } from '@elastic/elasticsearch';
 import { Request, Response, NextFunction } from 'express';
 
-export class NotFoundError extends Error {
-    public status = 404;
-    constructor(message: string) {
+export class ApplicationError extends Error {
+    readonly statusCode: number;
+    constructor(message: string, statusCode: number) {
         super(message);
+        this.statusCode = statusCode
 
         this.name = this.constructor.name;
 
@@ -11,27 +13,32 @@ export class NotFoundError extends Error {
     }
 }
 
+export const reportGenerationErrorHandler = (err: any, es: Client): void => {
+    console.error(`An error occurs while generating the report`, err);
+    es && es.close();
+    throw new ApplicationError(err.message || err.details || 'An unknown error occurred.', 500);
+};
+
 export const unknownEndpointHandler = (_req: Request, _res: Response): void => {
-    const notFoundErr = new NotFoundError('Not Found');
-    notFoundErr.status = 404;
+    const notFoundErr = new ApplicationError('Not Found', 404);
     throw notFoundErr;
 };
 
 export const globalErrorHandler = (
-    err: Error | NotFoundError,
+    err: Error | ApplicationError,
     req: Request,
     res: Response,
     _next: NextFunction,
 ): void => {
-    const status = err instanceof NotFoundError ? err.status : 500;
-    res.status(status);
+    const statusCode = err instanceof ApplicationError ? err.statusCode : 500;
+    res.status(statusCode);
     res.send({
         message: req.app.get('env') === 'development' ? err.message : {},
     });
 };
 
 export const globalErrorLogger = (
-    err: Error | NotFoundError,
+    err: Error | ApplicationError,
     _req: Request,
     _res: Response,
     next: NextFunction,

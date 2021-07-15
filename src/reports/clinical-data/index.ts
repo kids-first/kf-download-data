@@ -3,6 +3,7 @@ import { Client } from '@elastic/elasticsearch';
 import generateReport from '../generateReport';
 import reportConfig from './config';
 import { normalizeConfigs } from '../../utils/configUtils';
+import { reportGenerationErrorHandler } from '../../errors';
 
 const clinicalDataReport = (esHost: string) => async (req: Request, res: Response) => {
     console.time('clinical-data');
@@ -24,9 +25,7 @@ const clinicalDataReport = (esHost: string) => async (req: Request, res: Respons
         await generateReport(es, res, projectId, sqon, filename, normalizedConfigs);
         es.close();
     } catch (err) {
-        console.error(`Unhandled error while generating the report`, err);
-        res.status(500).send(err.message || err.details || 'An unknown error occurred.');
-        es && es.close();
+        reportGenerationErrorHandler(err, es);
     }
 
     console.timeEnd('clinical-data');
