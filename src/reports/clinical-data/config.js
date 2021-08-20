@@ -50,8 +50,20 @@ const phenotypes = {
     { field: 'external_id' },
     { field: 'is_proband' },
     {
-      field: 'phenotype.hpo_phenotype_observed_text',
+      field: 'phenotype.observed',
+      additionalFields: [
+        'phenotype.hpo_phenotype_observed',
+        'phenotype.hpo_phenotype_not_observed',
+      ],
       header: 'Phenotype (HPO)',
+      transform: (observed, row) => {
+        if (!row.phenotype) {
+          return;
+        }
+        return observed
+          ? row.phenotype.hpo_phenotype_observed
+          : row.phenotype.hpo_phenotype_not_observed;
+      },
     },
     {
       field: 'phenotype.observed',
