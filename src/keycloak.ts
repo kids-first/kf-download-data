@@ -1,12 +1,12 @@
-import { KEYCLOAK_URL } from './env';
+import { KEYCLOAK_CLIENT, KEYCLOAK_REALM, KEYCLOAK_URL } from './env';
 
 const keycloakConfig = {
-    realm: 'KidsFirst',
+    realm: KEYCLOAK_REALM,
     'confidential-port': 0,
     'bearer-only': true,
     'auth-server-url': KEYCLOAK_URL,
     'ssl-required': 'external',
-    resource: 'kf-api-portal-reports',
+    resource: KEYCLOAK_CLIENT,
 };
 
 export default keycloakConfig;

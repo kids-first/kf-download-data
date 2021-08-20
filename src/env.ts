@@ -6,10 +6,11 @@ dotenv.config();
 export const PORT = process.env.PORT || 4000;
 
 // ElasticSearch host
-export const ES_HOST =
-    process.env.ES_HOST || 'kf-arranger-es-prd.kids-first.io:9200';
+export const ES_HOST = process.env.ES_HOST || 'kf-arranger-es-prd.kids-first.io:9200';
 // ElasticSearch queries parameters
 export const ES_PAGESIZE: number = Number(process.env.ES_PAGESIZE) || 1000;
 
-// Keycloak host
-export const KEYCLOAK_URL = process.env.KEYCLOAK_URL || 'http://localhost:8080/auth';
+// Keycloak configs
+export const KEYCLOAK_URL = process.env.KEYCLOAK_URL || 'https://kf-keycloak-qa.kf-strides.org/auth';
+export const KEYCLOAK_REALM = process.env.KEYCLOAK_REALM || 'KidsFirst-test-CPE';
+export const KEYCLOAK_CLIENT = process.env.KEYCLOAK_CLIENT || 'kidsfirst-apis';
