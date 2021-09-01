@@ -12,5 +12,5 @@ export const ES_PAGESIZE: number = Number(process.env.ES_PAGESIZE) || 1000;
 
 // Keycloak configs
 export const KEYCLOAK_URL = process.env.KEYCLOAK_URL || 'https://kf-keycloak-qa.kf-strides.org/auth';
-export const KEYCLOAK_REALM = process.env.KEYCLOAK_REALM || 'KidsFirst-test-CPE';
+export const KEYCLOAK_REALM = process.env.KEYCLOAK_REALM || 'kidsfirstdrc';
 export const KEYCLOAK_CLIENT = process.env.KEYCLOAK_CLIENT || 'kidsfirst-apis';
