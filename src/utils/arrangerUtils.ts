@@ -84,7 +84,6 @@ const fetchProject = (es: Client, projectId: string, indexName: string) => {
     return es
         .search({
             index: `arranger-projects-${projectId}`,
-            type: `arranger-projects-${projectId}`,
             q: `name:${indexName}`,
         }) // eslint-disable-next-line no-underscore-dangle
         .then(({ body }) => body.hits.hits.map(hit => hit._source))
