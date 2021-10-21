@@ -15,6 +15,8 @@ import {
 import { executeSearchAfterQuery } from '../utils/esUtils';
 import ExtendedReportConfigs from '../utils/extendedReportConfigs';
 import ExtendedReportSheetConfigs from '../utils/extendedReportSheetConfigs';
+import { resolveSetsInSqon } from '../utils/sqonUtils';
+import { Sqon } from '../utils/setsTypes';
 
 const EMPTY_HEADER = '--';
 
@@ -43,11 +45,19 @@ const patchChunkIfNeeded = (sheetConfig, chunk) => {
 };
 // ===== //
 
-const makeReportQuery = (extendedConfig: object, sqon: object, sheetConfig: ExtendedReportSheetConfigs) => {
+const makeReportQuery = async (
+    extendedConfig: object,
+    sqon: Sqon,
+    sheetConfig: ExtendedReportSheetConfigs,
+    userId: string,
+    accessToken: string,
+) => {
     const nestedFields = getNestedFields(extendedConfig);
-    const query = buildQuery({ nestedFields, filters: sqon });
+    const newSqon = await resolveSetsInSqon(sqon, userId, accessToken);
+    const query = buildQuery({ nestedFields, filters: newSqon });
     const source = uniq(flattenDeep(sheetConfig.columns.map(col => col.additionalFields.concat(col.field))));
     const { sort } = sheetConfig; // "sort" is necessary to activate "search_after"
+
     return { query, _source: patchSourceIfNeeded(source, sheetConfig), sort };
 };
 
@@ -63,9 +73,9 @@ const setCellValueByType = {
     object: (val, cell) => cell.string(String(val)),
 };
 
-const addCellByType = (ws, rowIndex, resultRow) => {
+const addCellByType = (ws, rowIndex, resultRow) =>
     // use the correct type of cell
-    return (columnConfig, columnIndex) => {
+    (columnConfig, columnIndex) => {
         // Cells are one based, first parameter being the row, second the column
         //  e.g. ws.cell(1, 3) is C1
         const rawValue = findValueInField(resultRow, columnConfig.field);
@@ -74,7 +84,6 @@ const addCellByType = (ws, rowIndex, resultRow) => {
         const setter = value === null ? emptyCell : setCellValueByType[typeof value] || emptyCell;
         setter(value, cell);
     };
-};
 
 /**
  * Returns a default filename for the report, in case none was provided.
@@ -91,7 +100,16 @@ const getDefaultFilename = (): string => {
 /**
  * Generate and stream a report to `res`.
  */
-export default async function generateReport(es: Client, res: Response, projectId: string, sqon: object, filename: string, normalizedConfigs: ExtendedReportConfigs): Promise<void> {
+export default async function generateReport(
+    es: Client,
+    res: Response,
+    projectId: string,
+    sqon: Sqon,
+    filename: string,
+    normalizedConfigs: ExtendedReportConfigs,
+    userId: string,
+    accessToken: string,
+): Promise<void> {
     // create the Excel Workbook
     const wb = new xl.Workbook();
 
@@ -105,8 +123,7 @@ export default async function generateReport(es: Client, res: Response, projectI
             const extendedConfig = await getExtendedConfigs(es, projectId, normalizedConfigs.indexName);
             console.timeEnd(`getExtendedConfigs-${projectId}-${sheetConfig.sheetName}`);
 
-            const searchParams = makeReportQuery(extendedConfig, sqon, sheetConfig);
-
+            const searchParams = await makeReportQuery(extendedConfig, sqon, sheetConfig, userId, accessToken);
             // add the header row
             sheetConfig.columns.forEach(addHeaderCellByType(ws));
 

@@ -11,9 +11,8 @@ const clinicalDataReport = (esHost: string) => async (req: Request, res: Respons
     console.time('family-clinical-data');
 
     const { sqon, projectId, filename = null } = req.body;
-    console.log('projectId:', projectId);
-    console.log('sqon:', JSON.stringify(sqon, null, 2));
-    console.log('filename:', filename);
+    const userId = req['kauth']?.grant?.access_token?.content?.sub;
+    const accessToken = req.headers.authorization;
 
     let es = null;
     try {
@@ -27,7 +26,7 @@ const clinicalDataReport = (esHost: string) => async (req: Request, res: Respons
         const familySqon = await generateFamilySqon(es, projectId, sqon, normalizedConfigs);
 
         // Generate the report
-        await generateReport(es, res, projectId, familySqon, filename, normalizedConfigs);
+        await generateReport(es, res, projectId, familySqon, filename, normalizedConfigs, userId, accessToken);
         es.close();
     } catch (err) {
         reportGenerationErrorHandler(err, es);

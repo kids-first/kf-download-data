@@ -4,6 +4,7 @@ import { buildQuery } from '@kfarranger/middleware';
 import { getExtendedConfigs, getNestedFields } from '../../utils/arrangerUtils';
 import { executeSearch } from '../../utils/esUtils';
 import { Client } from '@elastic/elasticsearch';
+import { Sqon } from '../../utils/setsTypes';
 
 /**
  * Generate a sqon from the family_id of all the participants in the given `sqon`.
@@ -13,7 +14,7 @@ import { Client } from '@elastic/elasticsearch';
  * @param {object} normalizedConfigs - the normalized report configuration.
  * @returns {object} - A sqon of all the `family_id`.
  */
-export default async (es: Client, projectId: string, sqon: object, normalizedConfigs): Promise<object> => {
+export default async (es: Client, projectId: string, sqon: Sqon, normalizedConfigs): Promise<Sqon> => {
     const extendedConfig = await getExtendedConfigs(es, projectId, normalizedConfigs.indexName);
     const nestedFields = getNestedFields(extendedConfig);
     const query = buildQuery({ nestedFields, filters: sqon });
