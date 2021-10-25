@@ -5,6 +5,7 @@ import { getExtendedConfigs, getNestedFields } from '../../utils/arrangerUtils';
 import { executeSearch } from '../../utils/esUtils';
 import { Client } from '@elastic/elasticsearch';
 import { Sqon } from '../../utils/setsTypes';
+import { resolveSetsInSqon } from '../../utils/sqonUtils';
 
 /**
  * Generate a sqon from the family_id of all the participants in the given `sqon`.
@@ -12,12 +13,22 @@ import { Sqon } from '../../utils/setsTypes';
  * @param {string} projectId - the id of the arranger project.
  * @param {object} sqon - the sqon used to filter the results.
  * @param {object} normalizedConfigs - the normalized report configuration.
+ * @param {string} userId - the user id.
+ * @param {string} accessToken - the user access token.
  * @returns {object} - A sqon of all the `family_id`.
  */
-export default async (es: Client, projectId: string, sqon: Sqon, normalizedConfigs): Promise<Sqon> => {
+export default async (
+    es: Client,
+    projectId: string,
+    sqon: Sqon,
+    normalizedConfigs,
+    userId: string,
+    accessToken: string,
+): Promise<Sqon> => {
     const extendedConfig = await getExtendedConfigs(es, projectId, normalizedConfigs.indexName);
     const nestedFields = getNestedFields(extendedConfig);
-    const query = buildQuery({ nestedFields, filters: sqon });
+    const newSqon = await resolveSetsInSqon(sqon, userId, accessToken);
+    const query = buildQuery({ nestedFields, filters: newSqon });
     const esRequest = {
         query,
         aggs: {
