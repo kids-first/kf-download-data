@@ -1,9 +1,6 @@
 @Library(value='kids-first/aws-infra-jenkins-shared-libraries', changelog=false) _
 ecs_service_type_1_standard {
     projectName             = "kf-api-reports"
-    projectPrefix           = "-keycloak"
-    secrets_location        = "kf-api-portal-reports"
-    main_branch             = "keycloak"
     orgFullName             = "kids-first"
     account                 = "kf-strides"
     environments            = "dev,qa,prd"
