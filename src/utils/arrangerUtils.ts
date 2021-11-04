@@ -119,9 +119,8 @@ export const getExtendedConfigs = async (es: Client, projectId: string, indexNam
  * @param {Object} extendedConfigs - the extended configurations from the mappings.
  * @returns {string[]} - an array of fields path.
  */
-export const getNestedFields = extendedConfigs => {
-    return extendedConfigs.filter(({ type }) => type === 'nested').map(({ field }) => field);
-};
+export const getNestedFields = extendedConfigs =>
+    extendedConfigs.filter(({ type }) => type === 'nested').map(({ field }) => field);
 
 /**
  * Like `lodash.get`, but supports paths containing arrays.
@@ -187,9 +186,7 @@ const deepObjectMapFromNode = (source, currentLevel, segments) => {
         return [currentLevel];
     }
 
-    return currentValues.reduce((result, item) => {
-        return [...result, ...flattenUntilIrreducibility(item)];
-    }, []);
+    return currentValues.reduce((result, item) => [...result, ...flattenUntilIrreducibility(item)], []);
 };
 
 /**
