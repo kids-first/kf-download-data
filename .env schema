@@ -10,3 +10,6 @@ ES_HOST=http://kf-arranger-es-qa.kids-first.io:9200
 KEYCLOAK_URL=
 KEYCLOAK_REALM=
 KEYCLOAK_CLIENT=
+
+# Riff 
+RIFF_URL=
