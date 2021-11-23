@@ -1,12 +1,9 @@
 @Library(value='kids-first/aws-infra-jenkins-shared-libraries', changelog=false) _
 ecs_service_type_1_standard {
-    projectName             = "kf-api-reports"
-    projectPrefix           = "-with-sets"
-    secrets_location        = "kf-api-portal-reports"
-    main_branch             = "fix_sets_in_report"
+    projectName             = "kf-api-portal-reports"
     orgFullName             = "kids-first"
     account                 = "kf-strides"
-    environments            = "qa"
+    environments            = "qa,prd"
     docker_image_type       = "alpine"
     create_default_iam_role = "1"
     entrypoint_command      = "node ./dist/index.js"
