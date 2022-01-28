@@ -1,7 +1,7 @@
 {
   "name": "kf-api-portal-reports",
   "version": "1.2.3",
-  "description": "The Kids First Download Clinical Data API offers an endpoint to generate a report of clinical data based on a query built using the Kids First Portal.",
+  "description": "The Download Clinical Data API offers an endpoint to generate a report of clinical data based on a query built using the:",
   "main": "index.js",
   "scripts": {
     "start": "node ./dist/index.js",
@@ -44,7 +44,7 @@
   },
   "dependencies": {
     "@elastic/elasticsearch": "^7.4.0",
-    "@kfarranger/middleware": "1.5.2",
+    "@arranger/middleware": "2.16.1",
     "cors": "^2.8.5",
     "dotenv": "^8.1.0",
     "excel4node": "^1.7.2",

@@ -10,6 +10,9 @@ export const ES_HOST = process.env.ES_HOST || 'kf-arranger-es-prd.kids-first.io:
 // ElasticSearch queries parameters
 export const ES_PAGESIZE: number = Number(process.env.ES_PAGESIZE) || 1000;
 
+// Project
+export const PROJECT: string = process.env.PROJECT || 'kids-first';
+
 // Keycloak configs
 export const KEYCLOAK_URL = process.env.KEYCLOAK_URL || 'https://kf-keycloak-qa.kf-strides.org/auth';
 export const KEYCLOAK_REALM = process.env.KEYCLOAK_REALM || 'kidsfirstdrc';
