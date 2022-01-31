@@ -8,6 +8,7 @@ import { normalizeConfigs } from '../../utils/configUtils';
 import generateFamilySqon from './generateFamilySqon';
 import { reportGenerationErrorHandler } from '../../errors';
 import { PROJECT } from '../../env';
+import { ProjectType } from '../types';
 
 const clinicalDataReport = (esHost: string) => async (req: Request, res: Response) => {
     console.time('family-clinical-data');
@@ -16,7 +17,7 @@ const clinicalDataReport = (esHost: string) => async (req: Request, res: Respons
     const userId = req['kauth']?.grant?.access_token?.content?.sub;
     const accessToken = req.headers.authorization;
 
-    const reportConfig = PROJECT.toLowerCase().trim() === 'kids-first' ? configKf : configInclude;
+    const reportConfig = PROJECT.toLowerCase().trim() === ProjectType.kidsFirst ? configKf : configInclude;
 
     let es = null;
     try {

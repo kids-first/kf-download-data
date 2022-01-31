@@ -7,7 +7,7 @@ export type ColumnConfig = {
     field: string;
     header?: string;
     additionalFields?: string[];
-    transform?:any
+    transform?: any;
 };
 
 export type SheetConfig = {
@@ -15,9 +15,14 @@ export type SheetConfig = {
     root: string;
     columns: ColumnConfig[];
     sort: object[];
-}
+};
 
 export type ReportConfig = {
     queryConfigs: QueryConfig;
-    sheetConfigs: SheetConfig[]
+    sheetConfigs: SheetConfig[];
+};
+
+export enum ProjectType {
+    kidsFirst = 'kids-first',
+    include = 'include',
 }
