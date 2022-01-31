@@ -1,5 +1,5 @@
 import get from 'lodash/get';
-import { buildQuery } from '@kfarranger/middleware';
+import { buildQuery } from '@arranger/middleware';
 
 import { getExtendedConfigs, getNestedFields } from '../../utils/arrangerUtils';
 import { executeSearch } from '../../utils/esUtils';

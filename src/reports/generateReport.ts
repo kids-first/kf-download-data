@@ -1,5 +1,5 @@
 import { Client } from '@elastic/elasticsearch';
-import { buildQuery } from '@kfarranger/middleware';
+import { buildQuery } from '@arranger/middleware';
 import xl from 'excel4node';
 import { Response } from 'express';
 import flattenDeep from 'lodash/flattenDeep';

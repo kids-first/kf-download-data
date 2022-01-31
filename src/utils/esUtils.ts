@@ -1,7 +1,7 @@
 import { Client } from '@elastic/elasticsearch';
 import noop from 'lodash/noop';
 import defaults from 'lodash/defaults';
-import esToSafeJsInt from '@kfarranger/middleware/dist/utils/esToSafeJsInt';
+import esToSafeJsInt from '@arranger/middleware/dist/utils/esToSafeJsInt';
 
 type SearchOpts = {
   onPageFetched(data: object[], page: number): void;

@@ -1,10 +1,13 @@
 import { Request, Response } from 'express';
 import { Client } from '@elastic/elasticsearch';
 import generateReport from '../generateReport';
-import reportConfig from './config';
+import configKf from './configKf';
+import configInclude from './configInclude';
+import { PROJECT } from '../../env';
 import { normalizeConfigs } from '../../utils/configUtils';
 import ExtendedReportConfigs from '../../utils/extendedReportConfigs';
 import { reportGenerationErrorHandler } from '../../errors';
+import { ProjectType } from '../types';
 
 const clinicalDataReport = (esHost: string) => async (req: Request, res: Response) => {
     console.time('biospecimen-data');
@@ -12,6 +15,8 @@ const clinicalDataReport = (esHost: string) => async (req: Request, res: Respons
     const { sqon, projectId, filename = null } = req.body;
     const userId = req['kauth']?.grant?.access_token?.content?.sub;
     const accessToken = req.headers.authorization;
+
+    const reportConfig = PROJECT.toLowerCase().trim() === ProjectType.kidsFirst ? configKf : configInclude;
 
     let es = null;
     try {
