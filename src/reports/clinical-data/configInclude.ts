@@ -6,21 +6,20 @@ const participants: SheetConfig = {
     columns: [
         { field: 'fhir_id' },
         { field: 'external_id' },
-        { field: 'families_id' },
+        { field: 'family.family_id', header: 'Family ID' },
         { field: 'family_type' },
         { field: 'is_proband' },
-        { field: 'study.study_name' },
-        { field: 'families.family_members.exploded_member_entity' },
+        { field: 'study.study_name', header: 'Study Name' },
         { field: 'sex' },
         { field: 'race' },
         { field: 'ethnicity' },
         { field: 'karyotype' },
-        { field: 'down_syndrome_diagnosis' },
-        // { field: 'outcomes.vital_status' }, //TODO TBD
-        // {
-        //     field: 'outcomes.age_at_event_days',
-        //     header: 'Age at the Last Vital Status (Days)',
-        // }, //TODO TBD
+        { field: 'down_syndrome_status' },
+        { field: 'outcomes.vital_status' },
+        {
+            field: 'outcomes.age_at_event_days.value',
+            header: 'Age at the Last Vital Status (Days)',
+        },
         // { field: 'outcome.disease_related' }, //TODO TBD
         // { field: 'affected_status' }, //TODO TBD
     ],
@@ -56,22 +55,10 @@ const phenotypes: SheetConfig = {
                 return observed ? row.phenotype.hpo_phenotype_observed : row.phenotype.hpo_phenotype_not_observed;
             },
         },
-        // {
-        //     field: 'phenotype.observed',
-        //     additionalFields: ['phenotype.snomed_phenotype_observed', 'phenotype.snomed_phenotype_not_observed'],
-        //     header: 'Phenotype (SNOMED)',
-        //     transform: (observed, row) => {
-        //         if (!row.phenotype) {
-        //             return;
-        //         }
-        //         return observed ? row.phenotype.snomed_phenotype_observed : row.phenotype.snomed_phenotype_not_observed;
-        //     },
-        // }, //TODO TBD
-        { field: 'phenotype.source_text_phenotype' },
         {
             field: 'phenotype.observed',
             additionalFields: ['phenotype.hpo_phenotype_observed_text', 'phenotype.hpo_phenotype_not_observed_text'],
-            header: 'Phenotype Source Text',
+            header: 'Phenotype (Source Text)',
             transform: (observed, row) => {
                 if (!row.phenotype) {
                     return;
@@ -106,10 +93,10 @@ const diagnoses: SheetConfig = {
             header: 'Diagnosis Type',
             transform: () => 'Clinical',
         },
-        { field: 'diagnosis.mondo_id_diagnosis' },
-        { field: 'diagnosis.ncit_id_diagnosis' },
-        { field: 'diagnosis.icd_id_diagnosis' },
-        { field: 'diagnosis.source_text' },
+        { field: 'diagnosis.mondo_id_diagnosis', header: ' Diagnosis (MONDO)' },
+        { field: 'diagnosis.ncit_id_diagnosis', header: 'Diagnosis (NCIT)' },
+        { field: 'diagnosis.icd_id_diagnosis', header: 'Diagnosis (ICD)' },
+        { field: 'diagnosis.source_text', header: 'Diagnosis (Source Text)' },
         {
             field: 'diagnosis.age_at_event_days',
             header: 'Age at Diagnosis (Days)',
@@ -170,15 +157,19 @@ const histologicalDiagnoses: SheetConfig = {
 
 const familyRelationship: SheetConfig = {
     sheetName: 'Family Relationship',
-    root: 'families',
+    root: 'family.family_relations',
     columns: [
         { field: 'fhir_id' },
-        { field: 'family.family_members_id' },
-        // {
-        //     field: 'family.family_compositions.family_members.relationship',
-        //     header: 'Relationship',
-        //     transform: value => value || 'self',
-        // }, //TODO TBD
+        {
+            field: 'family.family_relations',
+            header: 'Family Members ID',
+            transform: (value, row) => (row.family ? row.family.family_relations.related_participant_id : ''),
+        },
+        {
+            field: 'family.family_relations',
+            header: 'Relationship',
+            transform: (value, row) => (row.family ? row.family.family_relations.relation : ''),
+        },
     ],
     sort: [{ fhir_id: 'asc' }],
 };
