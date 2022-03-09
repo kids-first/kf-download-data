@@ -108,51 +108,22 @@ const diagnoses: SheetConfig = {
 
 const histologicalDiagnoses: SheetConfig = {
     sheetName: 'Histological Diagnoses',
-    root: 'biospecimens.diagnoses',
+    root: 'files.biospecimens',
     columns: [
-        { field: 'fhir_id' },
-        { field: 'external_id' }, //TODO TBD biospecimen fields
-        // { field: 'biospecimens.kf_id' },
-        // { field: 'biospecimens.external_sample_id' },
-        // { field: 'biospecimens.external_aliquot_id' },
-        // { field: 'is_proband' },
-        // {
-        //     // This allows to do a cell with a static value.
-        //     // The value will be formatted like the value of `field` would have.
-        //     field: 'kf_id',
-        //     header: 'Diagnosis Type',
-        //     transform: () => 'Histological',
-        // },
-        // { field: 'biospecimens.diagnoses.diagnosis_category' },
-        // { field: 'biospecimens.diagnoses.mondo_id_diagnosis' },
-        // { field: 'biospecimens.diagnoses.ncit_id_diagnosis' },
-        // { field: 'biospecimens.diagnoses.source_text_diagnosis' },
-        // {
-        //     field: 'biospecimens.diagnoses.age_at_event_days',
-        //     header: 'Age at Diagnosis (Days)',
-        // },
-        // { field: 'biospecimens.diagnoses.source_text_tumor_location' },
-        // { field: 'biospecimens.source_text_anatomical_site' },
-        // { field: 'biospecimens.ncit_id_tissue_type' },
-        // { field: 'biospecimens.source_text_tissue_type' },
-        // { field: 'biospecimens.composition' },
-        // { field: 'biospecimens.method_of_sample_procurement' },
-        // { field: 'biospecimens.analyte_type' },
+        { field: 'files.biospecimens.fhir_id', header: 'ID' },
+        { field: 'files.biospecimens.sample_id', header: 'Sample Id' },
+        { field: 'files.biospecimens.container_id', header: 'Container Id' },
+        { field: 'files.biospecimens.parent_sample_id', header: 'Parent Sample Id' },
+        { field: 'files.biospecimens.parent_sample_type', header: 'Parent Sample Type' },
+        { field: 'study.study_code', header: 'Study' },
+        { field: 'files.biospecimens.collection_sample_type', header: 'Collection Sample Type' },
+        { field: 'files.biospecimens.age_at_biospecimen_collection', header: 'Age At Biospecimen Collection (Days)' },
+        { field: 'files.biospecimens.volume_ul', header: 'Volume' },
+        { field: 'files.biospecimens.volume_unit', header: 'Volume Unit' },
+        { field: 'files.biospecimens.laboratory_procedure', header: 'Laboratory Procedure' },
+        { field: 'files.biospecimens.biospecimen_storage', header: 'Biospecimen Storage' },
     ],
-    sort: [
-        { fhir_id: 'asc' },
-        {
-            'biospecimens.diagnoses.age_at_event_days': {
-                order: 'desc',
-                nested: {
-                    path: 'biospecimens',
-                    nested: {
-                        path: 'biospecimens.diagnoses',
-                    },
-                },
-            },
-        },
-    ],
+    sort: [{ fhir_id: 'asc' }],
 };
 
 const familyRelationship: SheetConfig = {
@@ -183,7 +154,7 @@ export const sheetConfigs: SheetConfig[] = [
     participants,
     phenotypes,
     diagnoses,
-    // histologicalDiagnoses, //TODO TBD missing biospecimen
+    histologicalDiagnoses,
     familyRelationship,
 ];
 
