@@ -9,19 +9,17 @@ const participants: SheetConfig = {
         { field: 'families_id' },
         { field: 'is_proband' },
         { field: 'study.study_name' },
-        // { field: 'family.family_compositions.composition' }, //TODO TBD
+        { field: 'family_type' },
         { field: 'sex' },
         { field: 'race' },
         { field: 'ethnicity' },
         { field: 'down_syndrome_diagnosis' },
         { field: 'karyotype' },
-        // { field: 'outcome.vital_status' }, //TODO TBD
-        // {
-        //     field: 'outcome.age_at_event_days',
-        //     header: 'Age at the Last Vital Status (Days)',
-        // }, //TODO TBD
-        // { field: 'outcome.disease_related' }, //TODO TBD
-        // { field: 'affected_status' }, //TODO TBD
+        { field: 'outcome.vital_status' },
+        {
+            field: 'outcome.age_at_event_days',
+            header: 'Age at the Last Vital Status (Days)',
+        },
     ],
     sort: [
         {
@@ -49,17 +47,6 @@ const phenotypes: SheetConfig = {
             field: 'phenotype.hpo_phenotype_observed_text',
             header: 'Phenotype (HPO)',
         },
-        // {
-        //     field: 'phenotype.observed',
-        //     additionalFields: ['phenotype.snomed_phenotype_observed', 'phenotype.snomed_phenotype_not_observed'],
-        //     header: 'Phenotype (SNOMED)',
-        //     transform: (observed, row) => {
-        //         if (!row.phenotype) {
-        //             return;
-        //         }
-        //         return observed ? row.phenotype.snomed_phenotype_observed : row.phenotype.snomed_phenotype_not_observed;
-        //     },
-        // }, //TODO TBD
         {
             field: 'phenotype.observed',
             additionalFields: ['phenotype.hpo_phenotype_observed_text', 'phenotype.hpo_phenotype_not_observed_text'],

@@ -4,25 +4,21 @@ const participants: SheetConfig = {
     sheetName: 'Participants',
     root: null,
     columns: [
-        { field: 'fhir_id' },
+        { field: 'participant_id' },
         { field: 'external_id' },
-        { field: 'families_id' },
+        { field: 'family.family_id', header: 'Family ID' },
         { field: 'family_type' },
-        { field: 'is_proband' },
-        { field: 'study.study_name' },
-        { field: 'families.family_members.exploded_member_entity' },
+        { field: 'study.study_name', header: 'Study Name' },
+        { field: 'study.study_code', header: 'Study Code' },
         { field: 'sex' },
         { field: 'race' },
         { field: 'ethnicity' },
-        { field: 'karyotype' },
-        { field: 'down_syndrome_diagnosis' },
-        // { field: 'outcomes.vital_status' }, //TODO TBD
-        // {
-        //     field: 'outcomes.age_at_event_days',
-        //     header: 'Age at the Last Vital Status (Days)',
-        // }, //TODO TBD
-        // { field: 'outcome.disease_related' }, //TODO TBD
-        // { field: 'affected_status' }, //TODO TBD
+        { field: 'down_syndrome_status' },
+        { field: 'outcomes.vital_status' },
+        {
+            field: 'outcomes.age_at_event_days.value',
+            header: 'Age at the Last Vital Status (Days)',
+        },
     ],
     sort: [
         {
@@ -44,41 +40,26 @@ const phenotypes: SheetConfig = {
     columns: [
         { field: 'fhir_id' },
         { field: 'external_id' },
-        { field: 'is_proband' },
         {
-            field: 'phenotype.observed',
-            additionalFields: ['phenotype.hpo_phenotype_observed', 'phenotype.hpo_phenotype_not_observed'],
+            field: 'phenotype.hpo_phenotype_observed',
+            additionalFields: ['phenotype.hpo_phenotype_not_observed'],
             header: 'Phenotype (HPO)',
-            transform: (observed, row) => {
+            transform: (value, row) => {
                 if (!row.phenotype) {
                     return;
                 }
-                return observed ? row.phenotype.hpo_phenotype_observed : row.phenotype.hpo_phenotype_not_observed;
+                return value || row.phenotype.hpo_phenotype_not_observed;
             },
         },
-        // {
-        //     field: 'phenotype.observed',
-        //     additionalFields: ['phenotype.snomed_phenotype_observed', 'phenotype.snomed_phenotype_not_observed'],
-        //     header: 'Phenotype (SNOMED)',
-        //     transform: (observed, row) => {
-        //         if (!row.phenotype) {
-        //             return;
-        //         }
-        //         return observed ? row.phenotype.snomed_phenotype_observed : row.phenotype.snomed_phenotype_not_observed;
-        //     },
-        // }, //TODO TBD
-        { field: 'phenotype.source_text_phenotype' },
         {
-            field: 'phenotype.observed',
-            additionalFields: ['phenotype.hpo_phenotype_observed_text', 'phenotype.hpo_phenotype_not_observed_text'],
-            header: 'Phenotype Source Text',
-            transform: (observed, row) => {
+            field: 'phenotype.hpo_phenotype_observed_text',
+            additionalFields: ['phenotype.hpo_phenotype_not_observed_text'],
+            header: 'Phenotype (Source Text)',
+            transform: (value, row) => {
                 if (!row.phenotype) {
                     return;
                 }
-                return observed
-                    ? row.phenotype.hpo_phenotype_observed_text
-                    : row.phenotype.hpo_phenotype_not_observed_text;
+                return value || row.phenotype.hpo_phenotype_not_observed_text;
             },
         },
         {
@@ -96,20 +77,19 @@ const phenotypes: SheetConfig = {
 
 const diagnoses: SheetConfig = {
     sheetName: 'Diagnoses',
-    root: 'diagnoses',
+    root: 'diagnosis',
     columns: [
         { field: 'fhir_id' },
         { field: 'external_id' },
-        { field: 'is_proband' },
         {
             field: 'fhir_id',
             header: 'Diagnosis Type',
             transform: () => 'Clinical',
         },
-        { field: 'diagnosis.mondo_id_diagnosis' },
-        { field: 'diagnosis.ncit_id_diagnosis' },
-        { field: 'diagnosis.icd_id_diagnosis' },
-        { field: 'diagnosis.source_text' },
+        { field: 'diagnosis.mondo_id_diagnosis', header: ' Diagnosis (MONDO)' },
+        { field: 'diagnosis.ncit_id_diagnosis', header: 'Diagnosis (NCIT)' },
+        { field: 'diagnosis.icd_id_diagnosis', header: 'Diagnosis (ICD)' },
+        { field: 'diagnosis.source_text', header: 'Diagnosis (Source Text)' },
         {
             field: 'diagnosis.age_at_event_days',
             header: 'Age at Diagnosis (Days)',
@@ -121,66 +101,44 @@ const diagnoses: SheetConfig = {
 
 const histologicalDiagnoses: SheetConfig = {
     sheetName: 'Histological Diagnoses',
-    root: 'biospecimens.diagnoses',
+    root: 'files.biospecimens',
     columns: [
-        { field: 'fhir_id' },
-        { field: 'external_id' }, //TODO TBD biospecimen fields
-        // { field: 'biospecimens.kf_id' },
-        // { field: 'biospecimens.external_sample_id' },
-        // { field: 'biospecimens.external_aliquot_id' },
-        // { field: 'is_proband' },
-        // {
-        //     // This allows to do a cell with a static value.
-        //     // The value will be formatted like the value of `field` would have.
-        //     field: 'kf_id',
-        //     header: 'Diagnosis Type',
-        //     transform: () => 'Histological',
-        // },
-        // { field: 'biospecimens.diagnoses.diagnosis_category' },
-        // { field: 'biospecimens.diagnoses.mondo_id_diagnosis' },
-        // { field: 'biospecimens.diagnoses.ncit_id_diagnosis' },
-        // { field: 'biospecimens.diagnoses.source_text_diagnosis' },
-        // {
-        //     field: 'biospecimens.diagnoses.age_at_event_days',
-        //     header: 'Age at Diagnosis (Days)',
-        // },
-        // { field: 'biospecimens.diagnoses.source_text_tumor_location' },
-        // { field: 'biospecimens.source_text_anatomical_site' },
-        // { field: 'biospecimens.ncit_id_tissue_type' },
-        // { field: 'biospecimens.source_text_tissue_type' },
-        // { field: 'biospecimens.composition' },
-        // { field: 'biospecimens.method_of_sample_procurement' },
-        // { field: 'biospecimens.analyte_type' },
+        { field: 'participant_id', header: 'Participant ID' },
+        { field: 'files.biospecimens.collection_sample_id', header: 'Collection ID' },
+        { field: 'files.biospecimens.collection_sample_type', header: 'Collection Sample Type' },
+        { field: 'files.biospecimens.sample_id', header: 'Sample Id' },
+        { field: 'files.biospecimens.container_id', header: 'Container Id' },
+        { field: 'files.biospecimens.sample_type', header: 'Sample Type' },
+        { field: 'files.biospecimens.parent_sample_id', header: 'Parent Sample Id' },
+        { field: 'files.biospecimens.parent_sample_type', header: 'Parent Sample Type' },
+        { field: 'study.study_code', header: 'Study Code' },
+        { field: 'files.biospecimens.age_at_biospecimen_collection', header: 'Age At Biospecimen Collection (Days)' },
+        { field: 'files.biospecimens.status', header: 'Sample Availability' },
+        { field: 'files.biospecimens.volume_ul', header: 'Volume' },
+        { field: 'files.biospecimens.volume_unit', header: 'Volume Unit' },
+        { field: 'files.biospecimens.laboratory_procedure', header: 'Laboratory Procedure' },
+        { field: 'files.biospecimens.biospecimen_storage', header: 'Biospecimen Storage' },
     ],
-    sort: [
-        { fhir_id: 'asc' },
-        {
-            'biospecimens.diagnoses.age_at_event_days': {
-                order: 'desc',
-                nested: {
-                    path: 'biospecimens',
-                    nested: {
-                        path: 'biospecimens.diagnoses',
-                    },
-                },
-            },
-        },
-    ],
+    sort: [{ fhir_id: 'asc' }],
 };
 
 const familyRelationship: SheetConfig = {
     sheetName: 'Family Relationship',
-    root: 'families',
+    root: 'family.family_relations',
     columns: [
-        { field: 'fhir_id' },
-        { field: 'family.family_members_id' },
-        // {
-        //     field: 'family.family_compositions.family_members.relationship',
-        //     header: 'Relationship',
-        //     transform: value => value || 'self',
-        // }, //TODO TBD
+        { field: 'participant_id' },
+        {
+            field: 'family.family_relations',
+            header: 'Family Members ID',
+            transform: (value, row) => (row.family ? row.family.family_relations.related_participant_id : ''),
+        },
+        {
+            field: 'family.family_relations',
+            header: 'Relationship',
+            transform: (value, row) => (row.family ? row.family.family_relations.relation : ''),
+        },
     ],
-    sort: [{ fhir_id: 'asc' }],
+    sort: [{ participant_id: 'asc' }],
 };
 
 export const queryConfigs: QueryConfig = {
@@ -192,7 +150,7 @@ export const sheetConfigs: SheetConfig[] = [
     participants,
     phenotypes,
     diagnoses,
-    // histologicalDiagnoses, //TODO TBD missing biospecimen
+    // histologicalDiagnoses,
     familyRelationship,
 ];
 
