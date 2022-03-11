@@ -20,8 +20,6 @@ const participants: SheetConfig = {
             field: 'outcome.age_at_event_days',
             header: 'Age at the Last Vital Status (Days)',
         },
-        // { field: 'outcome.disease_related' }, //TODO TBD
-        // { field: 'affected_status' }, //TODO TBD
     ],
     sort: [
         {
@@ -49,17 +47,6 @@ const phenotypes: SheetConfig = {
             field: 'phenotype.hpo_phenotype_observed_text',
             header: 'Phenotype (HPO)',
         },
-        // {
-        //     field: 'phenotype.observed',
-        //     additionalFields: ['phenotype.snomed_phenotype_observed', 'phenotype.snomed_phenotype_not_observed'],
-        //     header: 'Phenotype (SNOMED)',
-        //     transform: (observed, row) => {
-        //         if (!row.phenotype) {
-        //             return;
-        //         }
-        //         return observed ? row.phenotype.snomed_phenotype_observed : row.phenotype.snomed_phenotype_not_observed;
-        //     },
-        // }, //TODO TBD
         {
             field: 'phenotype.observed',
             additionalFields: ['phenotype.hpo_phenotype_observed_text', 'phenotype.hpo_phenotype_not_observed_text'],

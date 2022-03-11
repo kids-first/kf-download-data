@@ -2,26 +2,27 @@ import { QueryConfig, ReportConfig, SheetConfig } from '../types';
 
 const biospecimens: SheetConfig = {
     sheetName: 'Biospecimens',
-    root: 'biospecimens',
+    root: 'files.biospecimens',
     columns: [
-        { field: 'fhir_id' },
-        { field: 'external_id' },
-        { field: 'files.biospecimens.biospecimen_id', header: 'Biospecimens Biospecimens Id' },
-        {
-            field: 'files.biospecimens.age_at_biospecimen_collection',
-            header: 'Biospecimens Age At Biospecimen Collection',
-        },
-        { field: 'files.biospecimens.bio_repository', header: 'Biospecimens Bio Repository' },
-        { field: 'files.biospecimens.biospecimen_type', header: 'Biospecimens Biospecimen Type' },
-        { field: 'files.biospecimens.derived_sample_id', header: 'Biospecimens Derived Sample Id' },
-        { field: 'files.biospecimens.derived_sample_type', header: 'Biospecimens Derived Sample Type' },
-        { field: 'files.biospecimens.ncit_id_tissue_type', header: 'Biospecimens NCIT Id Tissue Type' },
-        { field: 'files.biospecimens.sample_id', header: 'Biospecimens Sample Id' },
-        { field: 'files.biospecimens.sample_type', header: 'Biospecimens Sample Type' },
+        { field: 'participant_id', header: 'Participant ID' },
+        { field: 'files.biospecimens.collection_sample_id', header: 'Collection ID' },
+        { field: 'files.biospecimens.collection_sample_type', header: 'Collection Sample Type' },
+        { field: 'files.biospecimens.sample_id', header: 'Sample Id' },
+        { field: 'files.biospecimens.container_id', header: 'Container Id' },
+        { field: 'files.biospecimens.sample_type', header: 'Sample Type' },
+        { field: 'files.biospecimens.parent_sample_id', header: 'Parent Sample Id' },
+        { field: 'files.biospecimens.parent_sample_type', header: 'Parent Sample Type' },
+        { field: 'study.study_code', header: 'Study Code' },
+        { field: 'files.biospecimens.age_at_biospecimen_collection', header: 'Age At Biospecimen Collection (Days)' },
+        { field: 'files.biospecimens.status', header: 'Sample Availability' },
+        { field: 'files.biospecimens.volume_ul', header: 'Volume' },
+        { field: 'files.biospecimens.volume_unit', header: 'Volume Unit' },
+        { field: 'files.biospecimens.laboratory_procedure', header: 'Laboratory Procedure' },
+        { field: 'files.biospecimens.biospecimen_storage', header: 'Biospecimen Storage' },
     ],
     sort: [
         {
-            'files.biospecimens.biospecimen_id': {
+            'files.biospecimens.sample_id': {
                 order: 'asc',
             },
         },

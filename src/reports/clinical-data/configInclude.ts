@@ -4,24 +4,21 @@ const participants: SheetConfig = {
     sheetName: 'Participants',
     root: null,
     columns: [
-        { field: 'fhir_id' },
+        { field: 'participant_id' },
         { field: 'external_id' },
         { field: 'family.family_id', header: 'Family ID' },
         { field: 'family_type' },
-        { field: 'is_proband' },
         { field: 'study.study_name', header: 'Study Name' },
+        { field: 'study.study_code', header: 'Study Code' },
         { field: 'sex' },
         { field: 'race' },
         { field: 'ethnicity' },
-        { field: 'karyotype' },
         { field: 'down_syndrome_status' },
         { field: 'outcomes.vital_status' },
         {
             field: 'outcomes.age_at_event_days.value',
             header: 'Age at the Last Vital Status (Days)',
         },
-        // { field: 'outcome.disease_related' }, //TODO TBD
-        // { field: 'affected_status' }, //TODO TBD
     ],
     sort: [
         {
@@ -43,29 +40,26 @@ const phenotypes: SheetConfig = {
     columns: [
         { field: 'fhir_id' },
         { field: 'external_id' },
-        { field: 'is_proband' },
         {
-            field: 'phenotype.observed',
-            additionalFields: ['phenotype.hpo_phenotype_observed', 'phenotype.hpo_phenotype_not_observed'],
+            field: 'phenotype.hpo_phenotype_observed',
+            additionalFields: ['phenotype.hpo_phenotype_not_observed'],
             header: 'Phenotype (HPO)',
-            transform: (observed, row) => {
+            transform: (value, row) => {
                 if (!row.phenotype) {
                     return;
                 }
-                return observed ? row.phenotype.hpo_phenotype_observed : row.phenotype.hpo_phenotype_not_observed;
+                return value || row.phenotype.hpo_phenotype_not_observed;
             },
         },
         {
-            field: 'phenotype.observed',
-            additionalFields: ['phenotype.hpo_phenotype_observed_text', 'phenotype.hpo_phenotype_not_observed_text'],
+            field: 'phenotype.hpo_phenotype_observed_text',
+            additionalFields: ['phenotype.hpo_phenotype_not_observed_text'],
             header: 'Phenotype (Source Text)',
-            transform: (observed, row) => {
+            transform: (value, row) => {
                 if (!row.phenotype) {
                     return;
                 }
-                return observed
-                    ? row.phenotype.hpo_phenotype_observed_text
-                    : row.phenotype.hpo_phenotype_not_observed_text;
+                return value || row.phenotype.hpo_phenotype_not_observed_text;
             },
         },
         {
@@ -83,11 +77,10 @@ const phenotypes: SheetConfig = {
 
 const diagnoses: SheetConfig = {
     sheetName: 'Diagnoses',
-    root: 'diagnoses',
+    root: 'diagnosis',
     columns: [
         { field: 'fhir_id' },
         { field: 'external_id' },
-        { field: 'is_proband' },
         {
             field: 'fhir_id',
             header: 'Diagnosis Type',
@@ -110,14 +103,17 @@ const histologicalDiagnoses: SheetConfig = {
     sheetName: 'Histological Diagnoses',
     root: 'files.biospecimens',
     columns: [
-        { field: 'files.biospecimens.fhir_id', header: 'ID' },
+        { field: 'participant_id', header: 'Participant ID' },
+        { field: 'files.biospecimens.collection_sample_id', header: 'Collection ID' },
+        { field: 'files.biospecimens.collection_sample_type', header: 'Collection Sample Type' },
         { field: 'files.biospecimens.sample_id', header: 'Sample Id' },
         { field: 'files.biospecimens.container_id', header: 'Container Id' },
+        { field: 'files.biospecimens.sample_type', header: 'Sample Type' },
         { field: 'files.biospecimens.parent_sample_id', header: 'Parent Sample Id' },
         { field: 'files.biospecimens.parent_sample_type', header: 'Parent Sample Type' },
-        { field: 'study.study_code', header: 'Study' },
-        { field: 'files.biospecimens.collection_sample_type', header: 'Collection Sample Type' },
+        { field: 'study.study_code', header: 'Study Code' },
         { field: 'files.biospecimens.age_at_biospecimen_collection', header: 'Age At Biospecimen Collection (Days)' },
+        { field: 'files.biospecimens.status', header: 'Sample Availability' },
         { field: 'files.biospecimens.volume_ul', header: 'Volume' },
         { field: 'files.biospecimens.volume_unit', header: 'Volume Unit' },
         { field: 'files.biospecimens.laboratory_procedure', header: 'Laboratory Procedure' },
@@ -130,7 +126,7 @@ const familyRelationship: SheetConfig = {
     sheetName: 'Family Relationship',
     root: 'family.family_relations',
     columns: [
-        { field: 'fhir_id' },
+        { field: 'participant_id' },
         {
             field: 'family.family_relations',
             header: 'Family Members ID',
@@ -142,7 +138,7 @@ const familyRelationship: SheetConfig = {
             transform: (value, row) => (row.family ? row.family.family_relations.relation : ''),
         },
     ],
-    sort: [{ fhir_id: 'asc' }],
+    sort: [{ participant_id: 'asc' }],
 };
 
 export const queryConfigs: QueryConfig = {
@@ -154,7 +150,7 @@ export const sheetConfigs: SheetConfig[] = [
     participants,
     phenotypes,
     diagnoses,
-    histologicalDiagnoses,
+    // histologicalDiagnoses,
     familyRelationship,
 ];
 
