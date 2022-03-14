@@ -9,7 +9,7 @@ const participants: SheetConfig = {
         { field: 'family.family_id', header: 'Family ID' },
         { field: 'family_type' },
         { field: 'study.study_name', header: 'Study Name' },
-        { field: 'study.study_code', header: 'Study Code' },
+        { field: 'study.study_id', header: 'Study Code' },
         { field: 'sex' },
         { field: 'race' },
         { field: 'ethnicity' },
@@ -38,7 +38,7 @@ const phenotypes: SheetConfig = {
     sheetName: 'Phenotypes',
     root: 'phenotype',
     columns: [
-        { field: 'fhir_id' },
+        { field: 'participant_id' },
         { field: 'external_id' },
         {
             field: 'phenotype.hpo_phenotype_observed',
@@ -79,7 +79,7 @@ const diagnoses: SheetConfig = {
     sheetName: 'Diagnoses',
     root: 'diagnosis',
     columns: [
-        { field: 'fhir_id' },
+        { field: 'participant_id' },
         { field: 'external_id' },
         {
             field: 'fhir_id',
