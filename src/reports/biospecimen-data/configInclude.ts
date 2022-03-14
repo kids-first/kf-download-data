@@ -2,27 +2,27 @@ import { QueryConfig, ReportConfig, SheetConfig } from '../types';
 
 const biospecimens: SheetConfig = {
     sheetName: 'Biospecimens',
-    root: 'files.biospecimens',
+    root: null,
     columns: [
-        { field: 'participant_id', header: 'Participant ID' },
-        { field: 'files.biospecimens.collection_sample_id', header: 'Collection ID' },
-        { field: 'files.biospecimens.collection_sample_type', header: 'Collection Sample Type' },
-        { field: 'files.biospecimens.sample_id', header: 'Sample Id' },
-        { field: 'files.biospecimens.container_id', header: 'Container Id' },
-        { field: 'files.biospecimens.sample_type', header: 'Sample Type' },
-        { field: 'files.biospecimens.parent_sample_id', header: 'Parent Sample Id' },
-        { field: 'files.biospecimens.parent_sample_type', header: 'Parent Sample Type' },
-        { field: 'study.study_code', header: 'Study Code' },
-        { field: 'files.biospecimens.age_at_biospecimen_collection', header: 'Age At Biospecimen Collection (Days)' },
-        { field: 'files.biospecimens.status', header: 'Sample Availability' },
-        { field: 'files.biospecimens.volume_ul', header: 'Volume' },
-        { field: 'files.biospecimens.volume_unit', header: 'Volume Unit' },
-        { field: 'files.biospecimens.laboratory_procedure', header: 'Laboratory Procedure' },
-        { field: 'files.biospecimens.biospecimen_storage', header: 'Biospecimen Storage' },
+        { field: 'participant.participant_id', header: 'Participant ID' },
+        { field: 'collection_sample_id', header: 'Collection ID' },
+        { field: 'collection_sample_type', header: 'Collection Sample Type' },
+        { field: 'sample_id', header: 'Sample Id' },
+        { field: 'container_id', header: 'Container Id' },
+        { field: 'sample_type', header: 'Sample Type' },
+        { field: 'parent_sample_id', header: 'Parent Sample Id' },
+        { field: 'parent_sample_type', header: 'Parent Sample Type' },
+        { field: 'study.study_id', header: 'Study Code' },
+        { field: 'age_at_biospecimen_collection', header: 'Age At Biospecimen Collection (Days)' },
+        { field: 'status', header: 'Sample Availability' },
+        { field: 'volume_ul', header: 'Volume' },
+        { field: 'volume_unit', header: 'Volume Unit' },
+        { field: 'laboratory_procedure', header: 'Laboratory Procedure' },
+        { field: 'biospecimen_storage', header: 'Biospecimen Storage' },
     ],
     sort: [
         {
-            'files.biospecimens.sample_id': {
+            sample_id: {
                 order: 'asc',
             },
         },
@@ -35,8 +35,8 @@ const biospecimens: SheetConfig = {
 };
 
 const queryConfigs: QueryConfig = {
-    indexName: 'participant',
-    alias: 'participant_centric',
+    indexName: 'biospecimen',
+    alias: 'biospecimen_centric',
 };
 
 const sheetConfigs: SheetConfig[] = [biospecimens];
