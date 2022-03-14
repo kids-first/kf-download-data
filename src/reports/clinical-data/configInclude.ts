@@ -63,7 +63,7 @@ const phenotypes: SheetConfig = {
             },
         },
         {
-            field: 'phenotype.observed',
+            field: 'phenotype.hpo_phenotype_observed',
             header: 'Interpretation',
             transform: (value, row) => (value ? 'Observed' : 'Not Observed'),
         },
