@@ -4,20 +4,19 @@ const participants: SheetConfig = {
     sheetName: 'Participants',
     root: null,
     columns: [
-        { field: 'fhir_id' },
+        { field: 'participant_id' },
         { field: 'external_id' },
-        { field: 'families_id' },
-        { field: 'is_proband' },
-        { field: 'study.study_name' },
+        { field: 'family.family_id', header: 'Family ID' },
         { field: 'family_type' },
+        { field: 'study.study_name', header: 'Study Name' },
+        { field: 'study.study_id', header: 'Study Code' },
         { field: 'sex' },
         { field: 'race' },
         { field: 'ethnicity' },
-        { field: 'down_syndrome_diagnosis' },
-        { field: 'karyotype' },
-        { field: 'outcome.vital_status' },
+        { field: 'down_syndrome_status' },
+        { field: 'outcomes.vital_status' },
         {
-            field: 'outcome.age_at_event_days',
+            field: 'outcomes.age_at_event_days.value',
             header: 'Age at the Last Vital Status (Days)',
         },
     ],
@@ -100,7 +99,8 @@ export const queryConfigs: QueryConfig = {
     alias: 'participant_centric',
 };
 
-export const sheetConfigs: SheetConfig[] = [participants, phenotypes, diagnoses];
+// export const sheetConfigs: SheetConfig[] = [participants, phenotypes, diagnoses];
+export const sheetConfigs: SheetConfig[] = [participants];
 
 const reportConfig: ReportConfig = { queryConfigs, sheetConfigs };
 

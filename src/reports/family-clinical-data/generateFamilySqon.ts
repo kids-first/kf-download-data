@@ -6,6 +6,7 @@ import { executeSearch } from '../../utils/esUtils';
 import { Client } from '@elastic/elasticsearch';
 import { Sqon } from '../../utils/setsTypes';
 import { resolveSetsInSqon } from '../../utils/sqonUtils';
+import { ProjectType } from '../types';
 
 /**
  * Generate a sqon from the family_id of all the participants in the given `sqon`.
@@ -24,16 +25,18 @@ export default async (
     normalizedConfigs,
     userId: string,
     accessToken: string,
+    program: string,
 ): Promise<Sqon> => {
     const extendedConfig = await getExtendedConfigs(es, projectId, normalizedConfigs.indexName);
     const nestedFields = getNestedFields(extendedConfig);
     const newSqon = await resolveSetsInSqon(sqon, userId, accessToken);
     const query = buildQuery({ nestedFields, filters: newSqon });
+    const field = program.toLowerCase() === ProjectType.include ? 'family.family_id' : 'family_id';
     const esRequest = {
         query,
         aggs: {
             family_id: {
-                terms: { field: 'family_id', size: 100000 },
+                terms: { field, size: 100000 },
             },
         },
     };
@@ -47,7 +50,7 @@ export default async (
             {
                 op: 'in',
                 content: {
-                    field: 'family_id',
+                    field,
                     value: familyIds,
                 },
             },
