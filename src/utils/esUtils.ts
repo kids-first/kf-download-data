@@ -4,9 +4,9 @@ import defaults from 'lodash/defaults';
 import esToSafeJsInt from '@arranger/middleware/dist/utils/esToSafeJsInt';
 
 type SearchOpts = {
-  onPageFetched(data: object[], page: number): void;
-  onFinish(totalRaw: number):void;
-  pageSize: number;
+    onPageFetched(data: object[], page: number): void;
+    onFinish(totalRaw: number): void;
+    pageSize: number;
 };
 /**
  * Recursively calls the `search` on the given elasticsearch.Client,
@@ -24,67 +24,71 @@ type SearchOpts = {
  *  If a `size` property is provided in the query, it has precedence over this option.
  */
 export const executeSearchAfterQuery = async (es: Client, index: string, query, opts: SearchOpts) => {
-  opts = defaults(opts, {
-    onPageFetched: noop,
-    onFinish: noop,
-    pageSize: 1000,
-  });
+    opts = defaults(opts, {
+        onPageFetched: noop,
+        onFinish: noop,
+        pageSize: 1000,
+    });
 
-  // wrap values in an object to prevent closure bugs
-  let progress = {
-    total: 0,
-    fetched: 0,
-  };
-
-  const fetchNextPage = async (sort = null) => {
-    const searchParams = {
-      index,
-      body: {
-        ...query,
-        // "size" is necessary to activate "search_after"
-        size: query.size || opts.pageSize,
-      },
+    // wrap values in an object to prevent closure bugs
+    let progress = {
+        total: 0,
+        fetched: 0,
     };
 
-    // omit "search_after" on first call
-    if (sort) {
-      searchParams.body.search_after = sort.map(toSafeESValue);
-    }
+    const fetchNextPage = async (sort = null) => {
+        const searchParams = {
+            index,
+            body: {
+                ...query,
+                // "size" is necessary to activate "search_after"
+                size: query.size || opts.pageSize,
+            },
+        };
 
-    let page;
+        // omit "search_after" on first call
+        if (sort) {
+            searchParams.body.search_after = sort.map(toSafeESValue);
+        }
+
+        let page;
+        try {
+            page = await es.search(searchParams);
+        } catch (err) {
+            console.error(`Error searching ES with params ${JSON.stringify(searchParams)}`, err);
+            throw err;
+        }
+        progress.total = page.body.hits.total.value;
+        const pageSize = page.body.hits.hits.length;
+
+        progress.fetched += pageSize;
+
+        // a page may be empty if data has been removed from the search results in between two calls,
+        //  preventing this search from reaching fetched = total.
+        // Be sure not to go in an infinite loop if that happen.
+        if (pageSize > 0) {
+            opts.onPageFetched(
+                page.body.hits.hits.map(hit => hit._source),
+                progress.total,
+            );
+        }
+        if (progress.fetched >= progress.total || pageSize === 0) {
+            opts.onFinish(progress.total);
+            return;
+        }
+
+        await fetchNextPage(page.body.hits.hits[pageSize - 1].sort);
+    };
+
+    let otherPagesPromise;
     try {
-      page = await es.search(searchParams);
+        otherPagesPromise = await fetchNextPage();
     } catch (err) {
-      console.error(`Error searching ES with params ${JSON.stringify(searchParams)}`, err);
-      throw err;
-    }
-    progress.total = page.body.hits.total;
-    const pageSize = page.body.hits.hits.length;
-    progress.fetched += pageSize;
-
-    // a page may be empty if data has been removed from the search results in between two calls,
-    //  preventing this search from reaching fetched = total.
-    // Be sure not to go in an infinite loop if that happen.
-    if (pageSize > 0) {
-      opts.onPageFetched(page.body.hits.hits.map(hit => hit._source), progress.total);
-    }
-    if (progress.fetched >= progress.total || pageSize === 0) {
-      opts.onFinish(progress.total);
-      return;
+        console.error(`Failed to search ES for index: ${index}, query: ${JSON.stringify(query)}`, err);
+        throw err;
     }
 
-    await fetchNextPage(page.body.hits.hits[pageSize - 1].sort);
-  };
-
-  let otherPagesPromise;
-  try {
-    otherPagesPromise = await fetchNextPage();
-  } catch (err) {
-    console.error(`Failed to search ES for index: ${index}, query: ${JSON.stringify(query)}`, err);
-    throw err;
-  }
-
-  return otherPagesPromise;
+    return otherPagesPromise;
 };
 
 /**
@@ -94,20 +98,20 @@ export const executeSearchAfterQuery = async (es: Client, index: string, query, 
  * @param {Object} query - an object containing the query,
  */
 export const executeSearch = async (es, index, query) => {
-  const searchParams = {
-    index,
-    body: {
-      ...query,
-      size: typeof query.size === 'number' ? query.size : 0,
-    },
-  };
+    const searchParams = {
+        index,
+        body: {
+            ...query,
+            size: typeof query.size === 'number' ? query.size : 0,
+        },
+    };
 
-  try {
-    return await es.search(searchParams);
-  } catch (err) {
-    console.error(`Error searching ES with params ${JSON.stringify(searchParams)}`, err);
-    throw err;
-  }
+    try {
+        return await es.search(searchParams);
+    } catch (err) {
+        console.error(`Error searching ES with params ${JSON.stringify(searchParams)}`, err);
+        throw err;
+    }
 };
 
 /**
@@ -118,22 +122,22 @@ export const executeSearch = async (es, index, query) => {
  * @returns {any} the clean value. Might be of a different type than the input.
  */
 export const toSafeESValue = value => {
-  // Cap unsafe number
-  if (Number.isInteger(Number.parseFloat(value)) && !Number.isSafeInteger(value)) {
-    const bigValue = BigInt(value);
-    const bigMaxValue = BigInt(2 ** 63 - 1);
-    const bigMinValue = BigInt(-(2 ** 63 - 1));
-    if (bigValue < bigMinValue) {
-      return String(bigMinValue);
+    // Cap unsafe number
+    if (Number.isInteger(Number.parseFloat(value)) && !Number.isSafeInteger(value)) {
+        const bigValue = BigInt(value);
+        const bigMaxValue = BigInt(2 ** 63 - 1);
+        const bigMinValue = BigInt(-(2 ** 63 - 1));
+        if (bigValue < bigMinValue) {
+            return String(bigMinValue);
+        }
+        if (bigValue > bigMaxValue) {
+            return String(bigMaxValue);
+        }
+        return String(bigValue);
     }
-    if (bigValue > bigMaxValue) {
-      return String(bigMaxValue);
-    }
-    return String(bigValue);
-  }
 
-  // Value is already safe
-  return value;
+    // Value is already safe
+    return value;
 };
 
 /**
@@ -141,35 +145,35 @@ export const toSafeESValue = value => {
  *  to a human readable value.
  */
 export const getDefaultTransformPerType = (fieldType: string, fieldName: string): any => {
-  switch (fieldType) {
-    case 'boolean':
-      return defaultBoolTransform;
-    case 'id':
-    case 'keyword':
-    case 'text':
-      return x => (x === null ? '' : String(x));
-    case 'float':
-    case 'integer':
-    case 'long':
-      return x => esToSafeJsInt(x);
-    // case 'date':
-    // case 'nested':
-    // case 'object':
-    default:
-      console.warn(`Unsupported type "${fieldType}" encountered in field "${fieldName}"`);
-      return x => x;
-  }
+    switch (fieldType) {
+        case 'boolean':
+            return defaultBoolTransform;
+        case 'id':
+        case 'keyword':
+        case 'text':
+            return x => (x === null ? '' : String(x));
+        case 'float':
+        case 'integer':
+        case 'long':
+            return x => esToSafeJsInt(x);
+        // case 'date':
+        // case 'nested':
+        // case 'object':
+        default:
+            console.warn(`Unsupported type "${fieldType}" encountered in field "${fieldName}"`);
+            return x => x;
+    }
 };
 
 const defaultBoolTransform = value => {
-  switch (String(value).toLowerCase()) {
-    case 'true':
-      return 'Yes';
-    case 'false':
-      return 'No';
-    case 'null':
-      return '';
-    default:
-      return String(value);
-  }
+    switch (String(value).toLowerCase()) {
+        case 'true':
+            return 'Yes';
+        case 'false':
+            return 'No';
+        case 'null':
+            return '';
+        default:
+            return String(value);
+    }
 };
