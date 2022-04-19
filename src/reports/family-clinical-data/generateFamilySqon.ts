@@ -33,8 +33,8 @@ export default async (
     const newSqon = await resolveSetsInSqon(sqon, userId, accessToken);
     const query = buildQuery({ nestedFields, filters: newSqon });
 
-    const participantIds = (sqon.content || []).filter(e => (e.content?.field || '') === 'participant_id')[0].content
-        .value;
+    const participantIds =
+        (sqon.content || []).filter(e => (e.content?.field || '') === 'participant_id')[0]?.content.value || [];
 
     const field = program.toLowerCase() === ProjectType.include ? 'family.family_id' : 'family_id';
     const esRequest = {
