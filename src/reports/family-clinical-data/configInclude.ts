@@ -6,7 +6,7 @@ const participants: SheetConfig = {
     columns: [
         { field: 'participant_id' },
         { field: 'external_id' },
-        { field: 'family.family_id', header: 'Family ID' },
+        { field: 'families_id', header: 'Family ID' },
         { field: 'family_type' },
         { field: 'family.father_id', header: 'Father ID' },
         { field: 'family.mother_id', header: 'Mother ID' },
@@ -43,7 +43,7 @@ const phenotypes: SheetConfig = {
     columns: [
         { field: 'participant_id' },
         { field: 'external_id' },
-        { field: 'family.family_id', header: 'Family ID' },
+        { field: 'families_id', header: 'Family ID' },
         {
             field: 'phenotype.hpo_phenotype_observed',
             additionalFields: ['phenotype.hpo_phenotype_not_observed'],
@@ -85,7 +85,7 @@ const diagnoses: SheetConfig = {
     columns: [
         { field: 'participant_id' },
         { field: 'external_id' },
-        { field: 'family.family_id', header: 'Family ID' },
+        { field: 'families_id', header: 'Family ID' },
         {
             field: 'fhir_id',
             header: 'Diagnosis Type',
@@ -101,7 +101,7 @@ const diagnoses: SheetConfig = {
         },
         { field: 'diagnoses.source_text_tumor_location' },
     ],
-    sort: [{ 'family.family_id': 'asc' }, { participant_id: 'asc' }],
+    sort: [{ 'families_id': 'asc' }, { participant_id: 'asc' }],
 };
 
 export const queryConfigs: QueryConfig = {
