@@ -36,7 +36,7 @@ export default async (
     const participantIds =
         (sqon.content || []).filter(e => (e.content?.field || '') === 'participant_id')[0]?.content.value || [];
 
-    const field = program.toLowerCase() === ProjectType.include ? 'families_id' : 'family_id';
+    const field = 'family_id'; //fixme!!
     const esRequest = {
         query,
         aggs: {

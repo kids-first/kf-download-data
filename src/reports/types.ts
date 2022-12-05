@@ -23,6 +23,5 @@ export type ReportConfig = {
 };
 
 export enum ProjectType {
-    kidsFirst = 'kids-first',
-    include = 'include',
+    cqdg = 'cqdg',
 }
