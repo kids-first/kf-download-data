@@ -4,7 +4,7 @@ import generateReport from '../generateReport';
 import configCqdg from './configCqdg';
 import { normalizeConfigs } from '../../utils/configUtils';
 import { reportGenerationErrorHandler } from '../../errors';
-import {ES_PWD, ES_USER} from '../../env';
+import { ES_PWD, ES_USER } from '../../env';
 
 const clinicalDataReport = (esHost: string) => async (req: Request, res: Response) => {
     console.time('clinical-data');
@@ -16,7 +16,10 @@ const clinicalDataReport = (esHost: string) => async (req: Request, res: Respons
     let es = null;
     try {
         // prepare the ES client
-        es = new Client({ node: esHost, auth: { password: ES_PWD, username: ES_USER } });
+        es =
+            ES_PWD && ES_USER
+                ? new Client({ node: esHost, auth: { password: ES_PWD, username: ES_USER } })
+                : new Client({ node: esHost });
 
         // decorate the configs with default values, values from arranger's project, etc...
         const normalizedConfigs = await normalizeConfigs(es, projectId, configCqdg);
