@@ -13,7 +13,6 @@ const participants: SheetConfig = {
         { field: 'sex' },
         { field: 'race' },
         { field: 'ethnicity' },
-        { field: 'outcome.vital_status' },
         { field: 'diagnosis.affected_status_text' },
     ],
     sort: [
@@ -46,14 +45,6 @@ const diagnoses: SheetConfig = {
         { field: 'family.family_id' },
 
         { field: 'is_proband' },
-        { field: 'diagnoses.mondo_id_diagnosis' },
-        { field: 'diagnoses.ncit_id_diagnosis' },
-        { field: 'diagnoses.source_text' },
-        {
-            field: 'diagnoses.age_at_event_days',
-            header: 'Age at Diagnosis (Days)',
-        },
-        { field: 'diagnoses.source_text_tumor_location' },
     ],
     sort: [{ participant_id: 'asc' }],
 };
