@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { Client } from '@elastic/elasticsearch';
 import generateReport from '../generateReport';
 import configKf from './configKf';
+import configKfNext from './configKfNext';
 import configInclude from './configInclude';
 import { PROJECT } from '../../env';
 import { normalizeConfigs } from '../../utils/configUtils';
@@ -12,11 +13,19 @@ import { ProjectType } from '../types';
 const clinicalDataReport = (esHost: string) => async (req: Request, res: Response) => {
     console.time('biospecimen-data');
 
-    const { sqon, projectId, filename = null } = req.body;
+    const { sqon, projectId, filename = null, isKfNext = false } = req.body;
     const userId = req['kauth']?.grant?.access_token?.content?.sub;
     const accessToken = req.headers.authorization;
 
-    const reportConfig = PROJECT.toLowerCase().trim() === ProjectType.kidsFirst ? configKf : configInclude;
+    const p = PROJECT.toLowerCase().trim();
+    let reportConfig;
+    if (isKfNext) {
+        reportConfig = configKfNext;
+    } else if (p === ProjectType.kidsFirst) {
+        reportConfig = configInclude;
+    } else if (p === ProjectType.kidsFirst) {
+        reportConfig = configKf;
+    }
 
     let es = null;
     try {
