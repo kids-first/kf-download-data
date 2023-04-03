@@ -7,6 +7,7 @@ import { Client } from '@elastic/elasticsearch';
 import { resolveSetsInSqon } from '../../utils/sqonUtils';
 import { ProjectType } from '../types';
 import { Sqon } from '../../utils/setsTypes';
+import { ES_QUERY_MAX_SIZE } from '../../env';
 
 /**
  * Generate a sqon from the family_id of all the participants in the given `sqon`.
@@ -19,7 +20,7 @@ import { Sqon } from '../../utils/setsTypes';
  * @param {string} program - the program the report will run on.
  * @returns {object} - A sqon of all the `family_id`.
  */
-export default async (
+const generateFamilySqon = async (
     es: Client,
     projectId: string,
     sqon: Sqon,
@@ -41,7 +42,7 @@ export default async (
         query,
         aggs: {
             family_id: {
-                terms: { field, size: 100000 },
+                terms: { field, size: ES_QUERY_MAX_SIZE },
             },
         },
     };
@@ -69,3 +70,6 @@ export default async (
         ],
     };
 };
+
+
+export default generateFamilySqon;
