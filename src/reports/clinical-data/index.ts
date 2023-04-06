@@ -11,7 +11,7 @@ import { ProjectType } from '../types';
 
 const clinicalDataReport = (esHost: string) => async (req: Request, res: Response) => {
     console.time('clinical-data');
-    const { sqon, projectId, filename = null, isKfNext = false } = req.body;
+    const { sqon, projectId, filename = null, isKfNext = false, withFamily = false } = req.body;
     const userId = req['kauth']?.grant?.access_token?.content?.sub;
     const accessToken = req.headers.authorization;
 
