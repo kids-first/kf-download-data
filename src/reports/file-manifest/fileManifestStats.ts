@@ -28,7 +28,7 @@ const fileManifestStats = () => async (req: Request, res: Response): Promise<voi
                 ? new Client({ node: ES_HOST, auth: { password: ES_PWD, username: ES_USER } })
                 : new Client({ node: ES_HOST });
 
-        const wantedFields = ['file_id', 'data_type', 'file_size', 'participants.participant_id'];
+        const wantedFields = ['file_id', 'data_type', 'size', 'participants.participant_id'];
         const files = await getFilesFromSqon(es, projectId, sqon, userId, accessToken, wantedFields);
 
         const newFiles = withFamily
@@ -48,7 +48,7 @@ const fileManifestStats = () => async (req: Request, res: Response): Promise<voi
                     value: file.data_type,
                     nb_participants: filesFound.reduce((a, b) => a + (b?.participants?.length || 0), 0),
                     nb_files: filesFound.length,
-                    size: filesFound.reduce((a, b) => a + (b?.file_size || 0), 0),
+                    size: filesFound.reduce((a, b) => a + (b?.size || 0), 0),
                 });
             }
         }
