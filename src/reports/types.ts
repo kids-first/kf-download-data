@@ -8,6 +8,8 @@ export type ColumnConfig = {
     header?: string;
     additionalFields?: string[];
     transform?: any;
+    /* this property can be useful if there are multiple columns targeting the same field */
+    fieldExtraSuffix?: string;
 };
 
 export type SheetConfig = {

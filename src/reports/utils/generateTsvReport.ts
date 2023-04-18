@@ -6,7 +6,7 @@ const generateTsvReport = async (data: { key: string }[], path: string, config: 
     let tsvContent = config.columns.map(c => c.header).join('\t') + '\n';
 
     for (const row of data) {
-        const values = config.columns.map(c => row[c.field]);
+        const values = config.columns.map(c => row[`${c.field}${c.fieldExtraSuffix || ''}`]);
         tsvContent += values.join('\t') + '\n';
     }
 

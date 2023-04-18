@@ -33,31 +33,28 @@ const getInfosByConfig = async (
     const results = await executeSearch(es, esIndex, esRequest);
     const hits = results?.body?.hits?.hits || [];
     const sources = hits.map(hit => hit._source);
-    const infos: { key: string }[] = sources.map(source =>
-        config.columns
-            .map(column => {
-                const field = column.field;
-                /** default case example: field = 'file_id' */
-                let value = source[field];
-                const fieldSplitedByDot = field?.split('.');
-                if (fieldSplitedByDot?.length > 1) {
-                    if (Array.isArray(source[fieldSplitedByDot[0]])) {
-                        /** array case example: field = 'participants.participant_id' */
-                        value = getValueRecursive(source, fieldSplitedByDot);
-                    } else {
-                        /** nested object case example: field = 'sequencing_experiment.experimental_strategy' */
-                        value = get(source, field);
-                    }
+    return sources.map(source =>
+        config.columns.reduce((data, column) => {
+            const field = column.field;
+            /** default case example: field = 'file_id' */
+            let value = source[field];
+            const fieldSplitedByDot = field?.split('.');
+            if (fieldSplitedByDot?.length > 1) {
+                if (Array.isArray(source[fieldSplitedByDot[0]])) {
+                    /** array case example: field = 'participants.participant_id' */
+                    value = getValueRecursive(source, fieldSplitedByDot);
+                } else {
+                    /** nested object case example: field = 'sequencing_experiment.experimental_strategy' */
+                    value = get(source, field);
                 }
-                if (column.transform) {
-                    value = column.transform(value);
-                }
-                return { [field]: value };
-            })
-            .reduce((a, b) => Object.assign(a, b), {}),
-    );
+            }
+            if (column.transform) {
+                value = column.transform(value);
+            }
 
-    return infos;
+            return { ...data, [`${column.field}${column.fieldExtraSuffix || ''}`]: value };
+        }, {}),
+    );
 };
 
 export default getInfosByConfig;
