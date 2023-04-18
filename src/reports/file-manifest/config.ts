@@ -16,7 +16,7 @@ const processBiospecimens = (participants: ParticipantsData, key: keyof Biospeci
 
 const config: SheetConfig = {
     sheetName: 'Files',
-    root: 'file',
+    root: null,
     columns: [
         { field: 'access_urls', header: 'Access URL' },
         {
@@ -35,17 +35,25 @@ const config: SheetConfig = {
         { field: 'study.study_name', header: 'Study Name' },
         { field: 'participants.participant_id', header: 'Participant ID' },
         {
+            fieldExtraSuffix: '_sample_id',
             field: 'participants',
             header: 'Sample ID',
             transform: participants => processBiospecimens(participants, 'sample_id'),
         },
-        { field: 'participants', header: 'Proband', transform: xs => xs.map(x => (x ? 'Yes' : 'No')).join(',') },
         {
+            fieldExtraSuffix: '_proband',
+            field: 'participants',
+            header: 'Proband',
+            transform: (xs: { is_proband: boolean }[]): string => xs?.map(x => (x.is_proband ? 'Yes' : 'No')).join(','),
+        },
+        {
+            fieldExtraSuffix: '_family',
             field: 'participants',
             header: 'Family ID',
             transform: participants => processBiospecimens(participants, 'family'),
         },
         {
+            fieldExtraSuffix: '_external_sample_id',
             field: 'participants',
             header: 'External Sample ID',
             transform: participants => processBiospecimens(participants, 'external_sample_id'),
