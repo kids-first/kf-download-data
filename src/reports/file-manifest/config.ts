@@ -25,7 +25,7 @@ const config: SheetConfig = {
         },
         { field: 'file_name', header: 'File Name' },
         { field: 'size', header: 'File Size', transform: value => formatFileSize(value, { output: 'string' }) },
-        { field: 'study.data_category', header: 'Data Category' },
+        { field: 'data_category', header: 'Data Category' },
         { field: 'data_type', header: 'Data Type' },
         { field: 'file_format', header: 'File Format' },
         { field: 'sequencing_experiment.experiment_strategy', header: 'Experimental Strategy' },
