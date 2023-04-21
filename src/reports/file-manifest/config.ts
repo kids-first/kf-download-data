@@ -11,7 +11,7 @@ const processBiospecimens = (participants: ParticipantsData, key: keyof Biospeci
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         //@ts-ignore
         .flat()
-        .map(x => (key === 'family' ? x?.family?.family_id : x[key]))
+        .map(x => x[key])
         .filter(x => !!x);
 
 const config: SheetConfig = {
@@ -25,7 +25,7 @@ const config: SheetConfig = {
         },
         { field: 'file_name', header: 'File Name' },
         { field: 'size', header: 'File Size', transform: value => formatFileSize(value, { output: 'string' }) },
-        { field: 'study.data_category', header: 'Data Category' },
+        { field: 'data_category', header: 'Data Category' },
         { field: 'data_type', header: 'Data Type' },
         { field: 'file_format', header: 'File Format' },
         { field: 'sequencing_experiment.experiment_strategy', header: 'Experimental Strategy' },
@@ -50,7 +50,7 @@ const config: SheetConfig = {
             fieldExtraSuffix: '_family',
             field: 'participants',
             header: 'Family ID',
-            transform: participants => processBiospecimens(participants, 'family'),
+            transform: participants => (participants || []).map(x => x?.family?.family_id ?? ''),
         },
         {
             fieldExtraSuffix: '_external_sample_id',
