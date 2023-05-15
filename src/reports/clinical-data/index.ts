@@ -19,10 +19,12 @@ const clinicalDataReport = (esHost: string) => async (req: Request, res: Respons
     let reportConfig;
     if (isKfNext) {
         reportConfig = configKfNext;
-    } else if (p === ProjectType.kidsFirst) {
+    } else if (p === ProjectType.include) {
         reportConfig = configInclude;
     } else if (p === ProjectType.kidsFirst) {
         reportConfig = configKf;
+    } else {
+        console.warn("No reportConfig found.")
     }
 
     let es = null;
