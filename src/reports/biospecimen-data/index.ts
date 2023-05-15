@@ -10,7 +10,7 @@ import ExtendedReportConfigs from '../../utils/extendedReportConfigs';
 import { reportGenerationErrorHandler } from '../../errors';
 import { ProjectType } from '../types';
 
-const clinicalDataReport = (esHost: string) => async (req: Request, res: Response) => {
+const biospecimenDataReport = (esHost: string) => async (req: Request, res: Response) => {
     console.time('biospecimen-data');
 
     const { sqon, projectId, filename = null, isKfNext = false } = req.body;
@@ -21,10 +21,12 @@ const clinicalDataReport = (esHost: string) => async (req: Request, res: Respons
     let reportConfig;
     if (isKfNext) {
         reportConfig = configKfNext;
-    } else if (p === ProjectType.kidsFirst) {
+    } else if (p === ProjectType.include) {
         reportConfig = configInclude;
     } else if (p === ProjectType.kidsFirst) {
         reportConfig = configKf;
+    } else {
+        console.warn("No reportConfig found.")
     }
 
     let es = null;
@@ -45,4 +47,4 @@ const clinicalDataReport = (esHost: string) => async (req: Request, res: Respons
     console.timeEnd('biospecimen-data');
 };
 
-export default clinicalDataReport;
+export default biospecimenDataReport;
