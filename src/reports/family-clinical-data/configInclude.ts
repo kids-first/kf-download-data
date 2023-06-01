@@ -7,7 +7,7 @@ const participants: SheetConfig = {
         { field: 'participant_id' },
         { field: 'external_id' },
         { field: 'families_id', header: 'Family ID' },
-        { field: 'family_type' },
+        { field: 'family_type', header: 'Family Unit' },
         { field: 'family.father_id', header: 'Father ID' },
         { field: 'family.mother_id', header: 'Mother ID' },
         { field: 'family.family_relations.relation', header: 'Family Relationship' },
