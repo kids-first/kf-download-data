@@ -52,15 +52,8 @@ const phenotypes: SheetConfig = {
             },
         },
         {
-            field: 'phenotype.hpo_phenotype_observed_text',
-            additionalFields: ['phenotype.hpo_phenotype_not_observed_text'],
-            header: 'Phenotype (Source Text)',
-            transform: (value, row) => {
-                if (!row.phenotype) {
-                    return;
-                }
-                return value || row.phenotype.hpo_phenotype_not_observed_text;
-            },
+            field: 'phenotype.source_text',
+            header: 'Phenotype (Source Text)'
         },
         {
             field: 'phenotype.hpo_phenotype_observed',
