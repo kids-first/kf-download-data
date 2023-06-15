@@ -56,15 +56,8 @@ const phenotypes: SheetConfig = {
             },
         },
         {
-            field: 'phenotype.hpo_phenotype_observed_text',
-            additionalFields: ['phenotype.hpo_phenotype_not_observed_text'],
+            field: 'phenotype.source_text',
             header: 'Phenotype (Source Text)',
-            transform: (value, row) => {
-                if (!row.phenotype) {
-                    return;
-                }
-                return value || row.phenotype.hpo_phenotype_not_observed_text;
-            },
         },
         {
             field: 'phenotype.hpo_phenotype_observed',
@@ -101,7 +94,7 @@ const diagnoses: SheetConfig = {
         },
         { field: 'diagnoses.source_text_tumor_location' },
     ],
-    sort: [{ 'families_id': 'asc' }, { participant_id: 'asc' }],
+    sort: [{ families_id: 'asc' }, { participant_id: 'asc' }],
 };
 
 export const queryConfigs: QueryConfig = {
