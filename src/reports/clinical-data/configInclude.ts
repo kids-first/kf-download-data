@@ -4,8 +4,8 @@ const participants: SheetConfig = {
     sheetName: 'Participants',
     root: null,
     columns: [
-        { field: 'participant_id' },
-        { field: 'external_id' },
+        { field: 'participant_id', header: 'Participant ID' },
+        { field: 'external_id', header: 'External Participant ID' },
         { field: 'family.family_id', header: 'Family ID' },
         { field: 'family_type', header: 'Family Unit' },
         { field: 'study.study_name', header: 'Study Name' },
@@ -14,7 +14,7 @@ const participants: SheetConfig = {
         { field: 'race' },
         { field: 'ethnicity' },
         { field: 'down_syndrome_status' },
-        { field: 'outcomes.vital_status' },
+        { field: 'outcomes.vital_status', header: 'Vital Status' },
         {
             field: 'outcomes.age_at_event_days.value',
             header: 'Age at the Last Vital Status (Days)',
@@ -38,8 +38,8 @@ const phenotypes: SheetConfig = {
     sheetName: 'Phenotypes',
     root: 'phenotype',
     columns: [
-        { field: 'participant_id' },
-        { field: 'external_id' },
+        { field: 'participant_id', header: 'Participant ID' },
+        { field: 'external_id', header: 'External Participant ID' },
         {
             field: 'phenotype.hpo_phenotype_observed',
             additionalFields: ['phenotype.hpo_phenotype_not_observed'],
@@ -53,12 +53,12 @@ const phenotypes: SheetConfig = {
         },
         {
             field: 'phenotype.source_text',
-            header: 'Phenotype (Source Text)'
+            header: 'Condition (Source Text)',
         },
         {
             field: 'phenotype.hpo_phenotype_observed',
             header: 'Interpretation',
-            transform: (value, row) => (value ? 'Observed' : 'Not Observed'),
+            transform: (value, _) => (value ? 'Observed' : 'Not Observed'),
         },
         {
             field: 'phenotype.age_at_event_days',
@@ -72,22 +72,14 @@ const diagnoses: SheetConfig = {
     sheetName: 'Diagnoses',
     root: 'diagnosis',
     columns: [
-        { field: 'participant_id' },
-        { field: 'external_id' },
-        {
-            field: 'fhir_id',
-            header: 'Diagnosis Type',
-            transform: () => 'Clinical',
-        },
+        { field: 'participant_id', header: 'Participant ID' },
+        { field: 'external_id', header: 'External Participant ID' },
         { field: 'diagnosis.mondo_id_diagnosis', header: ' Diagnosis (MONDO)' },
-        { field: 'diagnosis.ncit_id_diagnosis', header: 'Diagnosis (NCIT)' },
-        { field: 'diagnosis.icd_id_diagnosis', header: 'Diagnosis (ICD)' },
-        { field: 'diagnosis.source_text', header: 'Diagnosis (Source Text)' },
+        { field: 'diagnosis.source_text', header: 'Condition (Source Text)' },
         {
             field: 'diagnosis.age_at_event_days',
             header: 'Age at Diagnosis (Days)',
         },
-        { field: 'diagnosis.source_text_tumor_location' },
     ],
     sort: [{ fhir_id: 'asc' }],
 };
@@ -119,7 +111,7 @@ const familyRelationship: SheetConfig = {
     sheetName: 'Family Relationship',
     root: 'family.family_relations',
     columns: [
-        { field: 'participant_id' },
+        { field: 'participant_id', header: 'Participant ID' },
         {
             field: 'family.family_relations',
             header: 'Family Members ID',
@@ -127,7 +119,7 @@ const familyRelationship: SheetConfig = {
         },
         {
             field: 'family.family_relations',
-            header: 'Relationship',
+            header: 'Family Member Relationship',
             transform: (value, row) => (row.family ? row.family.family_relations.relation : ''),
         },
     ],
