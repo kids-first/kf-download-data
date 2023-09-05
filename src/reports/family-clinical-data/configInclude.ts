@@ -8,9 +8,21 @@ const participants: SheetConfig = {
         { field: 'external_id', header: 'External Participant ID' },
         { field: 'families_id', header: 'Family ID' },
         { field: 'family_type', header: 'Family Unit' },
-        { field: 'family.father_id', header: 'Father ID' },
-        { field: 'family.mother_id', header: 'Mother ID' },
-        { field: 'family.family_relations.relation', header: 'Family Member Relationship' },
+        {
+            field: 'family.relations_to_proband',
+            header: 'Family Role',
+            transform: (
+                _: string,
+                row: {
+                    participant_id: string;
+                    family: { relations_to_proband: { participant_id: string; role: string }[] };
+                },
+            ): string => {
+                const ptId = row.participant_id;
+                const relations = row?.family?.relations_to_proband ?? [];
+                return relations.find(x => x.participant_id === ptId)?.role ?? '';
+            },
+        },
         { field: 'study.study_name', header: 'Study Name' },
         { field: 'study.study_id', header: 'Study Code' },
         { field: 'sex' },
@@ -24,6 +36,11 @@ const participants: SheetConfig = {
         },
     ],
     sort: [
+        {
+            families_id: {
+                order: 'asc',
+            },
+        },
         {
             fhir_id: {
                 order: 'asc',
@@ -48,7 +65,10 @@ const phenotypes: SheetConfig = {
             field: 'phenotype.hpo_phenotype_observed',
             additionalFields: ['phenotype.hpo_phenotype_not_observed'],
             header: 'Phenotype (HPO)',
-            transform: (value, row) => {
+            transform: (
+                value: string,
+                row: { phenotype: { hpo_phenotype_not_observed: string } },
+            ): undefined | string => {
                 if (!row.phenotype) {
                     return;
                 }

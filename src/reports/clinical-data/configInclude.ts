@@ -6,7 +6,7 @@ const participants: SheetConfig = {
     columns: [
         { field: 'participant_id', header: 'Participant ID' },
         { field: 'external_id', header: 'External Participant ID' },
-        { field: 'family.family_id', header: 'Family ID' },
+        { field: 'families_id', header: 'Family ID' },
         { field: 'family_type', header: 'Family Unit' },
         { field: 'study.study_name', header: 'Study Name' },
         { field: 'study.study_id', header: 'Study Code' },
@@ -44,7 +44,10 @@ const phenotypes: SheetConfig = {
             field: 'phenotype.hpo_phenotype_observed',
             additionalFields: ['phenotype.hpo_phenotype_not_observed'],
             header: 'Phenotype (HPO)',
-            transform: (value, row) => {
+            transform: (
+                value: string,
+                row: { phenotype: { hpo_phenotype_not_observed: string } },
+            ): undefined | string => {
                 if (!row.phenotype) {
                     return;
                 }
@@ -58,7 +61,7 @@ const phenotypes: SheetConfig = {
         {
             field: 'phenotype.hpo_phenotype_observed',
             header: 'Interpretation',
-            transform: (value, _) => (value ? 'Observed' : 'Not Observed'),
+            transform: (value: string): string => (value ? 'Observed' : 'Not Observed'),
         },
         {
             field: 'phenotype.age_at_event_days',
@@ -84,43 +87,23 @@ const diagnoses: SheetConfig = {
     sort: [{ fhir_id: 'asc' }],
 };
 
-const histologicalDiagnoses: SheetConfig = {
-    sheetName: 'Histological Diagnoses',
-    root: 'files.biospecimens',
-    columns: [
-        { field: 'participant_id', header: 'Participant ID' },
-        { field: 'files.biospecimens.collection_sample_id', header: 'Collection ID' },
-        { field: 'files.biospecimens.collection_sample_type', header: 'Collection Sample Type' },
-        { field: 'files.biospecimens.sample_id', header: 'Sample Id' },
-        { field: 'files.biospecimens.container_id', header: 'Container Id' },
-        { field: 'files.biospecimens.sample_type', header: 'Sample Type' },
-        { field: 'files.biospecimens.parent_sample_id', header: 'Parent Sample Id' },
-        { field: 'files.biospecimens.parent_sample_type', header: 'Parent Sample Type' },
-        { field: 'study.study_code', header: 'Study Code' },
-        { field: 'files.biospecimens.age_at_biospecimen_collection', header: 'Age At Biospecimen Collection (Days)' },
-        { field: 'files.biospecimens.status', header: 'Sample Availability' },
-        { field: 'files.biospecimens.volume_ul', header: 'Volume' },
-        { field: 'files.biospecimens.volume_unit', header: 'Volume Unit' },
-        { field: 'files.biospecimens.laboratory_procedure', header: 'Laboratory Procedure' },
-        { field: 'files.biospecimens.biospecimen_storage', header: 'Biospecimen Storage' },
-    ],
-    sort: [{ fhir_id: 'asc' }],
-};
-
 const familyRelationship: SheetConfig = {
     sheetName: 'Family Relationship',
-    root: 'family.family_relations',
+    root: 'family.relations_to_proband',
     columns: [
-        { field: 'participant_id', header: 'Participant ID' },
         {
-            field: 'family.family_relations',
-            header: 'Family Members ID',
-            transform: (value, row) => (row.family ? row.family.family_relations.related_participant_id : ''),
+            field: 'family.relations_to_proband.participant_id',
+            header: 'Participant ID',
+            additionalFields: ['participant_id'],
+            transform: (value: string, row: { participant_id: string }) => value ?? row.participant_id,
         },
         {
-            field: 'family.family_relations',
-            header: 'Family Member Relationship',
-            transform: (value, row) => (row.family ? row.family.family_relations.relation : ''),
+            field: 'family.family_id',
+            header: 'Family ID',
+        },
+        {
+            field: 'family.relations_to_proband.role',
+            header: 'Family Role',
         },
     ],
     sort: [{ participant_id: 'asc' }],
@@ -131,13 +114,7 @@ export const queryConfigs: QueryConfig = {
     alias: 'participant_centric',
 };
 
-export const sheetConfigs: SheetConfig[] = [
-    participants,
-    phenotypes,
-    diagnoses,
-    // histologicalDiagnoses,
-    familyRelationship,
-];
+export const sheetConfigs: SheetConfig[] = [participants, phenotypes, diagnoses, familyRelationship];
 
 const reportConfig: ReportConfig = { queryConfigs, sheetConfigs };
 
