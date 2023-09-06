@@ -1,6 +1,6 @@
 {
   "name": "kf-api-portal-reports",
-  "version": "1.2.3",
+  "version": "1.3.0",
   "description": "The Download Clinical Data API offers an endpoint to generate a report of clinical data based on a query built using the:",
   "main": "index.js",
   "scripts": {
