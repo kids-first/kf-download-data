@@ -17,7 +17,7 @@ const biospecimens: SheetConfig = {
         { field: 'study.study_id', header: 'Study Code' },
         { field: 'age_at_biospecimen_collection', header: 'Age At Biospecimen Collection (Days)' },
         { field: 'status', header: 'Sample Availability' },
-        { field: 'volume_ul', header: 'Volume' },
+        { field: 'volume', header: 'Volume' },
         { field: 'volume_unit', header: 'Volume Unit' },
         { field: 'laboratory_procedure', header: 'Laboratory Procedure' },
         { field: 'biospecimen_storage', header: 'Biospecimen Storage' },
