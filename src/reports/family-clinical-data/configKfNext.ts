@@ -7,6 +7,21 @@ const participants: SheetConfig = {
         { field: 'participant_id', header: 'Participant ID' },
         { field: 'external_id', header: 'External Participant ID' },
         { field: 'families_id', header: 'Family ID' },
+        {
+            field: 'family.relations_to_proband',
+            header: 'Family Role',
+            transform: (
+                _: string,
+                row: {
+                    participant_id: string;
+                    family: { relations_to_proband: { participant_id: string; role: string }[] };
+                },
+            ): string => {
+                const ptId = row.participant_id;
+                const relations = row?.family?.relations_to_proband ?? [];
+                return relations.find(x => x.participant_id === ptId)?.role ?? '';
+            },
+        },
         //TODO { field: '?', header: 'External Family ID' },
         { field: 'is_proband', header: 'Proband' },
         { field: 'study.study_name', header: 'Study Name' },
@@ -21,6 +36,11 @@ const participants: SheetConfig = {
         { field: 'diagnosis.affected_status_text', header: 'Affected Status' },
     ],
     sort: [
+        {
+            families_id: {
+                order: 'asc',
+            },
+        },
         {
             participant_id: {
                 order: 'asc',
@@ -60,7 +80,7 @@ const phenotypes: SheetConfig = {
         },
         { field: 'phenotype.age_at_event_days', header: 'Age at Phenotype Assignment (Days)' },
     ],
-    sort: [{ participant_id: 'asc' }],
+    sort: [{ families_id: 'asc' }, { participant_id: 'asc' }],
 };
 
 const diagnoses: SheetConfig = {
@@ -72,43 +92,19 @@ const diagnoses: SheetConfig = {
         { field: 'families_id', header: 'Family ID' },
         { field: 'is_proband', header: 'Proband' },
         //TODO { field: '?', header: 'Diagnosis Category' },
-
         { field: 'diagnosis.mondo_display_term', header: 'Diagnosis (MONDO)' },
-
         {
             field: 'diagnosis.ncit_display_term',
             additionalFields: ['diagnosis.ncit_code'],
             header: 'Diagnosis (NCIT)',
-            transform: (displayTerm: string, row: { diagnosis: { ncit_code: string } }) => displayTerm || row?.diagnosis?.ncit_code || '',
+            transform: (displayTerm: string, row: { diagnosis: { ncit_code: string } }) =>
+                displayTerm || row?.diagnosis?.ncit_code || '',
         },
-
         { field: 'diagnosis.source_text', header: 'Diagnosis (Source Text)' },
         { field: 'diagnosis.age_at_event_days', header: 'Age at Diagnosis (Days)' },
         { field: 'diagnosis.source_text_tumor_location', header: 'Tumor Location (Source Text)' },
     ],
-    sort: [{ participant_id: 'asc' }],
-};
-
-const familyRelationship: SheetConfig = {
-    sheetName: 'Family Relationship',
-    root: 'family.relations_to_proband',
-    columns: [
-        {
-            field: 'family.relations_to_proband.participant_id',
-            header: 'Participant ID',
-            additionalFields: ['participant_id'],
-            transform: (value: string, row: { participant_id: string }) => value ?? row.participant_id,
-        },
-        {
-            field: 'family.family_id',
-            header: 'Family ID',
-        },
-        {
-            field: 'family.relations_to_proband.role',
-            header: 'Family Role',
-        },
-    ],
-    sort: [{ participant_id: 'asc' }],
+    sort: [{ families_id: 'asc' }, { participant_id: 'asc' }],
 };
 
 export const queryConfigs: QueryConfig = {
@@ -116,7 +112,7 @@ export const queryConfigs: QueryConfig = {
     alias: 'next_participant_centric',
 };
 
-export const sheetConfigs: SheetConfig[] = [participants, phenotypes, diagnoses, familyRelationship];
+export const sheetConfigs: SheetConfig[] = [participants, phenotypes, diagnoses];
 
 const reportConfig: ReportConfig = { queryConfigs, sheetConfigs };
 

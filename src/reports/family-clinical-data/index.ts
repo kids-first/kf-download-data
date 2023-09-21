@@ -8,16 +8,27 @@ import { normalizeConfigs } from '../../utils/configUtils';
 import generateFamilySqon from './generateFamilySqon';
 import { reportGenerationErrorHandler } from '../../errors';
 import { PROJECT } from '../../env';
-import { ProjectType } from '../types';
+import { ProjectType, ReportConfig } from '../types';
+import configKfNext from './configKfNext';
 
 const clinicalDataReport = (esHost: string) => async (req: Request, res: Response) => {
     console.time('family-clinical-data');
 
-    const { sqon, projectId, filename = null } = req.body;
+    const { sqon, projectId, filename = null, isKfNext = false } = req.body;
     const userId = req['kauth']?.grant?.access_token?.content?.sub;
     const accessToken = req.headers.authorization;
 
-    const reportConfig = PROJECT.toLowerCase().trim() === ProjectType.kidsFirst ? configKf : configInclude;
+    const p = PROJECT.toLowerCase().trim();
+    let reportConfig: ReportConfig;
+    if (isKfNext) {
+        reportConfig = configKfNext;
+    } else if (p === ProjectType.include) {
+        reportConfig = configInclude;
+    } else if (p === ProjectType.kidsFirst) {
+        reportConfig = configKf;
+    } else {
+        console.warn('No reportConfig found.');
+    }
 
     let es = null;
     try {
