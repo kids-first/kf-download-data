@@ -9,7 +9,7 @@ import generateFamilySqon from './generateFamilySqon';
 import { reportGenerationErrorHandler } from '../../errors';
 import { PROJECT } from '../../env';
 import { ProjectType, ReportConfig } from '../types';
-import configKfNext from '../clinical-data/configKfNext';
+import configKfNext from './configKfNext';
 
 const clinicalDataReport = (esHost: string) => async (req: Request, res: Response) => {
     console.time('family-clinical-data');
