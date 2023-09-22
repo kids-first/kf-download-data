@@ -11,7 +11,7 @@ import { PROJECT } from '../../env';
 import { ProjectType, ReportConfig } from '../types';
 import configKfNext from './configKfNext';
 
-const clinicalDataReport = (esHost: string) => async (req: Request, res: Response) => {
+const clinicalDataReport = (esHost: string) => async (req: Request, res: Response): Promise<void> => {
     console.time('family-clinical-data');
 
     const { sqon, projectId, filename = null, isKfNext = false } = req.body;
@@ -47,6 +47,7 @@ const clinicalDataReport = (esHost: string) => async (req: Request, res: Respons
             userId,
             accessToken,
             PROJECT,
+            isKfNext,
         );
 
         // Generate the report

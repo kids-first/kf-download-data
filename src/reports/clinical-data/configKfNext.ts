@@ -18,7 +18,6 @@ const participants: SheetConfig = {
         { field: 'ethnicity', header: 'Ethnicity' },
         { field: 'outcomes.vital_status', header: 'Vital Status' },
         //TODO { field: '?', header: 'Age at Last Vital Status (Days)' },
-        { field: 'diagnosis.affected_status_text', header: 'Affected Status' },
     ],
     sort: [
         {
