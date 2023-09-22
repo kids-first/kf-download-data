@@ -28,6 +28,7 @@ const generateFamilySqon = async (
     userId: string,
     accessToken: string,
     program: string,
+    isKfNext: boolean,
 ): Promise<Sqon> => {
     const extendedConfig = await getExtendedConfigs(es, projectId, normalizedConfigs.indexName);
     const nestedFields = getNestedFields(extendedConfig);
@@ -37,7 +38,7 @@ const generateFamilySqon = async (
     const participantIds =
         (sqon.content || []).filter(e => (e.content?.field || '') === 'participant_id')[0]?.content.value || [];
 
-    const field = program.toLowerCase() === ProjectType.include ? 'families_id' : 'family_id';
+    const field = program.toLowerCase() === ProjectType.include || isKfNext ? 'families_id' : 'family_id';
     const esRequest = {
         query,
         aggs: {
