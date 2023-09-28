@@ -7,6 +7,11 @@ const participants: SheetConfig = {
         { field: 'participant_id', header: 'Participant ID' },
         { field: 'external_id', header: 'External Participant ID' },
         { field: 'families_id', header: 'Family ID' },
+        //TODO { field: '?', header: 'External Family ID' },
+        { field: 'is_proband', header: 'Proband' },
+        { field: 'study.study_name', header: 'Study Name' },
+        { field: 'study.study_code', header: 'Study Code' },
+        { field: 'family_type', header: 'Family Composition' },
         {
             field: 'family.relations_to_proband',
             header: 'Family Role',
@@ -22,11 +27,6 @@ const participants: SheetConfig = {
                 return relations.find(x => x.participant_id === ptId)?.role ?? '';
             },
         },
-        //TODO { field: '?', header: 'External Family ID' },
-        { field: 'is_proband', header: 'Proband' },
-        { field: 'study.study_name', header: 'Study Name' },
-        { field: 'study.study_code', header: 'Study Code' },
-        { field: 'family_type', header: 'Family Composition' },
         //TODO { field: '?', header: 'Diagnosis Category' },
         { field: 'sex', header: 'Sex' },
         { field: 'race', header: 'Race' },
