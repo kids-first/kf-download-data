@@ -21,17 +21,18 @@ const getFilesInfo = async (fileIds: string[], es: Client): Promise<IFileInfo[]>
     const sources = hits.map(hit => hit._source);
     const filesInfos = [];
     sources.forEach(source => {
-        source.participants.forEach(participant => {
-            if (
-                participant.families_id &&
-                !filesInfos.find(f => f.families_id === participant.families_id && f.data_type === source.data_type)
-            ) {
-                filesInfos.push({
-                    data_type: source.data_type,
-                    families_id: participant.families_id || '',
-                });
-            }
-        });
+        source.participants &&
+            source.participants.forEach(participant => {
+                if (
+                    participant.families_id &&
+                    !filesInfos.find(f => f.families_id === participant.families_id && f.data_type === source.data_type)
+                ) {
+                    filesInfos.push({
+                        data_type: source.data_type,
+                        families_id: participant.families_id || '',
+                    });
+                }
+            });
     });
     return filesInfos;
 };
