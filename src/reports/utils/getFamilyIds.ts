@@ -5,14 +5,14 @@ import { executeSearch } from '../../utils/esUtils';
 
 interface IFileInfo {
     data_type: string;
-    family_id: string;
+    families_id: string;
 }
 
-/** Get IFileInfo: files data_types and family_ids */
+/** Get IFileInfo: files data_types and families_id */
 const getFilesInfo = async (fileIds: string[], es: Client): Promise<IFileInfo[]> => {
     const esRequest = {
         query: { bool: { must: [{ terms: { file_id: fileIds, boost: 0 } }] } },
-        _source: ['file_id', 'data_type', 'participants.family_id'],
+        _source: ['file_id', 'data_type', 'participants.families_id'],
         sort: [{ data_type: { order: 'asc' } }],
         size: ES_QUERY_MAX_SIZE,
     };
@@ -23,12 +23,12 @@ const getFilesInfo = async (fileIds: string[], es: Client): Promise<IFileInfo[]>
     sources.forEach(source => {
         source.participants.forEach(participant => {
             if (
-                participant.family_id &&
-                !filesInfos.find(f => f.family_id === participant.family_id && f.data_type === source.data_type)
+                participant.families_id &&
+                !filesInfos.find(f => f.families_id === participant.families_id && f.data_type === source.data_type)
             ) {
                 filesInfos.push({
                     data_type: source.data_type,
-                    family_id: participant.family_id || '',
+                    families_id: participant.families_id || '',
                 });
             }
         });
@@ -36,7 +36,7 @@ const getFilesInfo = async (fileIds: string[], es: Client): Promise<IFileInfo[]>
     return filesInfos;
 };
 
-/** for each filesInfos iteration, get files from file.participants.family_id and file.data_type */
+/** for each filesInfos iteration, get files from file.participants.families_id and file.data_type */
 const getFilesIdsMatched = async (filesInfos: IFileInfo[], es: Client): Promise<string[]> => {
     const filesIdsMatched = [];
     const results = await Promise.all(
@@ -50,7 +50,7 @@ const getFilesIdsMatched = async (filesInfos: IFileInfo[], es: Client): Promise<
                                 nested: {
                                     path: 'participants',
                                     query: {
-                                        bool: { must: [{ match: { 'participants.family_id': info.family_id } }] },
+                                        bool: { must: [{ match: { 'participants.families_id': info.families_id } }] },
                                     },
                                 },
                             },
