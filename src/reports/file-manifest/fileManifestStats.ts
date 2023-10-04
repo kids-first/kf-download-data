@@ -23,10 +23,9 @@ const fileManifestStats = () => async (req: Request, res: Response): Promise<voi
 
     const wantedFields = ['file_id', 'data_type', 'size', 'participants.participant_id'];
 
-    let esClient = null;
-    try {
-        esClient = EsInstance.getInstance();
+    const esClient = EsInstance.getInstance();
 
+    try {
         const files = await getFilesFromSqon(esClient, projectId, sqon, userId, accessToken, wantedFields);
 
         const newFiles = withFamily

@@ -22,11 +22,9 @@ const biospecimenRequestStats = () => async (req: Request, res: Response): Promi
 
     const wantedFields = ['sample_id', 'study.study_code', 'study.study_name', 'participant_fhir_id', 'container_id'];
 
-    let esClient = null;
+    const esClient = EsInstance.getInstance();
 
     try {
-        esClient = EsInstance.getInstance();
-
         const availableBiospecimens = await getAvailableBiospecimensFromSqon(
             esClient,
             projectId,

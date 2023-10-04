@@ -30,11 +30,9 @@ const biospecimenDataReport = () => async (req: Request, res: Response): Promise
         console.warn('No reportConfig found.');
     }
 
-    let esClient = null;
-    try {
-        // prepare the ES client
-        esClient = EsInstance.getInstance();
+    const esClient = EsInstance.getInstance();
 
+    try {
         // decorate the configs with default values, values from arranger's project, etc...
         const normalizedConfigs: ExtendedReportConfigs = await normalizeConfigs(esClient, projectId, reportConfig);
 
