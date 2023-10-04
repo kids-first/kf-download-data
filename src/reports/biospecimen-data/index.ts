@@ -1,5 +1,6 @@
+/* eslint-disable no-console */
 import { Request, Response } from 'express';
-import { Client } from '@elastic/elasticsearch';
+import EsInstance from '../../ElasticSearchClientInstance';
 import generateReport from '../generateReport';
 import configKf from './configKf';
 import configKfNext from './configKfNext';
@@ -10,7 +11,7 @@ import ExtendedReportConfigs from '../../utils/extendedReportConfigs';
 import { reportGenerationErrorHandler } from '../../errors';
 import { ProjectType } from '../types';
 
-const biospecimenDataReport = (esHost: string) => async (req: Request, res: Response) => {
+const biospecimenDataReport = () => async (req: Request, res: Response): Promise<void> => {
     console.time('biospecimen-data');
 
     const { sqon, projectId, filename = null, isKfNext = false } = req.body;
@@ -26,22 +27,21 @@ const biospecimenDataReport = (esHost: string) => async (req: Request, res: Resp
     } else if (p === ProjectType.kidsFirst) {
         reportConfig = configKf;
     } else {
-        console.warn("No reportConfig found.")
+        console.warn('No reportConfig found.');
     }
 
-    let es = null;
+    let esClient = null;
     try {
         // prepare the ES client
-        es = new Client({ node: esHost });
+        esClient = EsInstance.getInstance();
 
         // decorate the configs with default values, values from arranger's project, etc...
-        const normalizedConfigs: ExtendedReportConfigs = await normalizeConfigs(es, projectId, reportConfig);
+        const normalizedConfigs: ExtendedReportConfigs = await normalizeConfigs(esClient, projectId, reportConfig);
 
         // Generate the report
-        await generateReport(es, res, projectId, sqon, filename, normalizedConfigs, userId, accessToken);
-        es.close();
+        await generateReport(esClient, res, projectId, sqon, filename, normalizedConfigs, userId, accessToken);
     } catch (err) {
-        reportGenerationErrorHandler(err, es);
+        reportGenerationErrorHandler(err, esClient);
     }
 
     console.timeEnd('biospecimen-data');

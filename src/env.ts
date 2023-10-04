@@ -21,7 +21,6 @@ export const esFileIndex = process.env.ES_FILE_INDEX || 'file_centric';
 export const esFileAlias = process.env.ES_FILE_ALIAS || 'file';
 
 export const esBiospecimenIndex = process.env.ES_BIOSPECIMEN_INDEX || 'biospecimen_centric';
-export const esBiospecimenAlias = process.env.ES_BIOSPECIMEN_ALIAS || 'biospecimen';
 
 // Keycloak configs
 export const KEYCLOAK_URL = process.env.KEYCLOAK_URL || 'https://kf-keycloak-qa.kf-strides.org/auth';

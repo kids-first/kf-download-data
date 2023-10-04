@@ -1,7 +1,7 @@
 import { buildQuery } from '@arranger/middleware';
 import { Client } from '@elastic/elasticsearch';
 
-import { ES_QUERY_MAX_SIZE, esBiospecimenAlias, esBiospecimenIndex } from '../../env';
+import { ES_QUERY_MAX_SIZE, esBiospecimenIndex } from '../../env';
 import { getExtendedConfigs, getNestedFields } from '../../utils/arrangerUtils';
 import { executeSearch } from '../../utils/esUtils';
 import { Sqon } from '../../utils/setsTypes';
@@ -26,7 +26,7 @@ const getAvailableBiospecimensFromSqon = async (
     fieldsWanted: string[],
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<any[]> => {
-    const extendedConfig = await getExtendedConfigs(es, projectId, esBiospecimenAlias);
+    const extendedConfig = await getExtendedConfigs(es, projectId, 'biospecimen');
     const nestedFields = getNestedFields(extendedConfig);
     const newSqon = await resolveSetsInSqon(sqon, userId, accessToken);
     const newSqonForAvailableOnly = addConditionAvailableInSqon(newSqon);
@@ -48,7 +48,7 @@ const addConditionAvailableInSqon = (sqon: Sqon): Sqon => ({
         {
             content: {
                 field: 'status',
-                index: esBiospecimenAlias,
+                index: 'biospecimen',
                 value: ['available'],
             },
             op: 'in',
