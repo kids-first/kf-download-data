@@ -35,7 +35,7 @@ const biospecimenRequestStats = () => async (req: Request, res: Response): Promi
             'participant_fhir_id',
             'container_id',
         ];
-        // const files = await getFilesFromSqon(es, projectId, sqon, userId, accessToken, wantedFields);
+
         const availableBiospecimens = await getAvailableBiospecimensFromSqon(
             es,
             projectId,
