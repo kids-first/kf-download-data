@@ -1,5 +1,6 @@
-import { Client } from '@elastic/elasticsearch';
+/* eslint-disable no-console */
 import { Request, Response } from 'express';
+import EsInstance from '../../ElasticSearchClientInstance';
 import generateReport from '../generateReport';
 import configKf from './configKf';
 import configInclude from './configInclude';
@@ -11,7 +12,7 @@ import { PROJECT } from '../../env';
 import { ProjectType, ReportConfig } from '../types';
 import configKfNext from './configKfNext';
 
-const clinicalDataReport = (esHost: string) => async (req: Request, res: Response): Promise<void> => {
+const clinicalDataReport = () => async (req: Request, res: Response): Promise<void> => {
     console.time('family-clinical-data');
 
     const { sqon, projectId, filename = null, isKfNext = false } = req.body;
@@ -30,17 +31,17 @@ const clinicalDataReport = (esHost: string) => async (req: Request, res: Respons
         console.warn('No reportConfig found.');
     }
 
-    let es = null;
+    let esClient = null;
     try {
         // prepare the ES client
-        es = new Client({ node: esHost });
+        esClient = EsInstance.getInstance();
 
         // decorate the configs with default values, values from arranger's project, etc...
-        const normalizedConfigs = await normalizeConfigs(es, projectId, reportConfig);
+        const normalizedConfigs = await normalizeConfigs(esClient, projectId, reportConfig);
 
         // generate a new sqon containing the id of all family members for the current sqon
         const familySqon = await generateFamilySqon(
-            es,
+            esClient,
             projectId,
             sqon,
             normalizedConfigs,
@@ -51,10 +52,9 @@ const clinicalDataReport = (esHost: string) => async (req: Request, res: Respons
         );
 
         // Generate the report
-        await generateReport(es, res, projectId, familySqon, filename, normalizedConfigs, userId, accessToken);
-        es.close();
+        await generateReport(esClient, res, projectId, familySqon, filename, normalizedConfigs, userId, accessToken);
     } catch (err) {
-        reportGenerationErrorHandler(err, es);
+        reportGenerationErrorHandler(err, esClient);
     }
 
     console.timeEnd('family-clinical-data');

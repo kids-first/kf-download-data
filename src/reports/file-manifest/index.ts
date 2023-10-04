@@ -1,13 +1,14 @@
-import { Client } from '@elastic/elasticsearch';
+/* eslint-disable no-console */
 import { Request, Response } from 'express';
 
-import { ES_HOST, ES_PWD, ES_USER, esFileIndex } from '../../env';
+import EsInstance from '../../ElasticSearchClientInstance';
 import { reportGenerationErrorHandler } from '../../utils/errors';
 import generateTsvReport from '../utils/generateTsvReport';
 import getFamilyIds from '../utils/getFamilyIds';
 import getFilesFromSqon from '../utils/getFilesFromSqon';
 import getInfosByConfig from '../utils/getInfosByConfig';
 import config from './config';
+import { esFileIndex } from '../../env';
 
 const fileManifestReport = () => async (req: Request, res: Response): Promise<void> => {
     console.time('fileManifestReport');
@@ -16,29 +17,25 @@ const fileManifestReport = () => async (req: Request, res: Response): Promise<vo
     const userId = req['kauth']?.grant?.access_token?.content?.sub;
     const accessToken = req.headers.authorization;
 
-    let es = null;
+    const wantedFields = ['file_id'];
+
+    let esClient = null;
     try {
-        es =
-            ES_PWD && ES_USER
-                ? new Client({ node: ES_HOST, auth: { password: ES_PWD, username: ES_USER } })
-                : new Client({ node: ES_HOST });
+        esClient = EsInstance.getInstance();
 
-        const wantedFields = ['file_id'];
-        const files = await getFilesFromSqon(es, projectId, sqon, userId, accessToken, wantedFields);
+        const files = await getFilesFromSqon(esClient, projectId, sqon, userId, accessToken, wantedFields);
         const fileIds = files?.map(f => f.file_id);
-        const newFileIds = withFamily ? await getFamilyIds(es, fileIds) : fileIds;
+        const newFileIds = withFamily ? await getFamilyIds(esClient, fileIds) : fileIds;
 
-        const filesInfos = await getInfosByConfig(es, config, newFileIds, 'file_id', esFileIndex);
+        const filesInfos = await getInfosByConfig(esClient, config, newFileIds, 'file_id', esFileIndex);
 
         const path = `/tmp/${filename}.tsv`;
         await generateTsvReport(filesInfos, path, config);
 
         res.setHeader('Content-Disposition', `attachment; filename="${filename}.tsv"`);
         res.sendFile(path);
-
-        es.close();
     } catch (err) {
-        reportGenerationErrorHandler(err, es);
+        reportGenerationErrorHandler(err, esClient);
     }
 
     console.timeEnd('fileManifestReport');

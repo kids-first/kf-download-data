@@ -1,7 +1,7 @@
-import { Client } from '@elastic/elasticsearch';
+/* eslint-disable no-console */
 import { Request, Response } from 'express';
 
-import { ES_HOST, ES_PWD, ES_USER } from '../../env';
+import EsInstance from '../../ElasticSearchClientInstance';
 import { reportGenerationErrorHandler } from '../../utils/errors';
 import getFamilyIds from '../utils/getFamilyIds';
 import getFilesFromSqon from '../utils/getFilesFromSqon';
@@ -21,19 +21,17 @@ const fileManifestStats = () => async (req: Request, res: Response): Promise<voi
     const userId = req['kauth']?.grant?.access_token?.content?.sub;
     const accessToken = req.headers.authorization;
 
-    let es = null;
-    try {
-        es =
-            ES_PWD && ES_USER
-                ? new Client({ node: ES_HOST, auth: { password: ES_PWD, username: ES_USER } })
-                : new Client({ node: ES_HOST });
+    const wantedFields = ['file_id', 'data_type', 'size', 'participants.participant_id'];
 
-        const wantedFields = ['file_id', 'data_type', 'size', 'participants.participant_id'];
-        const files = await getFilesFromSqon(es, projectId, sqon, userId, accessToken, wantedFields);
+    let esClient = null;
+    try {
+        esClient = EsInstance.getInstance();
+
+        const files = await getFilesFromSqon(esClient, projectId, sqon, userId, accessToken, wantedFields);
 
         const newFiles = withFamily
             ? await getFamilyIds(
-                  es,
+                  esClient,
                   files?.map(f => f.file_id),
               )
             : files;
@@ -54,9 +52,8 @@ const fileManifestStats = () => async (req: Request, res: Response): Promise<voi
         }
 
         res.send(filesInfosData);
-        es.close();
     } catch (err) {
-        reportGenerationErrorHandler(err, es);
+        reportGenerationErrorHandler(err, esClient);
     }
 
     console.timeEnd('getFileManifestStats');

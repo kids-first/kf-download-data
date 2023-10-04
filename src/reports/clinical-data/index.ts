@@ -1,5 +1,6 @@
+/* eslint-disable no-console */
 import { Request, Response } from 'express';
-import { Client } from '@elastic/elasticsearch';
+import EsInstance from '../../ElasticSearchClientInstance';
 import generateReport from '../generateReport';
 import configKf from './configKf';
 import configInclude from './configInclude';
@@ -9,9 +10,9 @@ import { reportGenerationErrorHandler } from '../../errors';
 import { PROJECT } from '../../env';
 import { ProjectType } from '../types';
 
-const clinicalDataReport = (esHost: string) => async (req: Request, res: Response) => {
+const clinicalDataReport = () => async (req: Request, res: Response): Promise<void> => {
     console.time('clinical-data');
-    const { sqon, projectId, filename = null, isKfNext = false, withFamily = false } = req.body;
+    const { sqon, projectId, filename = null, isKfNext = false } = req.body;
     const userId = req['kauth']?.grant?.access_token?.content?.sub;
     const accessToken = req.headers.authorization;
 
@@ -24,22 +25,21 @@ const clinicalDataReport = (esHost: string) => async (req: Request, res: Respons
     } else if (p === ProjectType.kidsFirst) {
         reportConfig = configKf;
     } else {
-        console.warn("No reportConfig found.")
+        console.warn('No reportConfig found.');
     }
 
-    let es = null;
+    let esClient = null;
     try {
         // prepare the ES client
-        es = new Client({ node: esHost });
+        esClient = EsInstance.getInstance();
 
         // decorate the configs with default values, values from arranger's project, etc...
-        const normalizedConfigs = await normalizeConfigs(es, projectId, reportConfig);
+        const normalizedConfigs = await normalizeConfigs(esClient, projectId, reportConfig);
 
         // Generate the report
-        await generateReport(es, res, projectId, sqon, filename, normalizedConfigs, userId, accessToken);
-        es.close();
+        await generateReport(esClient, res, projectId, sqon, filename, normalizedConfigs, userId, accessToken);
     } catch (err) {
-        reportGenerationErrorHandler(err, es);
+        reportGenerationErrorHandler(err, esClient);
     }
 
     console.timeEnd('clinical-data');

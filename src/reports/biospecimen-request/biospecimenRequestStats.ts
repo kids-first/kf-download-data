@@ -1,8 +1,7 @@
 /* eslint-disable no-console */
-import { Client } from '@elastic/elasticsearch';
 import { Request, Response } from 'express';
 
-import { ES_HOST, ES_PWD, ES_USER } from '../../env';
+import EsInstance from '../../ElasticSearchClientInstance';
 import { reportGenerationErrorHandler } from '../../utils/errors';
 import getAvailableBiospecimensFromSqon from '../utils/getAvailableBiospecimensFromSqon';
 
@@ -21,23 +20,15 @@ const biospecimenRequestStats = () => async (req: Request, res: Response): Promi
     const userId = req['kauth']?.grant?.access_token?.content?.sub;
     const accessToken = req.headers.authorization;
 
-    let es = null;
-    try {
-        es =
-            ES_PWD && ES_USER
-                ? new Client({ node: ES_HOST, auth: { password: ES_PWD, username: ES_USER } })
-                : new Client({ node: ES_HOST });
+    const wantedFields = ['sample_id', 'study.study_code', 'study.study_name', 'participant_fhir_id', 'container_id'];
 
-        const wantedFields = [
-            'sample_id',
-            'study.study_code',
-            'study.study_name',
-            'participant_fhir_id',
-            'container_id',
-        ];
+    let esClient = null;
+
+    try {
+        esClient = EsInstance.getInstance();
 
         const availableBiospecimens = await getAvailableBiospecimensFromSqon(
-            es,
+            esClient,
             projectId,
             sqon,
             userId,
@@ -51,22 +42,20 @@ const biospecimenRequestStats = () => async (req: Request, res: Response): Promi
             const biospecimenForStudy = availableBiospecimens.filter(
                 ({ study }) => study.study_code === biospecimen.study.study_code,
             );
-            if (!biospecimenDatasByStudy.find(f => f.study_code === biospecimen.study.study_code)) {
+            if (!biospecimenDatasByStudy.some(f => f.study_code === biospecimen.study.study_code)) {
                 biospecimenDatasByStudy.push({
                     study_code: biospecimen.study.study_code,
                     study_name: biospecimen.study.study_name,
                     nb_participants: new Set(biospecimenForStudy.map(b => b.participant_fhir_id)).size,
                     nb_available_samples: biospecimenForStudy.length,
-                    nb_containers: new Set(biospecimenForStudy.map(b => b.container_id).filter(c => c !== undefined))
-                        .size,
+                    nb_containers: new Set(biospecimenForStudy.map(b => b.container_id).filter(c => c)).size,
                 });
             }
         }
 
         res.send(biospecimenDatasByStudy);
-        es.close();
     } catch (err) {
-        reportGenerationErrorHandler(err, es);
+        reportGenerationErrorHandler(err, esClient);
     }
 
     console.timeEnd('biospecimenRequestStats');
