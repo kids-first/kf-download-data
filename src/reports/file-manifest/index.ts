@@ -19,10 +19,9 @@ const fileManifestReport = () => async (req: Request, res: Response): Promise<vo
 
     const wantedFields = ['file_id'];
 
-    let esClient = null;
-    try {
-        esClient = EsInstance.getInstance();
+    const esClient = EsInstance.getInstance();
 
+    try {
         const files = await getFilesFromSqon(esClient, projectId, sqon, userId, accessToken, wantedFields);
         const fileIds = files?.map(f => f.file_id);
         const newFileIds = withFamily ? await getFamilyIds(esClient, fileIds) : fileIds;
