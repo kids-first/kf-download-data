@@ -32,7 +32,7 @@ const participants: SheetConfig = {
         { field: 'race', header: 'Race' },
         { field: 'ethnicity', header: 'Ethnicity' },
         { field: 'outcomes.vital_status', header: 'Vital Status' },
-        //TODO { field: '?', header: 'Age at Last Vital Status (Days)' },
+        { field: 'outcomes.age_at_event_days.value', header: 'Age at Last Vital Status (Days)' },
     ],
     sort: [
         {
