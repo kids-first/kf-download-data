@@ -10,7 +10,8 @@
     "clean": "rm -rf ./dist/* ",
     "deploy": "git push && git push --tags",
     "lint": "eslint . --ext .ts",
-    "test": "cross-env NODE_ENV=\"test\" nyc --reporter=html mocha"
+    "test": "cross-env NODE_ENV=\"test\" nyc --reporter=html mocha",
+    "cbs": "npm run clean && npm run build && npm run start"
   },
   "repository": {
     "type": "git",
