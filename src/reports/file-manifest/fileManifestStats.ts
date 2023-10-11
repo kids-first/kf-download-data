@@ -2,7 +2,7 @@
 import { Request, Response } from 'express';
 
 import EsInstance from '../../ElasticSearchClientInstance';
-import { reportGenerationErrorHandler } from '../../utils/errors';
+import { reportGenerationErrorHandler } from '../../errors';
 import getFamilyIds from '../utils/getFamilyIds';
 import getFilesFromSqon from '../utils/getFilesFromSqon';
 
@@ -14,7 +14,7 @@ interface IFileByDataType {
     size: number;
 }
 
-const fileManifestStats = () => async (req: Request, res: Response): Promise<void> => {
+const fileManifestStats = async (req: Request, res: Response): Promise<void> => {
     console.time('getFileManifestStats');
 
     const { sqon, projectId, withFamily = false } = req.body;

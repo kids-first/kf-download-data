@@ -11,7 +11,7 @@ import ExtendedReportConfigs from '../../utils/extendedReportConfigs';
 import { reportGenerationErrorHandler } from '../../errors';
 import { ProjectType } from '../types';
 
-const biospecimenDataReport = () => async (req: Request, res: Response): Promise<void> => {
+const biospecimenDataReport = async (req: Request, res: Response): Promise<void> => {
     console.time('biospecimen-data');
 
     const { sqon, projectId, filename = null, isKfNext = false } = req.body;

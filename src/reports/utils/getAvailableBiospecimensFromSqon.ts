@@ -41,7 +41,7 @@ const getAvailableBiospecimensFromSqon = async (
     return sources;
 };
 
-const addConditionAvailableInSqon = (sqon: Sqon): Sqon => ({
+export const addConditionAvailableInSqon = (sqon: Sqon): Sqon => ({
     ...sqon,
     content: [
         ...sqon.content,

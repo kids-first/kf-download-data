@@ -2,7 +2,7 @@
 import { Request, Response } from 'express';
 
 import EsInstance from '../../ElasticSearchClientInstance';
-import { reportGenerationErrorHandler } from '../../utils/errors';
+import { reportGenerationErrorHandler } from '../../errors';
 import generateTsvReport from '../utils/generateTsvReport';
 import getFamilyIds from '../utils/getFamilyIds';
 import getFilesFromSqon from '../utils/getFilesFromSqon';
@@ -10,7 +10,7 @@ import getInfosByConfig from '../utils/getInfosByConfig';
 import config from './config';
 import { esFileIndex } from '../../env';
 
-const fileManifestReport = () => async (req: Request, res: Response): Promise<void> => {
+const fileManifestReport = async (req: Request, res: Response): Promise<void> => {
     console.time('fileManifestReport');
 
     const { sqon, filename, projectId, withFamily = false } = req.body;

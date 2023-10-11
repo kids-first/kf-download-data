@@ -2,7 +2,6 @@ import cors from 'cors';
 import express, { Application } from 'express';
 import Keycloak, { KeycloakConfig } from 'keycloak-connect';
 
-import { ES_HOST } from './env';
 import { unknownEndpointHandler, globalErrorLogger, globalErrorHandler } from './errors';
 import reportsEndpoint from './reports';
 import statusEndpoint from './status';
