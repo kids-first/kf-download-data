@@ -10,7 +10,7 @@ import { reportGenerationErrorHandler } from '../../errors';
 import { PROJECT } from '../../env';
 import { ProjectType } from '../types';
 
-const clinicalDataReport = () => async (req: Request, res: Response): Promise<void> => {
+const clinicalDataReport = async (req: Request, res: Response): Promise<void> => {
     console.time('clinical-data');
     const { sqon, projectId, filename = null, isKfNext = false } = req.body;
     const userId = req['kauth']?.grant?.access_token?.content?.sub;

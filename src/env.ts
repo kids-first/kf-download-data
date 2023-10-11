@@ -28,3 +28,4 @@ export const KEYCLOAK_REALM = process.env.KEYCLOAK_REALM || 'kidsfirstdrc';
 export const KEYCLOAK_CLIENT = process.env.KEYCLOAK_CLIENT || 'kidsfirst-apis';
 
 export const RIFF_URL = process.env.RIFF_URL || 'https://riff-qa.kf-strides.org';
+export const USERS_API_URL = process.env.USERS_API_URL || 'https://users-api-qa.373997854230.d3b.io';

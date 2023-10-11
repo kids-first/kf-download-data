@@ -12,7 +12,7 @@ import { PROJECT } from '../../env';
 import { ProjectType, ReportConfig } from '../types';
 import configKfNext from './configKfNext';
 
-const clinicalDataReport = () => async (req: Request, res: Response): Promise<void> => {
+const clinicalDataReport = async (req: Request, res: Response): Promise<void> => {
     console.time('family-clinical-data');
 
     const { sqon, projectId, filename = null, isKfNext = false } = req.body;

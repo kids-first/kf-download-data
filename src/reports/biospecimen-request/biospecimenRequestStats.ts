@@ -2,7 +2,7 @@
 import { Request, Response } from 'express';
 
 import EsInstance from '../../ElasticSearchClientInstance';
-import { reportGenerationErrorHandler } from '../../utils/errors';
+import { reportGenerationErrorHandler } from '../../errors';
 import getAvailableBiospecimensFromSqon from '../utils/getAvailableBiospecimensFromSqon';
 
 interface IBiospecimenDataByStudy {
@@ -13,7 +13,7 @@ interface IBiospecimenDataByStudy {
     nb_containers: number;
 }
 
-const biospecimenRequestStats = () => async (req: Request, res: Response): Promise<void> => {
+const biospecimenRequestStats = async (req: Request, res: Response): Promise<void> => {
     console.time('biospecimenRequestStats');
 
     const { sqon, projectId } = req.body;
