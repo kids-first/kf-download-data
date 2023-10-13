@@ -1,13 +1,16 @@
 /* eslint-disable no-console */
 import { NextFunction, Request, Response } from 'express';
-
+import format from 'date-fns/format';
+import * as fs from 'fs';
+import JSZip from 'jszip';
 import EsInstance from '../../ElasticSearchClientInstance';
 import { reportGenerationErrorHandler } from '../../errors';
 import config from './config';
 import { normalizeConfigs } from '../../utils/configUtils';
-import generateReport from '../generateReport';
 import ExtendedReportConfigs from '../../utils/extendedReportConfigs';
 import { createSet } from '../../utils/userClient';
+import { getUTCDate } from '../../utils/dateUtils';
+import generateFiles from './generateBiospecimenRequestFiles';
 
 const biospecimenRequest = async (req: Request, res: Response, _next: NextFunction): Promise<void> => {
     console.time('biospecimenRequest');
@@ -24,10 +27,45 @@ const biospecimenRequest = async (req: Request, res: Response, _next: NextFuncti
         // decorate the configs with default values, values from arranger's project, etc...
         const normalizedConfigs: ExtendedReportConfigs = await normalizeConfigs(esClient, projectId, config);
 
-        const filename = 'include_biospecimenRequest_' + new Date().toISOString();
+        const nowUTC = getUTCDate();
+        const filenameZip = `include_biospecimenRequest_${format(nowUTC, "yyyyMMdd'T'HHmmss'Z'")}.zip`;
+        const pathFileZip = `/tmp/${filenameZip}`;
 
-        // Generate the report
-        await generateReport(esClient, res, projectId, sqon, filename, normalizedConfigs, userId, accessToken);
+        const filenameXlsx = `include_biospecimenRequest_${format(nowUTC, "yyyyMMdd'T'HHmmss'Z'")}.xlsx`;
+        const pathFileXlsx = `/tmp/${filenameXlsx}`;
+
+        const filenameTxt = `include_biospecimenRequest_README_${format(nowUTC, "yyyyMMdd'T'HHmmss'Z'")}.txt`;
+        const pathFileTxt = `/tmp/${filenameTxt}`;
+
+        // Generate the files
+        await generateFiles(
+            esClient,
+            projectId,
+            sqon,
+            pathFileXlsx,
+            pathFileTxt,
+            normalizedConfigs,
+            userId,
+            accessToken,
+        );
+
+        // Create the zip archive
+        const zip = new JSZip();
+
+        // Add the excel file in the archive
+        const filenameXlsxData = fs.readFileSync(pathFileXlsx);
+        zip.file(`${filenameXlsx}`, filenameXlsxData);
+
+        // Add README in the archive
+        const filenameTxtData = fs.readFileSync(pathFileTxt);
+        zip.file(`${filenameTxt}`, filenameTxtData);
+
+        zip.generateNodeStream({ type: 'nodebuffer', streamFiles: true })
+            .pipe(fs.createWriteStream(pathFileZip))
+            .on('finish', function() {
+                res.setHeader('Content-Disposition', `attachment; filename="${filenameZip}"`);
+                res.sendFile(pathFileZip);
+            });
     } catch (err) {
         reportGenerationErrorHandler(err, esClient);
     } finally {

@@ -16,6 +16,7 @@ export const createSet = async (
     sqon: Sqon,
     biospecimenRequestName: string,
 ): Promise<void> => {
+    console.time('biospecimen request create set');
     const wantedFields = ['sample_id'];
     const esClient = EsInstance.getInstance();
     const ids = (
@@ -35,8 +36,6 @@ export const createSet = async (
         },
     };
 
-    console.log(JSON.stringify(payload));
-
     const response = await fetch(encodeURI(SET_URI), {
         method: 'post',
         headers: {
@@ -48,9 +47,9 @@ export const createSet = async (
 
     const body = await response.json();
 
-    if (response.status < 300) {
-        console.log('response body', body);
-    } else {
+    console.timeEnd('biospecimen request create set');
+
+    if (response.status >= 300) {
         throw new UserApiError(response.status, body);
     }
 };

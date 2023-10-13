@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { Client } from '@elastic/elasticsearch';
 import { buildQuery } from '@arranger/middleware';
 import xl from 'excel4node';
@@ -31,7 +32,7 @@ const isTaggedDxPatchNeeded = sheetConfig =>
 const patchSourceIfNeeded = (source, sheetConfig) =>
     isTaggedDxPatchNeeded(sheetConfig) ? [...source, 'diagnoses.is_tagged'] : source;
 
-const patchChunkIfNeeded = (sheetConfig, chunk) => {
+export const patchChunkIfNeeded = (sheetConfig, chunk) => {
     if (!isTaggedDxPatchNeeded(sheetConfig)) {
         return chunk;
     }
@@ -61,7 +62,7 @@ const makeReportQuery = async (
     return { query, _source: patchSourceIfNeeded(source, sheetConfig), sort };
 };
 
-const addHeaderCellByType = ws => (columnConfig, columnIndex) => {
+export const addHeaderCellByType = ws => (columnConfig, columnIndex) => {
     ws.cell(1, columnIndex + 1).string(columnConfig.header || EMPTY_HEADER);
 };
 
@@ -73,13 +74,13 @@ const setCellValueByType = {
     object: (val, cell) => cell.string(String(val)),
 };
 
-const addCellByType = (ws, rowIndex, resultRow) =>
+export const addCellByType = (ws, rowIndex, resultRow) =>
     // use the correct type of cell
     (columnConfig, columnIndex) => {
         // Cells are one based, first parameter being the row, second the column
         //  e.g. ws.cell(1, 3) is C1
         const rawValue = findValueInField(resultRow, columnConfig.field);
-        const value = columnConfig.transform(rawValue, resultRow);
+        const value = columnConfig.transform ? columnConfig.transform(rawValue, resultRow) : rawValue;
         const cell = ws.cell(rowIndex, columnIndex + 1);
         const setter = value === null ? emptyCell : setCellValueByType[typeof value] || emptyCell;
         setter(value, cell);
