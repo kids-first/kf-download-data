@@ -28,13 +28,13 @@ const biospecimenRequest = async (req: Request, res: Response, _next: NextFuncti
         const normalizedConfigs: ExtendedReportConfigs = await normalizeConfigs(esClient, projectId, config);
 
         const nowUTC = getUTCDate();
-        const filenameZip = `include_biospecimenRequest_${format(nowUTC, "yyyyMMdd'T'HHmmss'Z'")}.zip`;
+        const filenameZip = generateFileName('zip', nowUTC, '');
         const pathFileZip = `/tmp/${filenameZip}`;
 
-        const filenameXlsx = `include_biospecimenRequest_${format(nowUTC, "yyyyMMdd'T'HHmmss'Z'")}.xlsx`;
+        const filenameXlsx = generateFileName('xlsx', nowUTC, '');
         const pathFileXlsx = `/tmp/${filenameXlsx}`;
 
-        const filenameTxt = `include_biospecimenRequest_README_${format(nowUTC, "yyyyMMdd'T'HHmmss'Z'")}.txt`;
+        const filenameTxt = generateFileName('txt', nowUTC, 'README_');
         const pathFileTxt = `/tmp/${filenameTxt}`;
 
         // Generate the files
@@ -72,5 +72,8 @@ const biospecimenRequest = async (req: Request, res: Response, _next: NextFuncti
         console.timeEnd('biospecimenRequest');
     }
 };
+
+const generateFileName = (ext: string, nowUTC: Date, suffix: string) =>
+    `include_biospecimenRequest_${suffix}${format(nowUTC, "yyyyMMdd'T'HHmmss'Z'")}.${ext}`;
 
 export default biospecimenRequest;
