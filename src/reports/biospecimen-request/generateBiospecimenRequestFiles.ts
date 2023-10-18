@@ -12,6 +12,7 @@ import { contact, generateStudyTab, wantedFields } from './config';
 import { resolveSetsInSqon } from '../../utils/sqonUtils';
 import { SheetConfig } from '../types';
 import generateTxtFile from '../utils/generateTxtFile';
+import { addConditionAvailableInSqon } from '../utils/getAvailableBiospecimensFromSqon';
 
 /**
  * Generate and write locally.
@@ -102,7 +103,8 @@ const makeReportQuery = async (
 ) => {
     const nestedFields = getNestedFields(extendedConfig);
     const newSqon = await resolveSetsInSqon(sqon, userId, accessToken);
-    const query = buildQuery({ nestedFields, filters: newSqon });
+    const newSqonForAvailableOnly = addConditionAvailableInSqon(newSqon);
+    const query = buildQuery({ nestedFields, filters: newSqonForAvailableOnly });
 
     return {
         query,
