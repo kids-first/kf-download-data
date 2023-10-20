@@ -52,7 +52,7 @@ const fileManifestStats = async (req: Request, res: Response): Promise<void> => 
 
         res.send(filesInfosData);
     } catch (err) {
-        reportGenerationErrorHandler(err, esClient);
+        reportGenerationErrorHandler(err);
     }
 
     console.timeEnd('getFileManifestStats');

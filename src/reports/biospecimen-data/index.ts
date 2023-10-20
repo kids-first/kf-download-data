@@ -39,7 +39,7 @@ const biospecimenDataReport = async (req: Request, res: Response): Promise<void>
         // Generate the report
         await generateReport(esClient, res, projectId, sqon, filename, normalizedConfigs, userId, accessToken);
     } catch (err) {
-        reportGenerationErrorHandler(err, esClient);
+        reportGenerationErrorHandler(err);
     }
 
     console.timeEnd('biospecimen-data');
