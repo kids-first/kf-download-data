@@ -52,7 +52,7 @@ const clinicalDataReport = async (req: Request, res: Response): Promise<void> =>
         // Generate the report
         await generateReport(esClient, res, projectId, familySqon, filename, normalizedConfigs, userId, accessToken);
     } catch (err) {
-        reportGenerationErrorHandler(err, esClient);
+        reportGenerationErrorHandler(err);
     }
 
     console.timeEnd('family-clinical-data');

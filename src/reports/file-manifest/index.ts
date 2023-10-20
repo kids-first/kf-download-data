@@ -34,7 +34,7 @@ const fileManifestReport = async (req: Request, res: Response): Promise<void> =>
         res.setHeader('Content-Disposition', `attachment; filename="${filename}.tsv"`);
         res.sendFile(path);
     } catch (err) {
-        reportGenerationErrorHandler(err, esClient);
+        reportGenerationErrorHandler(err);
     }
 
     console.timeEnd('fileManifestReport');

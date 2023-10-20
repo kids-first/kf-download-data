@@ -67,7 +67,7 @@ const biospecimenRequest = async (req: Request, res: Response, _next: NextFuncti
                 res.sendFile(pathFileZip);
             });
     } catch (err) {
-        reportGenerationErrorHandler(err, esClient);
+        reportGenerationErrorHandler(err);
     } finally {
         console.timeEnd('biospecimenRequest');
     }

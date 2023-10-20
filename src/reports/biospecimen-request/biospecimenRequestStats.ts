@@ -53,7 +53,7 @@ const biospecimenRequestStats = async (req: Request, res: Response): Promise<voi
 
         res.send(biospecimenDatasByStudy);
     } catch (err) {
-        reportGenerationErrorHandler(err, esClient);
+        reportGenerationErrorHandler(err);
     }
 
     console.timeEnd('biospecimenRequestStats');

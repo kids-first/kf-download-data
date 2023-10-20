@@ -16,9 +16,8 @@ export class ApplicationError extends Error {
     }
 }
 
-export const reportGenerationErrorHandler = (err: any, es: Client): void => {
+export const reportGenerationErrorHandler = (err: any): void => {
     console.error(`An error occurs while generating the report`, err);
-    es && es.close();
     throw new ApplicationError(err.message || err.details || 'An unknown error occurred.', INTERNAL_ERROR_STATUS_CODE);
 };
 
