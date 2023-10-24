@@ -17,11 +17,11 @@ export const createSet = async (
     biospecimenRequestName: string,
 ): Promise<void> => {
     console.time('biospecimen request create set');
-    const wantedFields = ['sample_id'];
+    const wantedFields = ['biospecimen_id'];
     const esClient = EsInstance.getInstance();
     const ids = (
         await getAvailableBiospecimensFromSqon(esClient, projectId, sqon, userId, accessToken, wantedFields)
-    ).map(b => b.sample_id);
+    ).map(b => b.biospecimen_id);
 
     const payload = {
         alias: biospecimenRequestName,
@@ -32,7 +32,7 @@ export const createSet = async (
             setType: 'biospecimen-request',
             sqon: addConditionAvailableInSqon(sqon),
             sort: [],
-            idField: 'sample_id',
+            idField: 'biospecimen_id',
         },
     };
 
