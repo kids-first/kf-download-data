@@ -31,7 +31,7 @@ export const generateStudyTab: (study_code: string) => SheetConfig = study_code 
             { field: 'external_collection_sample_id', header: 'External Collection ID' },
             { field: 'collection_sample_id', header: 'INCLUDE Collection ID' },
             { field: 'collection_sample_type', header: 'Collection Sample Type' },
-            { field: 'container_id', header: 'Container ID' },
+            { field: 'container_id', header: 'INCLUDE Container ID' },
             { field: 'external_container_id', header: 'External Container ID' },
             { field: 'participant.external_id', header: 'External Participant ID' },
             { field: 'participant.participant_id', header: 'INCLUDE Participant ID' },

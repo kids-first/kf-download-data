@@ -65,7 +65,7 @@ export default async function generateFiles(
 
                     // Add biorepository request note to README content for the study
                     if ((row as any).study.note) {
-                        readmeContent += `\n${(row as any).study.note}`;
+                        readmeContent += `${(row as any).study.note}\n`;
                     }
                 }
 
