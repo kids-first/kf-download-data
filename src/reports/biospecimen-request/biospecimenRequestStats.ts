@@ -44,9 +44,9 @@ const biospecimenRequestStats = async (req: Request, res: Response): Promise<voi
                 biospecimenDatasByStudy.push({
                     study_code: biospecimen.study.study_code,
                     study_name: biospecimen.study.study_name,
-                    nb_participants: new Set(biospecimenForStudy.map(b => b.participant_fhir_id)).size,
-                    nb_available_samples: new Set(biospecimenForStudy.map(b => b.sample_id)).size,
-                    nb_containers: new Set(biospecimenForStudy.map(b => b.container_id).filter(c => c)).size,
+                    nb_participants: countDistinct(biospecimenForStudy.map(b => b.participant_fhir_id)),
+                    nb_available_samples: countDistinct(biospecimenForStudy.map(b => b.sample_id)),
+                    nb_containers: countDistinct(biospecimenForStudy.map(b => b.container_id).filter(c => c)),
                 });
             }
         }
@@ -58,5 +58,7 @@ const biospecimenRequestStats = async (req: Request, res: Response): Promise<voi
 
     console.timeEnd('biospecimenRequestStats');
 };
+
+const countDistinct = (array: string[]) => new Set(array).size;
 
 export default biospecimenRequestStats;
