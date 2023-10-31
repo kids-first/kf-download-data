@@ -116,6 +116,11 @@ const makeReportQuery = async (
         _source: wantedFields,
         sort: [
             {
+                'study.study_code': {
+                    order: 'asc',
+                },
+            },
+            {
                 biospecimen_id: {
                     order: 'asc',
                 },
