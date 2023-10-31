@@ -43,6 +43,11 @@ export const generateStudyTab: (study_code: string) => SheetConfig = study_code 
         ],
         sort: [
             {
+                'study.study_code': {
+                    order: 'asc',
+                },
+            },
+            {
                 biospecimen_id: {
                     order: 'asc',
                 },
