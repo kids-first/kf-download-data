@@ -1,4 +1,6 @@
 /* eslint-disable no-console */
+import noop from 'lodash/noop';
+
 import { Client } from '@elastic/elasticsearch';
 import { buildQuery } from '@arranger/middleware';
 import xl from 'excel4node';
@@ -43,8 +45,8 @@ export default async function generateFiles(
 
     const searchParams = await makeReportQuery(extendedConfig, sqon, wantedFields, userId, accessToken);
 
+    console.time(`biospecimen request search`);
     try {
-        console.time(`biospecimen request search`);
         await executeSearchAfterQuery(es, normalizedConfigs.alias, searchParams, {
             onPageFetched: rawChunk => {
                 for (const row of rawChunk) {
@@ -77,15 +79,14 @@ export default async function generateFiles(
                     workSheetWrappers.set(study_code, { rowIndex: currentRowIndex + 1 });
                 }
             },
-            onFinish: () => {
-                // Do Nothing
-            },
+            onFinish: noop,
             pageSize: Number(env.ES_PAGESIZE),
         });
-        console.timeEnd(`biospecimen request search`);
     } catch (err) {
         console.error(`Error while fetching the data for biospecimen request`);
         throw err;
+    } finally {
+        console.timeEnd(`biospecimen request search`);
     }
 
     // Writes the file on the server
