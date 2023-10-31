@@ -43,7 +43,7 @@ export const generateStudyTab: (study_code: string) => SheetConfig = study_code 
         ],
         sort: [
             {
-                sample_id: {
+                biospecimen_id: {
                     order: 'asc',
                 },
             },
@@ -56,6 +56,7 @@ const queryConfigs: QueryConfig = {
 };
 
 export const wantedFields = [
+    'biospecimen_id',
     'external_sample_id',
     'sample_id',
     'sample_type',
