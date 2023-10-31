@@ -43,50 +43,55 @@ export default async function generateFiles(
 
     const searchParams = await makeReportQuery(extendedConfig, sqon, wantedFields, userId, accessToken);
 
-    console.time(`biospecimen request search`);
-    await executeSearchAfterQuery(es, normalizedConfigs.alias, searchParams, {
-        onPageFetched: rawChunk => {
-            rawChunk.forEach(row => {
-                const study_code = (row as any).study.study_code;
-                if (!workSheets.has(study_code)) {
-                    // Add study sheet in wb
-                    const newSheetConfig = generateStudyTab(study_code);
-                    const newSheet = wb.addWorksheet(newSheetConfig.sheetName);
-                    newSheetConfig.columns.forEach(addHeaderCellByType(newSheet));
-                    workSheets.set(study_code, newSheet);
-                    workSheetConfigs.set(study_code, newSheetConfig);
-                    workSheetWrappers.set(study_code, { rowIndex: 2 });
+    try {
+        console.time(`biospecimen request search`);
+        await executeSearchAfterQuery(es, normalizedConfigs.alias, searchParams, {
+            onPageFetched: rawChunk => {
+                for (const row of rawChunk) {
+                    const study_code = (row as any).study.study_code;
+                    if (!workSheets.has(study_code)) {
+                        // Add study sheet in wb
+                        const newSheetConfig = generateStudyTab(study_code);
+                        const newSheet = wb.addWorksheet(newSheetConfig.sheetName);
+                        newSheetConfig.columns.forEach(addHeaderCellByType(newSheet));
+                        workSheets.set(study_code, newSheet);
+                        workSheetConfigs.set(study_code, newSheetConfig);
+                        workSheetWrappers.set(study_code, { rowIndex: 2 });
 
-                    // Add a line for the study in Contact sheet
-                    const currentRowIndex = workSheetWrappers.get(contact.sheetName).rowIndex;
-                    const cellAppender = addCellByType(wsContact, currentRowIndex, row);
-                    workSheetConfigs.get(contact.sheetName).columns.forEach(cellAppender);
-                    workSheetWrappers.set(contact.sheetName, { rowIndex: currentRowIndex + 1 });
+                        // Add a line for the study in Contact sheet
+                        const currentRowIndex = workSheetWrappers.get(contact.sheetName).rowIndex;
+                        const cellAppender = addCellByType(wsContact, currentRowIndex, row);
+                        workSheetConfigs.get(contact.sheetName).columns.forEach(cellAppender);
+                        workSheetWrappers.set(contact.sheetName, { rowIndex: currentRowIndex + 1 });
 
-                    // Add biorepository request note to README content for the study
-                    if ((row as any).study.note) {
-                        readmeContent += `${(row as any).study.note}\n`;
+                        // Add biorepository request note to README content for the study
+                        if ((row as any).study.note) {
+                            readmeContent += `${(row as any).study.note}\n`;
+                        }
                     }
-                }
 
-                // Add a line for the biospecimen in its study sheet
-                const currentRowIndex = workSheetWrappers.get(study_code).rowIndex;
-                const cellAppender = addCellByType(workSheets.get(study_code), currentRowIndex, row);
-                workSheetConfigs.get(study_code).columns.forEach(cellAppender);
-                workSheetWrappers.set(study_code, { rowIndex: currentRowIndex + 1 });
-            });
-        },
-        onFinish: () => {
-            // DO NOTHING
-        },
-        pageSize: Number(env.ES_PAGESIZE),
-    });
-    console.timeEnd(`biospecimen request search`);
+                    // Add a line for the biospecimen in its study sheet
+                    const currentRowIndex = workSheetWrappers.get(study_code).rowIndex;
+                    const cellAppender = addCellByType(workSheets.get(study_code), currentRowIndex, row);
+                    workSheetConfigs.get(study_code).columns.forEach(cellAppender);
+                    workSheetWrappers.set(study_code, { rowIndex: currentRowIndex + 1 });
+                }
+            },
+            onFinish: () => {
+                // Do Nothing
+            },
+            pageSize: Number(env.ES_PAGESIZE),
+        });
+        console.timeEnd(`biospecimen request search`);
+    } catch (err) {
+        console.error(`Error while fetching the data for biospecimen request`);
+        throw err;
+    }
 
     // Writes the file on the server
     console.time(`biospecimen request write files`);
     generateTxtFile(readmeContent, pathFileTxt);
-    return new Promise(resolve => {
+    return new Promise<void>(resolve => {
         wb.write(pathFileXlsx, () => {
             console.timeEnd(`biospecimen request write files`);
             resolve();
@@ -111,7 +116,7 @@ const makeReportQuery = async (
         _source: wantedFields,
         sort: [
             {
-                'study.study_code': {
+                biospecimen_id: {
                     order: 'asc',
                 },
             },
