@@ -76,6 +76,7 @@ export const wantedFields = [
     'participant.external_id',
     'participant.participant_id',
     'study.study_code',
+    'study.study_name',
     'study.biobank_contact',
     'study.biobank_request_link',
     'study.note',
