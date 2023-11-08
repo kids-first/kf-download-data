@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 /* eslint-disable no-console */
 import noop from 'lodash/noop';
 
@@ -30,7 +31,7 @@ export default async function generateFiles(
     accessToken: string,
 ): Promise<void> {
     const wb = new xl.Workbook();
-    let readmeContent = '';
+    let readmeContent = `# INCLUDE Biospecimen Request Report - README \n\nThis README provides information on accessing and requesting biospecimens from the INCLUDE biobanks. The report generated will provide contact information for each biobank along with their respective sheet listing all selected samples available for request. To initiate the process, please follow the instructions per study below. \n\n## Instructions for Biospecimen Requests per study\n\n`;
     const extendedConfig = await getExtendedConfigs(es, projectId, normalizedConfigs.indexName);
     const workSheets = new Map<string, any>([]);
     const workSheetConfigs = new Map<string, SheetConfig>([]);
@@ -68,7 +69,8 @@ export default async function generateFiles(
 
                         // Add biorepository request note to README content for the study
                         if ((row as any).study.note) {
-                            readmeContent += `${(row as any).study.note}\n`;
+                            readmeContent += `### ${study_code}\n\n`;
+                            readmeContent += `${(row as any).study.note}\n\n`;
                         }
                     }
 
