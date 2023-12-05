@@ -1,6 +1,4 @@
 /* eslint-disable no-unused-expressions */
-import { expect } from 'chai';
-
 import { findValueInField, generateColumnsForProperty } from './arrangerUtils';
 
 const getMockData = () => ({
@@ -64,42 +62,42 @@ describe('findValueInField', () => {
 
     it('returns the value of a first level scalar property', () => {
         const foundValue = findValueInField(mockData, 'race');
-        expect(foundValue).to.be.eql('White');
+        expect(foundValue).toEqual('White');
     });
 
     it('returns default value if the field does not exist', () => {
         const foundValue = findValueInField(mockData, 'potato', 'does not exist');
-        expect(foundValue).to.be.eql('does not exist');
+        expect(foundValue).toEqual('does not exist');
     });
 
     it('returns null if the field does not exist and no default value is provided', () => {
         const foundValue = findValueInField(mockData, 'potato');
-        expect(foundValue).to.be.null;
+        expect(foundValue).toBeNull;
     });
 
     it('returns the value of a second level scalar property', () => {
         const foundValue = findValueInField(mockData, 'study.short_name');
-        expect(foundValue).to.be.eql('Kids First: Pediatric Brain Tumors - CBTTC');
+        expect(foundValue).toEqual('Kids First: Pediatric Brain Tumors - CBTTC');
     });
 
     it('returns default value if an object property along the path does not exist', () => {
         const foundValue = findValueInField(mockData, 'french.fries', 'ketchup');
-        expect(foundValue).to.be.eql('ketchup');
+        expect(foundValue).toEqual('ketchup');
     });
 
     it('returns an array of value there is an array along the path', () => {
         const foundValue = findValueInField(mockData, 'diagnoses.diagnosis_category');
-        expect(foundValue).to.be.eql(['Cancer', 'Diabetes']);
+        expect(foundValue).toEqual(['Cancer', 'Diabetes']);
     });
 
     it('exclude properties of an array along the path that does not exist', () => {
         const foundValue = findValueInField(mockData, 'family.family_compositions.whatever');
-        expect(foundValue).to.be.eql([]);
+        expect(foundValue).toEqual([]);
     });
 
     it('returns the correct value', () => {
         const foundValue = findValueInField(mockData, 'an_object.an_array.another_array.a_prop');
-        expect(foundValue).to.be.eql(['value 1', 'value 2', 'value 3']);
+        expect(foundValue).toEqual(['value 1', 'value 2', 'value 3']);
     });
 });
 
@@ -118,12 +116,12 @@ describe('reduceAndMerge', () => {
 
     it('returns one row per row for property `propName`', () => {
         const result = generateColumnsForProperty(mockData, 'b');
-        expect(result.length).to.be.eql(2);
+        expect(result.length).toEqual(2);
     });
 
     it('returns rows that have all properties of the parent object, but with only the corresponding item of child property', () => {
         const result = generateColumnsForProperty(mockData, 'b');
-        expect(result).to.be.eql([
+        expect(result).toEqual([
             { a: 1, b: { d: 2 }, c: 5 },
             { a: 1, b: { f: [{ e: 3 }, { g: 6 }], h: 7 }, c: 5 },
         ]);
@@ -131,22 +129,22 @@ describe('reduceAndMerge', () => {
 
     it('returns the source object untouched if the property is not found', () => {
         const result = generateColumnsForProperty(mockData, 'potato');
-        expect(result).to.be.eql([mockData]);
+        expect(result).toEqual([mockData]);
     });
 
     it('returns the source object untouched if the property is not an array', () => {
         const result = generateColumnsForProperty(mockData, 'a');
-        expect(result).to.be.eql([mockData]);
+        expect(result).toEqual([mockData]);
     });
 
     it('on multiple levels, returns one row per row for property `propName`', () => {
         const result = generateColumnsForProperty(mockData, 'b.f');
-        expect(result.length).to.be.eql(3);
+        expect(result.length).toEqual(3);
     });
 
     it('can flatten on 2 levels deep', () => {
         const result = generateColumnsForProperty(mockData, 'b.f');
-        expect(result).to.be.eql([
+        expect(result).toEqual([
             { a: 1, b: { d: 2 }, c: 5 },
             { a: 1, b: { f: { e: 3 }, h: 7 }, c: 5 },
             { a: 1, b: { f: { g: 6 }, h: 7 }, c: 5 },
@@ -162,7 +160,7 @@ describe('reduceAndMerge', () => {
             },
             'b.c.d',
         );
-        expect(result).to.be.eql([
+        expect(result).toEqual([
             { a: 1, b: { c: { d: 2 } }, e: 4 },
             { a: 1, b: { c: { d: 4 } }, e: 4 },
             { a: 1, b: { c: { d: null } }, e: 4 },
@@ -178,7 +176,7 @@ describe('reduceAndMerge', () => {
             },
             'b.c.d.f',
         );
-        expect(result).to.be.eql([
+        expect(result).toEqual([
             { a: 1, b: { c: { d: { f: 1 } } }, e: 4 },
             { a: 1, b: { c: { d: { f: 2 } } }, e: 4 },
             { a: 1, b: { c: { d: { f: null } } }, e: 4 },
@@ -201,7 +199,7 @@ describe('reduceAndMerge', () => {
             },
             'b.c.d',
         );
-        expect(result).to.be.eql([
+        expect(result).toEqual([
             { a: 1, b: { c: { d: { k: 1, r: 1 } } }, e: 4 },
             { a: 1, b: { c: { d: { k: 2, r: 2 } } }, e: 4 },
         ]);
@@ -216,7 +214,7 @@ describe('reduceAndMerge', () => {
             },
             'b.c.d',
         );
-        expect(result).to.be.eql([
+        expect(result).toEqual([
             { a: 1, b: { c: { d: 1 } }, e: 4 },
             { a: 1, b: { c: { d: 2 } }, e: 4 },
         ]);
@@ -248,7 +246,7 @@ describe('reduceAndMerge', () => {
             },
             'a.b.c.d',
         );
-        expect(result).to.be.eql([
+        expect(result).toEqual([
             { a: { bb: 'blah', b: { c: { d: { e: 1 } } } } },
             { a: { bb: 'blah', b: { c: { d: { e: 2 } } } } },
             { a: { bb: 'blah', b: { e: [{ d: { e: 4 } }] } } }, // <- e is not spread here

@@ -5,7 +5,7 @@ import getAvailableBiospecimensFromSqon, {
 } from '../reports/utils/getAvailableBiospecimensFromSqon';
 import { UserApiError } from './userError';
 import EsInstance from '../ElasticSearchClientInstance';
-import { Sqon } from './setsTypes';
+import { Output, Sqon } from './setsTypes';
 
 const SET_URI = `${USERS_API_URL}/user-sets`;
 
@@ -52,4 +52,42 @@ export const createSet = async (
     if (response.status >= 300) {
         throw new UserApiError(response.status, body);
     }
+};
+
+export const getUserSets = async (accessToken: string): Promise<Output[]> => {
+    const response = await fetch(encodeURI(SET_URI), {
+        method: 'get',
+        headers: {
+            Authorization: accessToken,
+            'Content-Type': 'application/json',
+        },
+    });
+
+    const body = await response.json();
+
+    if (response.status === 200) {
+        return body;
+    }
+
+    throw new UserApiError(response.status, body);
+};
+
+export const getSharedSet = async (accessToken: string, setId: string): Promise<Output> => {
+    const uri = `${SET_URI}/shared/${setId}`;
+
+    const response = await fetch(encodeURI(uri), {
+        method: 'get',
+        headers: {
+            Authorization: accessToken,
+            'Content-Type': 'application/json',
+        },
+    });
+
+    const body = await response.json();
+
+    if (response.status === 200) {
+        return body;
+    }
+
+    throw new UserApiError(response.status, body);
 };
