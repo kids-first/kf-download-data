@@ -6,7 +6,7 @@ ecs_service_type_1_standard {
     environments            = "qa,prd"
     docker_image_type       = "alpine"
     create_default_iam_role = "1"
-    entrypoint_command      = "node ./dist/index.js"
+    entrypoint_command      = "node ./dist/src/index.js"
     quick_deploy            = "true"
     container_port          = "80"
     health_check_path       = "/status"
