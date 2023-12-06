@@ -4,7 +4,7 @@
   "description": "The Download Clinical Data API offers an endpoint to generate a report of clinical data based on a query built using the:",
   "main": "index.js",
   "scripts": {
-    "start": "node ./dist/index.js",
+    "start": "node ./dist/src/index.js",
     "watch-ts": "tsc -w",
     "build": "tsc ",
     "clean": "rm -rf ./dist/* ",
