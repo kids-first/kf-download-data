@@ -12,4 +12,4 @@ WORKDIR /app
 COPY --from=build-image ./app/dist ./dist
 COPY package* ./
 RUN npm ci --production
-CMD [ "node", "./dist/index.js" ]
+CMD [ "node", "./dist/src/index.js" ]
