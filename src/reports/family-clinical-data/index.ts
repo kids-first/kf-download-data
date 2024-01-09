@@ -6,7 +6,7 @@ import configKf from './configKf';
 import configInclude from './configInclude';
 import { normalizeConfigs } from '../../utils/configUtils';
 
-import generateFamilySqon from './generateFamilySqon';
+import generatePtSqonWithRelativesIfExist from './generatePtSqonWithRelativesIfExist';
 import { reportGenerationErrorHandler } from '../../errors';
 import { PROJECT } from '../../env';
 import { ProjectType, ReportConfig } from '../types';
@@ -38,19 +38,10 @@ const clinicalDataReport = async (req: Request, res: Response): Promise<void> =>
         const normalizedConfigs = await normalizeConfigs(esClient, projectId, reportConfig);
 
         // generate a new sqon containing the id of all family members for the current sqon
-        const familySqon = await generateFamilySqon(
-            esClient,
-            projectId,
-            sqon,
-            normalizedConfigs,
-            userId,
-            accessToken,
-            PROJECT,
-            isKfNext,
-        );
+        const participantsSqonWithRelatives = await generatePtSqonWithRelativesIfExist(esClient, projectId, sqon, normalizedConfigs, userId, accessToken);
 
         // Generate the report
-        await generateReport(esClient, res, projectId, familySqon, filename, normalizedConfigs, userId, accessToken);
+        await generateReport(esClient, res, projectId, participantsSqonWithRelatives, filename, normalizedConfigs, userId, accessToken);
     } catch (err) {
         reportGenerationErrorHandler(err);
     }
