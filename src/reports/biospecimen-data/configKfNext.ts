@@ -20,7 +20,7 @@ const biospecimens: SheetConfig = {
         { field: 'volume', header: 'Volume' },
         { field: 'volume_unit', header: 'Volume Unit' },
         { field: 'collection_method_of_sample_procurement', header: 'Method of Sample Procurement' },
-        { field: 'diagnoses.diagnosis_mondo', header: 'Histological Diagnosis (MONDO)' },
+        { field: 'diagnoses.mondo_display_term', header: 'Histological Diagnosis (MONDO)' },
         { field: 'diagnoses.diagnosis_ncit', header: 'Histological Diagnosis (NCIT)' },
         { field: 'diagnoses.source_text', header: 'Histological Diagnosis (Source Text)' },
         { field: 'diagnoses.source_text_tumor_location', header: 'Tumor Location (Source Text)' },
