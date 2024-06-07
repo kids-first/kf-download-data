@@ -11,4 +11,7 @@ module.exports = {
     testMatch: ['**/src/**/*.test.(ts|js)'],
     testEnvironment: 'node',
     modulePathIgnorePatterns: ['<rootDir>/dist/'],
+    collectCoverage: true,
+    collectCoverageFrom: ['src/**/*.ts'],
+    coverageDirectory: '<rootDir>/coverage/',
 };
