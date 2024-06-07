@@ -14,7 +14,9 @@ describe('Sqon generator for selected participants and their relatives', () => {
     test('merges participants adequately', () => {
         const x = ['p1', 'p2', 'p3'];
         const y = ['p2', 'p3', 'p4'];
-        expect(mergeParticipantsWithoutDuplicates(x, y).every(p => ['p1', 'p2', 'p3', 'p4'].includes(p))).toBeTruthy();
+        expect(
+            mergeParticipantsWithoutDuplicates(x, y).every((p) => ['p1', 'p2', 'p3', 'p4'].includes(p)),
+        ).toBeTruthy();
     });
     test('extracts correctly all participants from initial ES response', async () => {
         const query = {

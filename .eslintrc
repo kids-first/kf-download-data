@@ -10,9 +10,11 @@
         "sourceType": "module"
     },
     "plugins": [
+        "@typescript-eslint",
         "simple-import-sort"
     ],
     "extends": [
+        "eslint:recommended",
         "plugin:@typescript-eslint/recommended", 
         "plugin:prettier/recommended"
     ],
@@ -29,7 +31,9 @@
                 "ignoreComments": true
             }
         ],
-        "no-console": ["error", { "allow": ["warn", "error"] }],
+        "no-explicit-any": "off",
+        "@typescript-eslint/no-explicit-any": "off",
+        "no-console": ["error", { "allow": ["warn", "error", "time", "timeEnd", "assert"] }],
         "no-unused-vars": "off",
         "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
         "prefer-spread": "error",
@@ -37,4 +41,3 @@
         "simple-import-sort/imports": "error"
     }
 }
-  

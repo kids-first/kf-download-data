@@ -24,7 +24,7 @@ const participants: SheetConfig = {
             ): string => {
                 const ptId = row.participant_id;
                 const relations = row?.family?.relations_to_proband ?? [];
-                return relations.find(x => x.participant_id === ptId)?.role ?? '';
+                return relations.find((x) => x.participant_id === ptId)?.role ?? '';
             },
         },
         //TODO { field: '?', header: 'Diagnosis Category' },

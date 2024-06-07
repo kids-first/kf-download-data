@@ -1,21 +1,21 @@
 /* eslint-disable max-len */
 /* eslint-disable no-console */
-import noop from 'lodash/noop';
-
-import { Client } from '@elastic/elasticsearch';
 import { buildQuery } from '@arranger/middleware';
+import { Client } from '@elastic/elasticsearch';
 import xl from 'excel4node';
+import noop from 'lodash/noop';
 import { env } from 'process';
+
 import { getExtendedConfigs, getNestedFields } from '../../utils/arrangerUtils';
 import { executeSearchAfterQuery } from '../../utils/esUtils';
 import ExtendedReportConfigs from '../../utils/extendedReportConfigs';
 import { Sqon } from '../../utils/setsTypes';
-import { addCellByType, addHeaderCellByType } from '../generateReport';
-import { contact, generateStudyTab, wantedFields } from './config';
 import { resolveSetsInSqon } from '../../utils/sqonUtils';
+import { addCellByType, addHeaderCellByType } from '../generateReport';
 import { SheetConfig } from '../types';
 import generateTxtFile from '../utils/generateTxtFile';
 import { addConditionAvailableInSqon } from '../utils/getAvailableBiospecimensFromSqon';
+import { contact, generateStudyTab, wantedFields } from './config';
 
 /**
  * Generate and write locally.
@@ -49,7 +49,7 @@ export default async function generateFiles(
     console.time(`biospecimen request search`);
     try {
         await executeSearchAfterQuery(es, normalizedConfigs.alias, searchParams, {
-            onPageFetched: rawChunk => {
+            onPageFetched: (rawChunk) => {
                 for (const row of rawChunk) {
                     const study_code = (row as any).study.study_code;
                     if (!workSheets.has(study_code)) {
@@ -94,7 +94,7 @@ export default async function generateFiles(
     // Writes the file on the server
     console.time(`biospecimen request write files`);
     generateTxtFile(readmeContent, pathFileTxt);
-    return new Promise<void>(resolve => {
+    return new Promise<void>((resolve) => {
         wb.write(pathFileXlsx, () => {
             console.timeEnd(`biospecimen request write files`);
             resolve();

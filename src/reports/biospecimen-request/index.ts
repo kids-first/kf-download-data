@@ -1,15 +1,16 @@
 /* eslint-disable no-console */
-import { NextFunction, Request, Response } from 'express';
 import format from 'date-fns/format';
+import { NextFunction, Request, Response } from 'express';
 import * as fs from 'fs';
 import JSZip from 'jszip';
+
 import EsInstance from '../../ElasticSearchClientInstance';
 import { reportGenerationErrorHandler } from '../../errors';
-import config from './config';
 import { normalizeConfigs } from '../../utils/configUtils';
+import { getUTCDate } from '../../utils/dateUtils';
 import ExtendedReportConfigs from '../../utils/extendedReportConfigs';
 import { createSet } from '../../utils/userClient';
-import { getUTCDate } from '../../utils/dateUtils';
+import config from './config';
 import generateFiles from './generateBiospecimenRequestFiles';
 
 const biospecimenRequest = async (req: Request, res: Response, _next: NextFunction): Promise<void> => {
@@ -62,7 +63,7 @@ const biospecimenRequest = async (req: Request, res: Response, _next: NextFuncti
 
         zip.generateNodeStream({ type: 'nodebuffer', streamFiles: true })
             .pipe(fs.createWriteStream(pathFileZip))
-            .on('finish', function() {
+            .on('finish', function () {
                 res.setHeader('Content-Disposition', `attachment; filename="${filenameZip}"`);
                 res.sendFile(pathFileZip);
             });

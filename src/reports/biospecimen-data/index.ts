@@ -1,15 +1,16 @@
 /* eslint-disable no-console */
 import { Request, Response } from 'express';
+
 import EsInstance from '../../ElasticSearchClientInstance';
-import generateReport from '../generateReport';
-import configKf from './configKf';
-import configKfNext from './configKfNext';
-import configInclude from './configInclude';
 import { PROJECT } from '../../env';
+import { reportGenerationErrorHandler } from '../../errors';
 import { normalizeConfigs } from '../../utils/configUtils';
 import ExtendedReportConfigs from '../../utils/extendedReportConfigs';
-import { reportGenerationErrorHandler } from '../../errors';
+import generateReport from '../generateReport';
 import { ProjectType } from '../types';
+import configInclude from './configInclude';
+import configKf from './configKf';
+import configKfNext from './configKfNext';
 
 const biospecimenDataReport = async (req: Request, res: Response): Promise<void> => {
     console.time('biospecimen-data');

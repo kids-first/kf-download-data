@@ -1,14 +1,15 @@
 /* eslint-disable no-console */
 import { Request, Response } from 'express';
+
 import EsInstance from '../../ElasticSearchClientInstance';
-import generateReport from '../generateReport';
-import configKf from './configKf';
-import configInclude from './configInclude';
-import configKfNext from './configKfNext';
-import { normalizeConfigs } from '../../utils/configUtils';
-import { reportGenerationErrorHandler } from '../../errors';
 import { PROJECT } from '../../env';
+import { reportGenerationErrorHandler } from '../../errors';
+import { normalizeConfigs } from '../../utils/configUtils';
+import generateReport from '../generateReport';
 import { ProjectType } from '../types';
+import configInclude from './configInclude';
+import configKf from './configKf';
+import configKfNext from './configKfNext';
 
 const clinicalDataReport = async (req: Request, res: Response): Promise<void> => {
     console.time('clinical-data');

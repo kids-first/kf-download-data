@@ -1,12 +1,11 @@
 import { buildQuery } from '@arranger/middleware';
+import { Client } from '@elastic/elasticsearch';
 
+import { ES_QUERY_MAX_SIZE } from '../../env';
 import { getExtendedConfigs, getNestedFields } from '../../utils/arrangerUtils';
 import { executeSearch } from '../../utils/esUtils';
-import { Client } from '@elastic/elasticsearch';
-import { resolveSetsInSqon } from '../../utils/sqonUtils';
-
 import { Sqon } from '../../utils/setsTypes';
-import { ES_QUERY_MAX_SIZE } from '../../env';
+import { resolveSetsInSqon } from '../../utils/sqonUtils';
 
 type Bucket = { key: string; count: number };
 type AggregationIdsRequest = {

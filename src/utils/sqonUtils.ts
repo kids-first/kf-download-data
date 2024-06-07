@@ -1,9 +1,10 @@
 import { Dictionary, flattenDeep, get, isArray, zipObject } from 'lodash';
-import { Sqon, Output as UserSetOutput, mapRiffOutputToUserOutput } from './setsTypes';
-import { getRiffs } from './riffClient';
-import { getSharedSet, getUserSets } from './userClient';
+
 import { PROJECT } from '../env';
 import { ProjectType } from '../reports/types';
+import { getRiffs } from './riffClient';
+import { mapRiffOutputToUserOutput, Output as UserSetOutput, Sqon } from './setsTypes';
+import { getSharedSet, getUserSets } from './userClient';
 
 export const resolveSetsInSqon = async (sqon: Sqon, userId: string, accessToken: string): Promise<Sqon> => {
     const setIds: string[] = getSetIdsFromSqon(sqon || ({} as Sqon));
@@ -13,12 +14,12 @@ export const resolveSetsInSqon = async (sqon: Sqon, userId: string, accessToken:
         if (p === ProjectType.include) {
             userSets = await retrieveSetsFromUsers(accessToken, setIds);
         } else {
-            userSets = (await getRiffs(accessToken, userId)).map(s => mapRiffOutputToUserOutput(s));
+            userSets = (await getRiffs(accessToken, userId)).map((s) => mapRiffOutputToUserOutput(s));
         }
 
-        const ids = setIds.map(setId => get(userSets.filter(r => r.id === setId)[0], 'content.ids', []));
+        const ids = setIds.map((setId) => get(userSets.filter((r) => r.id === setId)[0], 'content.ids', []));
         const setIdsToValueMap: Dictionary<string[]> = zipObject(
-            setIds.map(id => `set_id:${id}`),
+            setIds.map((id) => `set_id:${id}`),
             ids,
         );
 
@@ -30,13 +31,13 @@ export const resolveSetsInSqon = async (sqon: Sqon, userId: string, accessToken:
 
 const injectIdsIntoSqon = (sqon: Sqon, setIdsToValueMap: Dictionary<string[]>) => ({
     ...sqon,
-    content: sqon.content.map(op => ({
+    content: sqon.content.map((op) => ({
         ...op,
         content: !isArray(op.content)
             ? {
                   ...op.content,
                   value: isArray(op.content.value)
-                      ? flattenDeep(op.content.value.map(value => setIdsToValueMap[value] || op.content.value))
+                      ? flattenDeep(op.content.value.map((value) => setIdsToValueMap[value] || op.content.value))
                       : setIdsToValueMap[op.content.value] || op.content.value,
               }
             : injectIdsIntoSqon(op, setIdsToValueMap).content,
@@ -49,14 +50,14 @@ const getSetIdsFromSqon = (sqon: Sqon, collection = []) =>
               sqon.content.reduce((acc, subSqon) => [...acc, ...getSetIdsFromSqon(subSqon, collection)], collection),
           )
         : isArray(sqon.content?.value)
-        ? sqon.content?.value.filter(value => String(value).indexOf('set_id:') === 0)
-        : [...(String(sqon.content?.value).indexOf?.('set_id:') === 0 ? [sqon.content.value] : [])]
-    ).map(setId => setId.replace('set_id:', ''));
+          ? sqon.content?.value.filter((value) => String(value).indexOf('set_id:') === 0)
+          : [...(String(sqon.content?.value).indexOf?.('set_id:') === 0 ? [sqon.content.value] : [])]
+    ).map((setId) => setId.replace('set_id:', ''));
 
 export const retrieveSetsFromUsers = async (accessToken: string, setIds: string[]): Promise<UserSetOutput[]> => {
     // Get all user sets
     const userSets = await getUserSets(accessToken);
-    const userSetsIds = userSets.map(us => us.id);
+    const userSetsIds = userSets.map((us) => us.id);
 
     for (const setId of setIds) {
         // if set is a shared set, fetch it and add it to user sets

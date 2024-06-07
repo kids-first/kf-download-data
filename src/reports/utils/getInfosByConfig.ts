@@ -12,7 +12,7 @@ const getValueRecursive = (file, fieldSplitedByDot, i = 0) => {
     if (Array.isArray(child)) {
         return getValueRecursive(file, fieldSplitedByDot, i + 1);
     }
-    return file[parent].map(e => e[child])?.join(', ');
+    return file[parent].map((e) => e[child])?.join(', ');
 };
 
 /** generic function to prepare { key: value }[] from a config ES search friendly */
@@ -26,14 +26,14 @@ const getInfosByConfig = async (
 ): Promise<{ key: string }[]> => {
     const esRequest = {
         query: { bool: { must: [{ terms: { [idField]: ids, boost: 0 } }] } },
-        _source: [...config.columns.map(e => e.field), ...(extraFields || [])],
+        _source: [...config.columns.map((e) => e.field), ...(extraFields || [])],
         sort: config.sort,
         size: ES_QUERY_MAX_SIZE,
     };
     const results = await executeSearch(es, esIndex, esRequest);
     const hits = results?.body?.hits?.hits || [];
-    const sources = hits.map(hit => hit._source);
-    return sources.map(source =>
+    const sources = hits.map((hit) => hit._source);
+    return sources.map((source) =>
         config.columns.reduce((data, column) => {
             const field = column.field;
             /** default case example: field = 'file_id' */

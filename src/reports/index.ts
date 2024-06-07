@@ -1,13 +1,13 @@
 import express from 'express';
 
+import { tryCatchNext } from '../errors';
+import biospecimenDataReport from './biospecimen-data';
+import biospecimenRequest from './biospecimen-request';
+import biospecimenRequestStats from './biospecimen-request/biospecimenRequestStats';
 import clinicalDataReport from './clinical-data';
 import familyClinicalDataReport from './family-clinical-data';
-import biospecimenDataReport from './biospecimen-data';
-import fileManifestStats from './file-manifest/fileManifestStats';
 import fileManifestReport from './file-manifest';
-import biospecimenRequestStats from './biospecimen-request/biospecimenRequestStats';
-import biospecimenRequest from './biospecimen-request';
-import { tryCatchNext } from '../errors';
+import fileManifestStats from './file-manifest/fileManifestStats';
 
 export default () => {
     const router = express.Router();

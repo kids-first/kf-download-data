@@ -1,4 +1,4 @@
-import { QueryConfig, ReportConfig, SheetConfig } from "../types";
+import { QueryConfig, ReportConfig, SheetConfig } from '../types';
 
 const biospecimens: SheetConfig = {
     sheetName: 'Biospecimens',
@@ -50,6 +50,6 @@ const queryConfigs: QueryConfig = {
 
 const sheetConfigs: SheetConfig[] = [biospecimens];
 
-const reportConfig: ReportConfig = {queryConfigs, sheetConfigs};
+const reportConfig: ReportConfig = { queryConfigs, sheetConfigs };
 
 export default reportConfig;

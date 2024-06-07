@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 import { Client } from '@elastic/elasticsearch';
+
 import { ES_HOST, ES_PWD, ES_USER } from './env';
 
 class EsInstance {

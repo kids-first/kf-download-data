@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-import { Sqon, Output as UserSetOutput } from './setsTypes';
-import { getRiffs, Riff } from './riffClient';
-import { getSharedSet, getUserSets } from './userClient';
-import { resolveSetsInSqon, retrieveSetsFromUsers } from './sqonUtils';
 import { ProjectType } from '../reports/types';
+import { getRiffs, Riff } from './riffClient';
+import { Output as UserSetOutput, Sqon } from './setsTypes';
+import { resolveSetsInSqon, retrieveSetsFromUsers } from './sqonUtils';
+import { getSharedSet, getUserSets } from './userClient';
 
 jest.mock('./riffClient');
 jest.mock('./userClient');

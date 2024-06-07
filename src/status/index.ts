@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 
-import { version, name, description } from '../../package.json';
+import { description, name, version } from '../../package.json';
 import { ES_HOST, PROJECT } from '../env';
 
 export default (_req: Request, res: Response) =>

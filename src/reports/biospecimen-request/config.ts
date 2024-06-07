@@ -1,3 +1,4 @@
+import { esBiospecimenIndex } from '../../env';
 import { QueryConfig, ReportConfig, SheetConfig } from '../types';
 
 export const contact: SheetConfig = {
@@ -17,7 +18,7 @@ export const contact: SheetConfig = {
     ],
 };
 
-export const generateStudyTab: (study_code: string) => SheetConfig = study_code =>
+export const generateStudyTab: (study_code: string) => SheetConfig = (study_code) =>
     ({
         sheetName: study_code,
         root: null,
@@ -53,11 +54,11 @@ export const generateStudyTab: (study_code: string) => SheetConfig = study_code 
                 },
             },
         ],
-    } as SheetConfig);
+    }) as SheetConfig;
 
 const queryConfigs: QueryConfig = {
     indexName: 'biospecimen',
-    alias: 'biospecimen_centric',
+    alias: esBiospecimenIndex,
 };
 
 export const wantedFields = [

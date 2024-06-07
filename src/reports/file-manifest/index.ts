@@ -2,15 +2,15 @@
 import { Request, Response } from 'express';
 
 import EsInstance from '../../ElasticSearchClientInstance';
+import { esFileIndex, PROJECT } from '../../env';
 import { reportGenerationErrorHandler } from '../../errors';
+import { ProjectType } from '../types';
 import generateTsvReport from '../utils/generateTsvReport';
 import getFamilyIds from '../utils/getFamilyIds';
 import getFilesFromSqon from '../utils/getFilesFromSqon';
 import getInfosByConfig from '../utils/getInfosByConfig';
-import configKf from './configKf';
 import configInclude from './configInclude';
-import { PROJECT, esFileIndex } from '../../env';
-import { ProjectType } from '../types';
+import configKf from './configKf';
 
 const fileManifestReport = async (req: Request, res: Response): Promise<void> => {
     console.time('fileManifestReport');
@@ -33,7 +33,7 @@ const fileManifestReport = async (req: Request, res: Response): Promise<void> =>
 
     try {
         const files = await getFilesFromSqon(esClient, projectId, sqon, userId, accessToken, wantedFields);
-        const fileIds = files?.map(f => f.file_id);
+        const fileIds = files?.map((f) => f.file_id);
         const newFileIds = withFamily ? await getFamilyIds(esClient, fileIds) : fileIds;
 
         const filesInfos = await getInfosByConfig(esClient, reportConfig, newFileIds, 'file_id', esFileIndex);

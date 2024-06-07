@@ -13,3 +13,6 @@ KEYCLOAK_CLIENT=
 
 # Riff 
 RIFF_URL=
+
+# Indexs name
+ES_BIOSPECIMEN_INDEX=

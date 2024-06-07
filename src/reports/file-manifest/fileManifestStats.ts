@@ -31,7 +31,7 @@ const fileManifestStats = async (req: Request, res: Response): Promise<void> => 
         const newFiles = withFamily
             ? await getFamilyIds(
                   esClient,
-                  files?.map(f => f.file_id),
+                  files?.map((f) => f.file_id),
               )
             : files;
 
@@ -39,7 +39,7 @@ const fileManifestStats = async (req: Request, res: Response): Promise<void> => 
         const filesInfosData: IFileByDataType[] = [];
         for (const file of newFiles) {
             const filesFound = files.filter(({ data_type }) => data_type === file.data_type);
-            if (!filesInfosData.find(f => f.value === file.data_type)) {
+            if (!filesInfosData.find((f) => f.value === file.data_type)) {
                 filesInfosData.push({
                     key: file.data_type,
                     value: file.data_type,

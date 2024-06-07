@@ -1,9 +1,9 @@
 /* eslint-disable no-console */
 import buildApp from './app';
-import keycloakConfig from './keycloak';
 import { PORT } from './env';
+import keycloakConfig from './keycloak';
 
-process.on('uncaughtException', err => {
+process.on('uncaughtException', (err) => {
     console.log(`Uncaught Exception: ${err.message}`);
     process.exit(1);
 });

@@ -1,8 +1,6 @@
-import fetch from 'node-fetch';
-
 import { RIFF_URL } from '../env';
-import { Sqon, Sort } from './setsTypes';
 import { RiffError } from './riffError';
+import { Sort, Sqon } from './setsTypes';
 
 export type RiffContent = {
     setType: string;
@@ -37,7 +35,7 @@ export const getRiffs = async (accessToken: string, userId: string): Promise<Rif
     const body = await response.json();
 
     if (response.status === 200) {
-        return body;
+        return body as Riff[];
     }
 
     throw new RiffError(response.status, body);

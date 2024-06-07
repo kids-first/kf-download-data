@@ -1,4 +1,4 @@
-import { QueryConfig, ReportConfig, SheetConfig } from "../types";
+import { QueryConfig, ReportConfig, SheetConfig } from '../types';
 
 // TODO : comment all the fields to document it, also put it in README.md
 const participants: SheetConfig = {
@@ -77,7 +77,7 @@ const phenotypes: SheetConfig = {
         {
             field: 'phenotype.observed',
             header: 'Interpretation',
-            transform: (value, row) => (value ? 'Observed' : 'Not Observed'),
+            transform: (value, _row) => (value ? 'Observed' : 'Not Observed'),
         },
         {
             field: 'phenotype.age_at_event_days',
@@ -171,7 +171,7 @@ const familyRelationship: SheetConfig = {
         {
             field: 'family.family_compositions.family_members.relationship',
             header: 'Relationship',
-            transform: value => value || 'self',
+            transform: (value) => value || 'self',
         },
     ],
     sort: [{ kf_id: 'asc' }],
@@ -182,9 +182,14 @@ export const queryConfigs: QueryConfig = {
     alias: 'participant_centric',
 };
 
-export const sheetConfigs: SheetConfig[] = [participants, phenotypes, diagnoses, histologicalDiagnoses, familyRelationship];
+export const sheetConfigs: SheetConfig[] = [
+    participants,
+    phenotypes,
+    diagnoses,
+    histologicalDiagnoses,
+    familyRelationship,
+];
 
-const reportConfig: ReportConfig = {queryConfigs, sheetConfigs};
+const reportConfig: ReportConfig = { queryConfigs, sheetConfigs };
 
 export default reportConfig;
-

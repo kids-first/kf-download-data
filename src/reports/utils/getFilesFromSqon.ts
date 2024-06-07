@@ -31,7 +31,7 @@ const getFilesFromSqon = async (
     const query = buildQuery({ nestedFields, filters: newSqon });
     const results = await executeSearch(es, esFileIndex, { query, size: ES_QUERY_MAX_SIZE, _source: fieldsWanted });
     const hits = results?.body?.hits?.hits || [];
-    const sources = hits.map(hit => hit._source);
+    const sources = hits.map((hit) => hit._source);
     return sources;
 };
 
