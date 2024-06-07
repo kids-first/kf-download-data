@@ -6,7 +6,7 @@ dotenv.config();
 export const PORT = process.env.PORT || 4000;
 
 // ElasticSearch host
-export const ES_HOST = process.env.ES_HOST || 'kf-arranger-es-prd.kids-first.io:9200';
+export const ES_HOST = process.env.ES_HOST || 'http://localhost:9200';
 export const ES_USER = process.env.ES_USER;
 export const ES_PWD = process.env.ES_PASS;
 
