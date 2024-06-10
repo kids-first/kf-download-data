@@ -1,4 +1,4 @@
-import { QueryConfig, ReportConfig, SheetConfig } from "../types";
+import { QueryConfig, ReportConfig, SheetConfig } from '../types';
 
 const participants: SheetConfig = {
     sheetName: 'Participants',
@@ -70,7 +70,7 @@ const phenotypes: SheetConfig = {
         {
             field: 'phenotype.observed',
             header: 'Interpretation',
-            transform: (value, row) => (value ? 'Observed' : 'Not Observed'),
+            transform: (value, _row) => (value ? 'Observed' : 'Not Observed'),
         },
         { field: 'phenotype.age_at_event_days', header: 'Age at Phenotype Assignment (Days)' },
     ],
@@ -110,7 +110,6 @@ export const queryConfigs: QueryConfig = {
 
 export const sheetConfigs: SheetConfig[] = [participants, phenotypes, diagnoses];
 
-const reportConfig: ReportConfig = {queryConfigs, sheetConfigs};
+const reportConfig: ReportConfig = { queryConfigs, sheetConfigs };
 
 export default reportConfig;
-

@@ -1,7 +1,7 @@
-import { Client } from '@elastic/elasticsearch';
-import noop from 'lodash/noop';
-import defaults from 'lodash/defaults';
 import esToSafeJsInt from '@arranger/middleware/dist/utils/esToSafeJsInt';
+import { Client } from '@elastic/elasticsearch';
+import defaults from 'lodash/defaults';
+import noop from 'lodash/noop';
 
 type SearchOpts = {
     onPageFetched(data: object[], page: number): void;
@@ -31,7 +31,7 @@ export const executeSearchAfterQuery = async (es: Client, index: string, query, 
     });
 
     // wrap values in an object to prevent closure bugs
-    let progress = {
+    const progress = {
         total: 0,
         fetched: 0,
     };
@@ -68,7 +68,7 @@ export const executeSearchAfterQuery = async (es: Client, index: string, query, 
         // Be sure not to go in an infinite loop if that happen.
         if (pageSize > 0) {
             opts.onPageFetched(
-                page.body.hits.hits.map(hit => hit._source),
+                page.body.hits.hits.map((hit) => hit._source),
                 progress.total,
             );
         }
@@ -121,7 +121,7 @@ export const executeSearch = async (es, index, query) => {
  * @param {any} value - any value to be validated.
  * @returns {any} the clean value. Might be of a different type than the input.
  */
-export const toSafeESValue = value => {
+export const toSafeESValue = (value) => {
     // Cap unsafe number
     if (Number.isInteger(Number.parseFloat(value)) && !Number.isSafeInteger(value)) {
         const bigValue = BigInt(value);
@@ -151,21 +151,21 @@ export const getDefaultTransformPerType = (fieldType: string, fieldName: string)
         case 'id':
         case 'keyword':
         case 'text':
-            return x => (x === null ? '' : String(x));
+            return (x) => (x === null ? '' : String(x));
         case 'float':
         case 'integer':
         case 'long':
-            return x => esToSafeJsInt(x);
+            return (x) => esToSafeJsInt(x);
         // case 'date':
         // case 'nested':
         // case 'object':
         default:
             console.warn(`Unsupported type "${fieldType}" encountered in field "${fieldName}"`);
-            return x => x;
+            return (x) => x;
     }
 };
 
-const defaultBoolTransform = value => {
+const defaultBoolTransform = (value) => {
     switch (String(value).toLowerCase()) {
         case 'true':
             return 'Yes';

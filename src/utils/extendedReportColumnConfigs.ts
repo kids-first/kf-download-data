@@ -2,7 +2,6 @@ import { ColumnConfig } from '../reports/types';
 import { getDefaultTransformPerType } from './esUtils';
 
 class ExtendedReportColumnConfigs {
-
     readonly rawColumn: ColumnConfig;
     readonly field: string;
     readonly additionalFields: string[];

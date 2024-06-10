@@ -1,10 +1,9 @@
 import { Client } from '@elastic/elasticsearch';
 
-import { getExtendedConfigs } from './arrangerUtils';
-
-import ExtendedReportSheetConfigs from './extendedReportSheetConfigs';
-import ExtendedReportConfigs from './extendedReportConfigs';
 import { ReportConfig, SheetConfig } from '../reports/types';
+import { getExtendedConfigs } from './arrangerUtils';
+import ExtendedReportConfigs from './extendedReportConfigs';
+import ExtendedReportSheetConfigs from './extendedReportSheetConfigs';
 
 /**
  * Decorates the raw reports configs with default values, values from arranger's project, etc...
@@ -15,7 +14,7 @@ export const normalizeConfigs = async (
     reportConfigs: ReportConfig,
 ): Promise<ExtendedReportConfigs> => {
     const sheets = await Promise.all(
-        reportConfigs.sheetConfigs.map(sc =>
+        reportConfigs.sheetConfigs.map((sc) =>
             normalizeSheetConfig(sc, es, projectId, reportConfigs.queryConfigs.indexName),
         ),
     );

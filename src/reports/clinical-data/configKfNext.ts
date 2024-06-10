@@ -78,7 +78,8 @@ const diagnoses: SheetConfig = {
             field: 'diagnosis.ncit_display_term',
             additionalFields: ['diagnosis.ncit_code'],
             header: 'Diagnosis (NCIT)',
-            transform: (displayTerm: string, row: { diagnosis: { ncit_code: string } }) => displayTerm || row?.diagnosis?.ncit_code || '',
+            transform: (displayTerm: string, row: { diagnosis: { ncit_code: string } }) =>
+                displayTerm || row?.diagnosis?.ncit_code || '',
         },
 
         { field: 'diagnosis.source_text', header: 'Diagnosis (Source Text)' },

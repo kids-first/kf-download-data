@@ -1,11 +1,11 @@
 /* eslint-disable no-console */
+import EsInstance from '../ElasticSearchClientInstance';
 import { USERS_API_URL } from '../env';
 import getAvailableBiospecimensFromSqon, {
     addConditionAvailableInSqon,
 } from '../reports/utils/getAvailableBiospecimensFromSqon';
-import { UserApiError } from './userError';
-import EsInstance from '../ElasticSearchClientInstance';
 import { Output, Sqon } from './setsTypes';
+import { UserApiError } from './userError';
 
 const SET_URI = `${USERS_API_URL}/user-sets`;
 
@@ -21,7 +21,7 @@ export const createSet = async (
     const esClient = EsInstance.getInstance();
     const ids = (
         await getAvailableBiospecimensFromSqon(esClient, projectId, sqon, userId, accessToken, wantedFields)
-    ).map(b => b.biospecimen_id);
+    ).map((b) => b.biospecimen_id);
 
     const payload = {
         alias: biospecimenRequestName,

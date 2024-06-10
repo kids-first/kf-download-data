@@ -1,5 +1,4 @@
-import { Client } from '@elastic/elasticsearch';
-import { Request, Response, NextFunction } from 'express';
+import { NextFunction, Request, Response } from 'express';
 
 const NOT_FOUND_STATUS_CODE = 404;
 const INTERNAL_ERROR_STATUS_CODE = 500;
@@ -49,14 +48,12 @@ export const globalErrorLogger = (
     next(err);
 };
 
-export const tryCatchNext = (endpoint: (req: Request, res: Response, next: NextFunction) => Promise<void>) => async (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-): Promise<void> => {
-    try {
-        return await endpoint(req, res, next);
-    } catch (err) {
-        next(err);
-    }
-};
+export const tryCatchNext =
+    (endpoint: (req: Request, res: Response, next: NextFunction) => Promise<void>) =>
+    async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            return await endpoint(req, res, next);
+        } catch (err) {
+            next(err);
+        }
+    };

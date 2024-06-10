@@ -2,11 +2,11 @@ import cors from 'cors';
 import express, { Application } from 'express';
 import Keycloak, { KeycloakConfig } from 'keycloak-connect';
 
-import { unknownEndpointHandler, globalErrorLogger, globalErrorHandler } from './errors';
+import { globalErrorHandler, globalErrorLogger, unknownEndpointHandler } from './errors';
 import reportsEndpoint from './reports';
 import statusEndpoint from './status';
 
-export default function(keycloakConfig: KeycloakConfig): Application {
+export default function (keycloakConfig: KeycloakConfig): Application {
     const keycloak = new Keycloak({}, keycloakConfig);
     const app = express();
 

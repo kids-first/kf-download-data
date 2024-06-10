@@ -13,8 +13,8 @@ class ExtendedReportSheetConfigs {
 
     initialize(extendedConfigs: any) {
         this.normalizedColumns = this.sheetConfig.columns
-            .map(rawColumn => {
-                const extendedFieldInfo = extendedConfigs.find(ec => rawColumn.field === ec.field);
+            .map((rawColumn) => {
+                const extendedFieldInfo = extendedConfigs.find((ec) => rawColumn.field === ec.field);
                 if (!extendedFieldInfo) {
                     console.warn(
                         `Missing extended field information for field "${rawColumn.field}" in sheet configs "${this.sheetName}", the field will be excluded.`,
@@ -24,7 +24,7 @@ class ExtendedReportSheetConfigs {
 
                 return new ExtendedReportColumnConfigs(rawColumn, extendedFieldInfo);
             })
-            .filter(col => col !== null);
+            .filter((col) => col !== null);
     }
 
     // eslint-disable-next-line class-methods-use-this

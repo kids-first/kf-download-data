@@ -119,4 +119,3 @@ export const sheetConfigs: SheetConfig[] = [participants, phenotypes, diagnoses,
 const reportConfig: ReportConfig = { queryConfigs, sheetConfigs };
 
 export default reportConfig;
-

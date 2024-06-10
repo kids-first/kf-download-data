@@ -18,14 +18,16 @@ const getFilesInfo = async (fileIds: string[], es: Client): Promise<IFileInfo[]>
     };
     const results = await executeSearch(es, esFileIndex, esRequest);
     const hits = results?.body?.hits?.hits || [];
-    const sources = hits.map(hit => hit._source);
+    const sources = hits.map((hit) => hit._source);
     const filesInfos = [];
-    sources.forEach(source => {
+    sources.forEach((source) => {
         source.participants &&
-            source.participants.forEach(participant => {
+            source.participants.forEach((participant) => {
                 if (
                     participant.families_id &&
-                    !filesInfos.find(f => f.families_id === participant.families_id && f.data_type === source.data_type)
+                    !filesInfos.find(
+                        (f) => f.families_id === participant.families_id && f.data_type === source.data_type,
+                    )
                 ) {
                     filesInfos.push({
                         data_type: source.data_type,
@@ -41,7 +43,7 @@ const getFilesInfo = async (fileIds: string[], es: Client): Promise<IFileInfo[]>
 const getFilesIdsMatched = async (filesInfos: IFileInfo[], es: Client): Promise<string[]> => {
     const filesIdsMatched = [];
     const results = await Promise.all(
-        filesInfos.map(info => {
+        filesInfos.map((info) => {
             const esRequest = {
                 query: {
                     bool: {
@@ -67,8 +69,8 @@ const getFilesIdsMatched = async (filesInfos: IFileInfo[], es: Client): Promise<
 
     for (const res of results) {
         const hits = res?.body?.hits?.hits || [];
-        const sources = hits.map(hit => hit._source);
-        filesIdsMatched.push(...sources.map(s => s.file_id));
+        const sources = hits.map((hit) => hit._source);
+        filesIdsMatched.push(...sources.map((s) => s.file_id));
     }
 
     return filesIdsMatched;

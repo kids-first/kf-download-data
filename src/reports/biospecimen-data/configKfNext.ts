@@ -1,3 +1,4 @@
+import { esBiospecimenIndex } from '../../env';
 import { QueryConfig, ReportConfig, SheetConfig } from '../types';
 
 const biospecimens: SheetConfig = {
@@ -44,7 +45,7 @@ const biospecimens: SheetConfig = {
 
 const queryConfigs: QueryConfig = {
     indexName: 'biospecimen',
-    alias: 'next_biospecimen_centric',
+    alias: esBiospecimenIndex,
 };
 
 const sheetConfigs: SheetConfig[] = [biospecimens];

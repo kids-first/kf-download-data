@@ -1,7 +1,7 @@
-import flatten from 'lodash/flatten';
-import isPlainObject from 'lodash/isPlainObject';
-import isEmpty from 'lodash/isEmpty';
 import { Client } from '@elastic/elasticsearch';
+import flatten from 'lodash/flatten';
+import isEmpty from 'lodash/isEmpty';
+import isPlainObject from 'lodash/isPlainObject';
 
 type CacheElem = {
     key: string;
@@ -76,7 +76,7 @@ class AsyncCache {
 
 const internalCache = new AsyncCache();
 
-const generateCacheKey = (projectId: string, indexName: string):string => `${projectId} ${indexName}`;
+const generateCacheKey = (projectId: string, indexName: string): string => `${projectId} ${indexName}`;
 
 const fetchProject = (es: Client, projectId: string, indexName: string) => {
     const key = generateCacheKey(projectId, indexName);
@@ -86,9 +86,9 @@ const fetchProject = (es: Client, projectId: string, indexName: string) => {
             index: `arranger-projects-${projectId}`,
             q: `name:${indexName}`,
         }) // eslint-disable-next-line no-underscore-dangle
-        .then(({ body }) => body.hits.hits.map(hit => hit._source))
-        .then(sources => sources.map(source => source.config.extended))
-        .then(extendedConfigs => {
+        .then(({ body }) => body.hits.hits.map((hit) => hit._source))
+        .then((sources) => sources.map((source) => source.config.extended))
+        .then((extendedConfigs) => {
             if (extendedConfigs.length === 0) {
                 throw new Error(`Could not find project for "projectId: ${projectId}, indexName: ${indexName}"`);
             }
@@ -99,7 +99,7 @@ const fetchProject = (es: Client, projectId: string, indexName: string) => {
             }
             return extendedConfigs[0];
         })
-        .catch(err => {
+        .catch((err) => {
             internalCache.remove(key);
             console.error(`Error while fetching project for "projectId: ${projectId}, indexName: ${indexName}"`, err);
             throw err;
@@ -119,7 +119,7 @@ export const getExtendedConfigs = async (es: Client, projectId: string, indexNam
  * @param {Object} extendedConfigs - the extended configurations from the mappings.
  * @returns {string[]} - an array of fields path.
  */
-export const getNestedFields = extendedConfigs =>
+export const getNestedFields = (extendedConfigs) =>
     extendedConfigs.filter(({ type }) => type === 'nested').map(({ field }) => field);
 
 /**
@@ -135,8 +135,8 @@ export const findValueInField = (source, path, defaultValue = null) => {
     const result = pathSegments.reduce((value, segment) => {
         if (Array.isArray(value)) {
             return flatten(value)
-                .map(v => v[segment])
-                .filter(v => v !== undefined);
+                .map((v) => v[segment])
+                .filter((v) => v !== undefined);
         }
         return value && value[segment];
     }, source);
@@ -169,9 +169,9 @@ const deepObjectMapFromNode = (source, currentLevel, segments) => {
 
     const currentValues = currentLevel[currentPathName];
 
-    const flattenUntilIrreducibility = currentNode => {
+    const flattenUntilIrreducibility = (currentNode) => {
         const irreducible = deepObjectMapFromNode(source, currentNode, nextPath);
-        return irreducible.map(deepestTarget => ({
+        return irreducible.map((deepestTarget) => ({
             ...currentLevel,
             [currentPathName]: deepestTarget,
         }));

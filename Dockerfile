@@ -2,14 +2,13 @@
 FROM node:20-alpine3.18 AS build-image
 WORKDIR /app
 COPY . .
-RUN npm ci
-RUN npm run clean
-RUN npm run build
+RUN npm ci && npm run clean && npm run build && npm run test:silent
 
 # Second image, that creates an image for production
 FROM node:20-alpine3.18 AS prod-image
 WORKDIR /app
 COPY --from=build-image ./app/dist ./dist
 COPY package* ./
-RUN npm ci --production
+RUN apk update && apk upgrade --no-cache libcrypto3 libssl3 && npm ci --production
+ENV NODE_ENV=production
 CMD [ "node", "./dist/src/index.js" ]
