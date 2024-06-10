@@ -1,7 +1,7 @@
 import { esBiospecimenIndex } from '../../env';
-import { QueryConfig, ReportConfig, SheetConfig } from '../types';
+import { BioRequestConfig, QueryConfig, ReportConfig, SheetConfig } from '../types';
 
-export const contact: SheetConfig = {
+const contact: SheetConfig = {
     sheetName: 'Contact Info',
     root: null,
     columns: [
@@ -18,7 +18,7 @@ export const contact: SheetConfig = {
     ],
 };
 
-export const generateStudyTab: (study_code: string) => SheetConfig = (study_code) =>
+const generateStudyTab: (study_code: string) => SheetConfig = (study_code) =>
     ({
         sheetName: study_code,
         root: null,
@@ -61,7 +61,7 @@ const queryConfigs: QueryConfig = {
     alias: esBiospecimenIndex,
 };
 
-export const wantedFields = [
+const wantedFields = [
     'biospecimen_id',
     'external_sample_id',
     'sample_id',
@@ -91,4 +91,18 @@ const sheetConfigs: SheetConfig[] = [contact];
 
 const reportConfig: ReportConfig = { queryConfigs, sheetConfigs };
 
-export default reportConfig;
+const fileNamePrefix = 'include';
+
+// eslint-disable-next-line max-len
+const readmeContent = `# INCLUDE Biospecimen Request Report - README \n\nThis README provides information on accessing and requesting biospecimens from the INCLUDE biobanks. The report generated will provide contact information for each biobank along with their respective sheet listing all selected samples available for request. To initiate the process, please follow the instructions per study below. \n\n## Instructions for Biospecimen Requests per study\n\n`;
+
+const bioRequestConfig: BioRequestConfig = {
+    reportConfig,
+    fileNamePrefix,
+    readmeContent,
+    wantedFields,
+    contact,
+    generateStudyTab,
+};
+
+export default bioRequestConfig;
