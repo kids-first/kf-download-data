@@ -94,7 +94,7 @@ const reportConfig: ReportConfig = { queryConfigs, sheetConfigs };
 const fileNamePrefix = 'include';
 
 // eslint-disable-next-line max-len
-const readmeContent = `# INCLUDE Biospecimen Request Report - README \n\nThis README provides information on accessing and requesting biospecimens from the INCLUDE biobanks. The report generated will provide contact information for each biobank along with their respective sheet listing all selected samples available for request. To initiate the process, please follow the instructions per study below. \n\n## Instructions for Biospecimen Requests per study\n\n`;
+const readmeContent = `# INCLUDE Biospecimen Request Report - README \n\nThis README provides information on accessing and requesting biospecimens from the INCLUDE biobanks. The report generated will provide contact information for each biobank along with their respective sheet listing all selected samples available for request. To initiate the process, please follow the instructions per study below. \n\n## Instructions for Biospecimen Requests per study`;
 
 const bioRequestConfig: BioRequestConfig = {
     reportConfig,

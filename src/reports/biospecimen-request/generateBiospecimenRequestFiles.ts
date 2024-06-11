@@ -35,7 +35,7 @@ export default async function generateFiles(
     const workSheetWrappers = new Map<string, any>([]);
 
     const { contact, generateStudyTab, wantedFields } = bioRequestConfig;
-    let readmeContent = `${bioRequestConfig.readmeContent}`;
+    const readmeContents: string[] = [bioRequestConfig.readmeContent];
 
     // Add Contact sheet in wb
     const wsContact = wb.addWorksheet(contact.sheetName);
@@ -69,8 +69,8 @@ export default async function generateFiles(
 
                         // Add biorepository request note to README content for the study
                         if ((row as any).study.note) {
-                            readmeContent += `### ${study_code} - ${(row as any).study.study_name}\n\n`;
-                            readmeContent += `${(row as any).study.note}\n\n`;
+                            readmeContents.push(`### ${study_code} - ${(row as any).study.study_name}`);
+                            readmeContents.push(`${(row as any).study.note}`);
                         }
                     }
 
@@ -93,7 +93,7 @@ export default async function generateFiles(
 
     // Writes the file on the server
     console.time(`biospecimen request write files`);
-    generateTxtFile(readmeContent, pathFileTxt);
+    generateTxtFile(readmeContents.join(`\n\n`), pathFileTxt);
     return new Promise<void>((resolve) => {
         wb.write(pathFileXlsx, () => {
             console.timeEnd(`biospecimen request write files`);
