@@ -28,3 +28,12 @@ export enum ProjectType {
     kidsFirst = 'kids-first',
     include = 'include',
 }
+
+export type BioRequestConfig = {
+    reportConfig: ReportConfig;
+    fileNamePrefix: string;
+    readmeContent: string;
+    wantedFields: string[];
+    contact: SheetConfig;
+    generateStudyTab: (study_code: string) => SheetConfig;
+};

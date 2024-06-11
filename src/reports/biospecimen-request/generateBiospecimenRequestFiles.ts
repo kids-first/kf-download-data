@@ -1,5 +1,3 @@
-/* eslint-disable max-len */
-/* eslint-disable no-console */
 import { buildQuery } from '@arranger/middleware';
 import { Client } from '@elastic/elasticsearch';
 import xl from 'excel4node';
@@ -12,10 +10,9 @@ import ExtendedReportConfigs from '../../utils/extendedReportConfigs';
 import { Sqon } from '../../utils/setsTypes';
 import { resolveSetsInSqon } from '../../utils/sqonUtils';
 import { addCellByType, addHeaderCellByType } from '../generateReport';
-import { SheetConfig } from '../types';
+import { BioRequestConfig, SheetConfig } from '../types';
 import generateTxtFile from '../utils/generateTxtFile';
 import { addConditionAvailableInSqon } from '../utils/getAvailableBiospecimensFromSqon';
-import { contact, generateStudyTab, wantedFields } from './config';
 
 /**
  * Generate and write locally.
@@ -29,13 +26,16 @@ export default async function generateFiles(
     normalizedConfigs: ExtendedReportConfigs,
     userId: string,
     accessToken: string,
+    bioRequestConfig: BioRequestConfig,
 ): Promise<void> {
     const wb = new xl.Workbook();
-    let readmeContent = `# INCLUDE Biospecimen Request Report - README \n\nThis README provides information on accessing and requesting biospecimens from the INCLUDE biobanks. The report generated will provide contact information for each biobank along with their respective sheet listing all selected samples available for request. To initiate the process, please follow the instructions per study below. \n\n## Instructions for Biospecimen Requests per study\n\n`;
     const extendedConfig = await getExtendedConfigs(es, projectId, normalizedConfigs.indexName);
     const workSheets = new Map<string, any>([]);
     const workSheetConfigs = new Map<string, SheetConfig>([]);
     const workSheetWrappers = new Map<string, any>([]);
+
+    const { contact, generateStudyTab, wantedFields } = bioRequestConfig;
+    const readmeContents: string[] = [bioRequestConfig.readmeContent];
 
     // Add Contact sheet in wb
     const wsContact = wb.addWorksheet(contact.sheetName);
@@ -69,8 +69,8 @@ export default async function generateFiles(
 
                         // Add biorepository request note to README content for the study
                         if ((row as any).study.note) {
-                            readmeContent += `### ${study_code} - ${(row as any).study.study_name}\n\n`;
-                            readmeContent += `${(row as any).study.note}\n\n`;
+                            readmeContents.push(`### ${study_code} - ${(row as any).study.study_name}`);
+                            readmeContents.push(`${(row as any).study.note}`);
                         }
                     }
 
@@ -93,7 +93,7 @@ export default async function generateFiles(
 
     // Writes the file on the server
     console.time(`biospecimen request write files`);
-    generateTxtFile(readmeContent, pathFileTxt);
+    generateTxtFile(readmeContents.join(`\n\n`), pathFileTxt);
     return new Promise<void>((resolve) => {
         wb.write(pathFileXlsx, () => {
             console.timeEnd(`biospecimen request write files`);

@@ -1,6 +1,9 @@
 # Port of this service (leave blank to use default 4000)
 PORT=4000
 
+# Project (include or kids-first)
+PROJECT=
+
 # ElasticSearch host
 # Must go through Bastion, so we'll use a local redirection through a ssh tunnel
 ES_HOST=http://kf-arranger-es-qa.kids-first.io:9200
@@ -13,6 +16,9 @@ KEYCLOAK_CLIENT=
 
 # Riff 
 RIFF_URL=
+
+# Users-API
+USERS_API_URL=
 
 # Indexs name
 ES_BIOSPECIMEN_INDEX=
