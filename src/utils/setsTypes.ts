@@ -1,5 +1,3 @@
-import { Riff } from './riffClient';
-
 export type Sqon = {
     op: string;
     content: any; // Since SQON is generic, it is too complex to define an explicit type for its content.
@@ -28,13 +26,3 @@ export type Output = {
     creation_date: Date;
     updated_date: Date;
 };
-
-export const mapRiffOutputToUserOutput = (output: Riff): Output => ({
-    id: output.id,
-    keycloak_id: output.uid,
-    content: output.content,
-    alias: output.alias,
-    sharedpublicly: output.sharedPublicly,
-    creation_date: output.creationDate,
-    updated_date: output.updatedDate,
-});

@@ -1,42 +1,42 @@
+import { esBiospecimenIndex } from '../../env';
 import { QueryConfig, ReportConfig, SheetConfig } from '../types';
 
 const biospecimens: SheetConfig = {
     sheetName: 'Biospecimens',
-    root: 'biospecimens',
+    root: null,
     columns: [
-        { field: 'kf_id' },
-        { field: 'external_id' },
-        { field: 'biospecimens.kf_id' },
-        { field: 'biospecimens.external_sample_id' },
-        { field: 'biospecimens.external_aliquot_id' },
-        { field: 'biospecimens.age_at_event_days' },
-        { field: 'biospecimens.composition' },
-        { field: 'biospecimens.analyte_type' },
-        { field: 'biospecimens.concentration_mg_per_ml' },
-        { field: 'biospecimens.volume_ul' },
-        { field: 'biospecimens.shipment_date' },
-        { field: 'biospecimens.shipment_origin' },
-        { field: 'biospecimens.sequencing_center_id' },
-        { field: 'biospecimens.consent_type' },
-        { field: 'biospecimens.dbgap_consent_code' },
-        { field: 'biospecimens.method_of_sample_procurement' },
-        { field: 'biospecimens.source_text_tumor_descriptor' },
-        { field: 'biospecimens.ncit_id_anatomical_site' },
-        { field: 'biospecimens.ncit_id_tissue_type' },
-        { field: 'biospecimens.source_text_anatomical_site' },
-        { field: 'biospecimens.source_text_tissue_type' },
-        { field: 'biospecimens.uberon_id_anatomical_site' },
-        { field: 'biospecimens.spatial_descriptor' },
+        { field: 'participant.participant_id', header: 'Participant ID' },
+        { field: 'participant.external_id', header: 'External Participant ID' },
+        { field: 'collection_sample_id', header: 'Collection ID' },
+        { field: 'external_collection_sample_id', header: 'External Collection ID' },
+        { field: 'collection_sample_type', header: 'Collection Sample Type' },
+        { field: 'sample_id', header: 'Sample ID' },
+        { field: 'external_sample_id', header: 'External Sample ID' },
+        { field: 'sample_type', header: 'Sample Type' },
+        { field: 'parent_sample_id', header: 'Parent Sample ID' },
+        { field: 'parent_sample_type', header: 'Parent Sample Type' },
+        { field: 'study.study_code', header: 'Study Code' },
+        { field: 'age_at_biospecimen_collection', header: 'Age at Biospecimen Collection (Days)' },
+        { field: 'status', header: 'Sample Availability' },
+        { field: 'volume', header: 'Volume' },
+        { field: 'volume_unit', header: 'Volume Unit' },
+        { field: 'collection_method_of_sample_procurement', header: 'Method of Sample Procurement' },
+        { field: 'diagnoses.mondo_display_term', header: 'Histological Diagnosis (MONDO)' },
+        { field: 'diagnoses.diagnosis_ncit', header: 'Histological Diagnosis (NCIT)' },
+        { field: 'diagnoses.source_text', header: 'Histological Diagnosis (Source Text)' },
+        { field: 'diagnoses.source_text_tumor_location', header: 'Tumor Location (Source Text)' },
+        //FIXME { field: '', header: 'Tumor Descriptor (Source Text)' },
+        { field: 'collection_ncit_anatomy_site_id', header: 'Anatomical Site (NCIT)' },
+        { field: 'collection_anatomy_site', header: 'Anatomical Site (Source Text)' },
+        // TODO: Add this back when it's ready { field: 'ncit_id_tissue_type', header: 'Tissue Type (NCIT)' },
+        // TODO: Add this back when it's ready { field: 'tissue_type_source_text', header: 'Tissue Type (Source Text)' },
+        { field: 'consent_type', header: 'Consent Type' },
+        { field: 'dbgap_consent_code', header: 'dbGaP Consent Code' },
+        { field: 'files.sequencing_experiment.sequencing_center_id', header: 'Sequencing Center ID' },
     ],
     sort: [
-        // TODO : SORT BY biospecimens.kf_id
         {
-            'biospecimens.kf_id': {
-                order: 'asc',
-            },
-        },
-        {
-            kf_id: {
+            'participant.participant_id': {
                 order: 'asc',
             },
         },
@@ -44,8 +44,8 @@ const biospecimens: SheetConfig = {
 };
 
 const queryConfigs: QueryConfig = {
-    indexName: 'participant',
-    alias: 'participant_centric',
+    indexName: 'biospecimen',
+    alias: esBiospecimenIndex,
 };
 
 const sheetConfigs: SheetConfig[] = [biospecimens];

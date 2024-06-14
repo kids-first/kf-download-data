@@ -1,44 +1,28 @@
 import { QueryConfig, ReportConfig, SheetConfig } from '../types';
 
-// TODO : comment all the fields to document it, also put it in README.md
 const participants: SheetConfig = {
     sheetName: 'Participants',
     root: null,
     columns: [
-        { field: 'kf_id' },
-        { field: 'external_id' },
-        { field: 'family_id' },
-        { field: 'is_proband' },
-        { field: 'study.short_name' },
-        { field: 'family.family_compositions.composition' },
-        { field: 'diagnosis_category' },
-        { field: 'gender' },
-        { field: 'race' },
-        { field: 'ethnicity' },
-        { field: 'outcome.vital_status' },
-        {
-            field: 'outcome.age_at_event_days',
-            header: 'Age at the Last Vital Status (Days)',
-        },
-        { field: 'outcome.disease_related' },
-        { field: 'affected_status' },
+        { field: 'participant_id', header: 'Participant ID' },
+        { field: 'external_id', header: 'External Participant ID' },
+        { field: 'families_id', header: 'Family ID' },
+        //TODO { field: '?', header: 'External Family ID' },
+        { field: 'is_proband', header: 'Proband' },
+        { field: 'study.study_name', header: 'Study Name' },
+        { field: 'study.study_code', header: 'Study Code' },
+        { field: 'family_type', header: 'Family Composition' },
+        //TODO { field: '?', header: 'Diagnosis Category' },
+        { field: 'sex', header: 'Sex' },
+        { field: 'race', header: 'Race' },
+        { field: 'ethnicity', header: 'Ethnicity' },
+        { field: 'outcomes.vital_status', header: 'Vital Status' },
+        { field: 'outcomes.age_at_event_days.value', header: 'Age at Last Vital Status (Days)' },
     ],
     sort: [
-        // does not work:
-        // see https://www.elastic.co/guide/en/elasticsearch/reference/current/fielddata.html
         {
-            family_id: {
+            participant_id: {
                 order: 'asc',
-            },
-        },
-        {
-            kf_id: {
-                order: 'asc',
-            },
-        },
-        {
-            'diagnoses.age_at_event_days': {
-                order: 'desc',
             },
         },
     ],
@@ -48,147 +32,91 @@ const phenotypes: SheetConfig = {
     sheetName: 'Phenotypes',
     root: 'phenotype',
     columns: [
-        { field: 'kf_id' },
-        { field: 'external_id' },
-        { field: 'is_proband' },
+        { field: 'participant_id', header: 'Participant ID' },
+        { field: 'external_id', header: 'External Participant ID' },
+        { field: 'families_id', header: 'Family ID' },
+        //TODO { field: '?', header: 'External Family ID'  },
+        { field: 'is_proband', header: 'Proband' },
         {
-            field: 'phenotype.observed',
+            field: 'phenotype.is_observed',
             additionalFields: ['phenotype.hpo_phenotype_observed', 'phenotype.hpo_phenotype_not_observed'],
             header: 'Phenotype (HPO)',
-            transform: (observed, row) => {
+            transform: (
+                isObserved: boolean,
+                row: { phenotype: { hpo_phenotype_observed: string; hpo_phenotype_not_observed: string } },
+            ) => {
                 if (!row.phenotype) {
                     return;
                 }
-                return observed ? row.phenotype.hpo_phenotype_observed : row.phenotype.hpo_phenotype_not_observed;
+                return isObserved ? row.phenotype.hpo_phenotype_observed : row.phenotype.hpo_phenotype_not_observed;
             },
         },
+        { field: 'phenotype.source_text', header: 'Phenotype (Source Text)' },
         {
-            field: 'phenotype.observed',
-            additionalFields: ['phenotype.snomed_phenotype_observed', 'phenotype.snomed_phenotype_not_observed'],
-            header: 'Phenotype (SNOMED)',
-            transform: (observed, row) => {
-                if (!row.phenotype) {
-                    return;
-                }
-                return observed ? row.phenotype.snomed_phenotype_observed : row.phenotype.snomed_phenotype_not_observed;
-            },
-        },
-        { field: 'phenotype.source_text_phenotype' },
-        {
-            field: 'phenotype.observed',
+            field: 'phenotype.is_observed',
             header: 'Interpretation',
-            transform: (value, _row) => (value ? 'Observed' : 'Not Observed'),
+            transform: (value: boolean) => (value ? 'Observed' : 'Not Observed'),
         },
-        {
-            field: 'phenotype.age_at_event_days',
-            header: 'Age at Phenotype Assignment (Days)',
-        },
+        { field: 'phenotype.age_at_event_days', header: 'Age at Phenotype Assignment (Days)' },
     ],
-    sort: [{ kf_id: 'asc' }],
+    sort: [{ participant_id: 'asc' }],
 };
 
-// <Biospecimen ID> <External Sample ID> <External Aliquot ID>
 const diagnoses: SheetConfig = {
     sheetName: 'Diagnoses',
-    root: 'diagnoses',
+    root: 'diagnosis',
     columns: [
-        { field: 'kf_id' },
-        { field: 'external_id' },
-        { field: 'is_proband' },
-        {
-            field: 'kf_id',
-            header: 'Diagnosis Type',
-            transform: () => 'Clinical',
-        },
-        { field: 'diagnoses.diagnosis_category' },
-        { field: 'diagnoses.mondo_id_diagnosis' },
-        { field: 'diagnoses.ncit_id_diagnosis' },
-        { field: 'diagnoses.source_text_diagnosis' },
-        {
-            field: 'diagnoses.age_at_event_days',
-            header: 'Age at Diagnosis (Days)',
-        },
-        { field: 'diagnoses.source_text_tumor_location' },
-    ],
-    sort: [{ kf_id: 'asc' }],
-};
+        { field: 'participant_id', header: 'Participant ID' },
+        { field: 'external_id', header: 'External Participant ID' },
+        { field: 'families_id', header: 'Family ID' },
+        { field: 'is_proband', header: 'Proband' },
+        //TODO { field: '?', header: 'Diagnosis Category' },
 
-const histologicalDiagnoses: SheetConfig = {
-    sheetName: 'Histological Diagnoses',
-    root: 'biospecimens.diagnoses',
-    columns: [
-        { field: 'kf_id' },
-        { field: 'external_id' },
-        { field: 'biospecimens.kf_id' },
-        { field: 'biospecimens.external_sample_id' },
-        { field: 'biospecimens.external_aliquot_id' },
-        { field: 'is_proband' },
+        { field: 'diagnosis.mondo_display_term', header: 'Diagnosis (MONDO)' },
+
         {
-            // This allows to do a cell with a static value.
-            // The value will be formatted like the value of `field` would have.
-            field: 'kf_id',
-            header: 'Diagnosis Type',
-            transform: () => 'Histological',
+            field: 'diagnosis.ncit_display_term',
+            additionalFields: ['diagnosis.ncit_code'],
+            header: 'Diagnosis (NCIT)',
+            transform: (displayTerm: string, row: { diagnosis: { ncit_code: string } }) =>
+                displayTerm || row?.diagnosis?.ncit_code || '',
         },
-        { field: 'biospecimens.diagnoses.diagnosis_category' },
-        { field: 'biospecimens.diagnoses.mondo_id_diagnosis' },
-        { field: 'biospecimens.diagnoses.ncit_id_diagnosis' },
-        { field: 'biospecimens.diagnoses.source_text_diagnosis' },
-        {
-            field: 'biospecimens.diagnoses.age_at_event_days',
-            header: 'Age at Diagnosis (Days)',
-        },
-        { field: 'biospecimens.diagnoses.source_text_tumor_location' },
-        { field: 'biospecimens.source_text_anatomical_site' },
-        { field: 'biospecimens.ncit_id_tissue_type' },
-        { field: 'biospecimens.source_text_tissue_type' },
-        { field: 'biospecimens.composition' },
-        { field: 'biospecimens.method_of_sample_procurement' },
-        { field: 'biospecimens.analyte_type' },
+
+        { field: 'diagnosis.source_text', header: 'Diagnosis (Source Text)' },
+        { field: 'diagnosis.age_at_event_days', header: 'Age at Diagnosis (Days)' },
+        { field: 'diagnosis.source_text_tumor_location', header: 'Tumor Location (Source Text)' },
     ],
-    sort: [
-        { kf_id: 'asc' },
-        {
-            'biospecimens.diagnoses.age_at_event_days': {
-                order: 'desc',
-                nested: {
-                    path: 'biospecimens',
-                    nested: {
-                        path: 'biospecimens.diagnoses',
-                    },
-                },
-            },
-        },
-    ],
+    sort: [{ participant_id: 'asc' }],
 };
 
 const familyRelationship: SheetConfig = {
     sheetName: 'Family Relationship',
-    root: 'family.family_compositions.family_members',
+    root: 'family.relations_to_proband',
     columns: [
-        { field: 'kf_id' },
-        { field: 'family.family_compositions.family_members.kf_id' },
         {
-            field: 'family.family_compositions.family_members.relationship',
-            header: 'Relationship',
-            transform: (value) => value || 'self',
+            field: 'family.relations_to_proband.participant_id',
+            header: 'Participant ID',
+            additionalFields: ['participant_id'],
+            transform: (value: string, row: { participant_id: string }) => value ?? row.participant_id,
+        },
+        {
+            field: 'family.family_id',
+            header: 'Family ID',
+        },
+        {
+            field: 'family.relations_to_proband.role',
+            header: 'Family Role',
         },
     ],
-    sort: [{ kf_id: 'asc' }],
+    sort: [{ participant_id: 'asc' }],
 };
 
 export const queryConfigs: QueryConfig = {
     indexName: 'participant',
-    alias: 'participant_centric',
+    alias: 'next_participant_centric',
 };
 
-export const sheetConfigs: SheetConfig[] = [
-    participants,
-    phenotypes,
-    diagnoses,
-    histologicalDiagnoses,
-    familyRelationship,
-];
+export const sheetConfigs: SheetConfig[] = [participants, phenotypes, diagnoses, familyRelationship];
 
 const reportConfig: ReportConfig = { queryConfigs, sheetConfigs };
 

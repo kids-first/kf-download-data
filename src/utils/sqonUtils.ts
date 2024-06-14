@@ -1,21 +1,12 @@
 import { Dictionary, flattenDeep, get, isArray, zipObject } from 'lodash';
 
-import { PROJECT } from '../env';
-import { ProjectType } from '../reports/types';
-import { getRiffs } from './riffClient';
-import { mapRiffOutputToUserOutput, Output as UserSetOutput, Sqon } from './setsTypes';
+import { Output as UserSetOutput, Sqon } from './setsTypes';
 import { getSharedSet, getUserSets } from './userClient';
 
 export const resolveSetsInSqon = async (sqon: Sqon, userId: string, accessToken: string): Promise<Sqon> => {
     const setIds: string[] = getSetIdsFromSqon(sqon || ({} as Sqon));
     if (setIds.length) {
-        let userSets: UserSetOutput[];
-        const p = PROJECT.toLowerCase().trim();
-        if (p === ProjectType.include) {
-            userSets = await retrieveSetsFromUsers(accessToken, setIds);
-        } else {
-            userSets = (await getRiffs(accessToken, userId)).map((s) => mapRiffOutputToUserOutput(s));
-        }
+        const userSets: UserSetOutput[] = await retrieveSetsFromUsers(accessToken, setIds);
 
         const ids = setIds.map((setId) => get(userSets.filter((r) => r.id === setId)[0], 'content.ids', []));
         const setIdsToValueMap: Dictionary<string[]> = zipObject(
