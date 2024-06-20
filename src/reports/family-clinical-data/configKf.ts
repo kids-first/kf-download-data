@@ -4,40 +4,45 @@ const participants: SheetConfig = {
     sheetName: 'Participants',
     root: null,
     columns: [
-        { field: 'kf_id' },
-        { field: 'external_id' },
-        { field: 'family_id' },
-        { field: 'is_proband' },
-        { field: 'study.short_name' },
-        { field: 'family.family_compositions.composition' },
-        { field: 'diagnosis_category' },
-        { field: 'gender' },
-        { field: 'race' },
-        { field: 'ethnicity' },
-        { field: 'outcome.vital_status' },
+        { field: 'participant_id', header: 'Participant ID' },
+        { field: 'external_id', header: 'External Participant ID' },
+        { field: 'families_id', header: 'Family ID' },
+        //TODO { field: '?', header: 'External Family ID' },
+        { field: 'is_proband', header: 'Proband' },
+        { field: 'study.study_name', header: 'Study Name' },
+        { field: 'study.study_code', header: 'Study Code' },
+        { field: 'family_type', header: 'Family Composition' },
         {
-            field: 'outcome.age_at_event_days',
-            header: 'Age at the Last Vital Status (Days)',
+            field: 'family.relations_to_proband',
+            header: 'Family Role',
+            transform: (
+                _: string,
+                row: {
+                    participant_id: string;
+                    family: { relations_to_proband: { participant_id: string; role: string }[] };
+                },
+            ): string => {
+                const ptId = row.participant_id;
+                const relations = row?.family?.relations_to_proband ?? [];
+                return relations.find((x) => x.participant_id === ptId)?.role ?? '';
+            },
         },
-        { field: 'outcome.disease_related' },
-        { field: 'affected_status' },
+        //TODO { field: '?', header: 'Diagnosis Category' },
+        { field: 'sex', header: 'Sex' },
+        { field: 'race', header: 'Race' },
+        { field: 'ethnicity', header: 'Ethnicity' },
+        { field: 'outcomes.vital_status', header: 'Vital Status' },
+        { field: 'outcomes.age_at_event_days.value', header: 'Age at Last Vital Status (Days)' },
     ],
     sort: [
-        // `family.family_id` would not work.
-        // see https://www.elastic.co/guide/en/elasticsearch/reference/current/fielddata.html
         {
-            family_id: {
+            families_id: {
                 order: 'asc',
             },
         },
         {
-            kf_id: {
+            participant_id: {
                 order: 'asc',
-            },
-        },
-        {
-            'diagnoses.age_at_event_days': {
-                order: 'desc',
             },
         },
     ],
@@ -47,65 +52,63 @@ const phenotypes: SheetConfig = {
     sheetName: 'Phenotypes',
     root: 'phenotype',
     columns: [
-        { field: 'kf_id' },
-        { field: 'external_id' },
-        { field: 'family_id' },
-        { field: 'is_proband' },
+        { field: 'participant_id', header: 'Participant ID' },
+        { field: 'external_id', header: 'External Participant ID' },
+        { field: 'families_id', header: 'Family ID' },
+        //TODO { field: '?', header: 'External Family ID'  },
+        { field: 'is_proband', header: 'Proband' },
         {
-            field: 'phenotype.hpo_phenotype_observed_text',
+            field: 'phenotype.is_observed',
+            additionalFields: ['phenotype.hpo_phenotype_observed', 'phenotype.hpo_phenotype_not_observed'],
             header: 'Phenotype (HPO)',
-        },
-        {
-            field: 'phenotype.observed',
-            additionalFields: ['phenotype.snomed_phenotype_observed', 'phenotype.snomed_phenotype_not_observed'],
-            header: 'Phenotype (SNOMED)',
-            transform: (observed, row) => {
+            transform: (
+                isObserved: boolean,
+                row: { phenotype: { hpo_phenotype_observed: string; hpo_phenotype_not_observed: string } },
+            ) => {
                 if (!row.phenotype) {
                     return;
                 }
-                return observed ? row.phenotype.snomed_phenotype_observed : row.phenotype.snomed_phenotype_not_observed;
+                return isObserved ? row.phenotype.hpo_phenotype_observed : row.phenotype.hpo_phenotype_not_observed;
             },
         },
-        { field: 'phenotype.source_text_phenotype' },
+        { field: 'phenotype.source_text', header: 'Phenotype (Source Text)' },
         {
-            field: 'phenotype.observed',
+            field: 'phenotype.is_observed',
             header: 'Interpretation',
-            transform: (value, _row) => (value ? 'Observed' : 'Not Observed'),
+            transform: (value: boolean) => (value ? 'Observed' : 'Not Observed'),
         },
         { field: 'phenotype.age_at_event_days', header: 'Age at Phenotype Assignment (Days)' },
     ],
-    sort: [{ family_id: 'asc' }, { kf_id: 'asc' }],
+    sort: [{ families_id: 'asc' }, { participant_id: 'asc' }],
 };
 
 const diagnoses: SheetConfig = {
     sheetName: 'Diagnoses',
-    root: 'diagnoses',
+    root: 'diagnosis',
     columns: [
-        { field: 'kf_id' },
-        { field: 'external_id' },
-        { field: 'family_id' },
-        { field: 'is_proband' },
+        { field: 'participant_id', header: 'Participant ID' },
+        { field: 'external_id', header: 'External Participant ID' },
+        { field: 'families_id', header: 'Family ID' },
+        { field: 'is_proband', header: 'Proband' },
+        //TODO { field: '?', header: 'Diagnosis Category' },
+        { field: 'diagnosis.mondo_display_term', header: 'Diagnosis (MONDO)' },
         {
-            field: 'kf_id',
-            header: 'Diagnosis Type',
-            transform: () => 'Clinical',
+            field: 'diagnosis.ncit_display_term',
+            additionalFields: ['diagnosis.ncit_code'],
+            header: 'Diagnosis (NCIT)',
+            transform: (displayTerm: string, row: { diagnosis: { ncit_code: string } }) =>
+                displayTerm || row?.diagnosis?.ncit_code || '',
         },
-        { field: 'diagnoses.diagnosis_category' },
-        { field: 'diagnoses.mondo_id_diagnosis' },
-        { field: 'diagnoses.ncit_id_diagnosis' },
-        { field: 'diagnoses.source_text_diagnosis' },
-        {
-            field: 'diagnoses.age_at_event_days',
-            header: 'Age at Diagnosis (Days)',
-        },
-        { field: 'diagnoses.source_text_tumor_location' },
+        { field: 'diagnosis.source_text', header: 'Diagnosis (Source Text)' },
+        { field: 'diagnosis.age_at_event_days', header: 'Age at Diagnosis (Days)' },
+        { field: 'diagnosis.source_text_tumor_location', header: 'Tumor Location (Source Text)' },
     ],
-    sort: [{ family_id: 'asc' }, { kf_id: 'asc' }],
+    sort: [{ families_id: 'asc' }, { participant_id: 'asc' }],
 };
 
 export const queryConfigs: QueryConfig = {
     indexName: 'participant',
-    alias: 'participant_centric',
+    alias: 'next_participant_centric',
 };
 
 export const sheetConfigs: SheetConfig[] = [participants, phenotypes, diagnoses];

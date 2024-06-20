@@ -9,21 +9,18 @@ import generateReport from '../generateReport';
 import { ProjectType, ReportConfig } from '../types';
 import configInclude from './configInclude';
 import configKf from './configKf';
-import configKfNext from './configKfNext';
 import generatePtSqonWithRelativesIfExist from './generatePtSqonWithRelativesIfExist';
 
 const clinicalDataReport = async (req: Request, res: Response): Promise<void> => {
     console.time('family-clinical-data');
 
-    const { sqon, projectId, filename = null, isKfNext = false } = req.body;
+    const { sqon, projectId, filename = null } = req.body;
     const userId = req['kauth']?.grant?.access_token?.content?.sub;
     const accessToken = req.headers.authorization;
 
     const p = PROJECT.toLowerCase().trim();
     let reportConfig: ReportConfig;
-    if (isKfNext) {
-        reportConfig = configKfNext;
-    } else if (p === ProjectType.include) {
+    if (p === ProjectType.include) {
         reportConfig = configInclude;
     } else if (p === ProjectType.kidsFirst) {
         reportConfig = configKf;
