@@ -14,6 +14,9 @@ import { BioRequestConfig, SheetConfig } from '../types';
 import generateTxtFile from '../utils/generateTxtFile';
 import { addConditionAvailableInSqon } from '../utils/getAvailableBiospecimensFromSqon';
 
+// eslint-disable-next-line max-len
+const cbtn_instructions_mock = 'To request biospecimens from CBTN, please use the request form (https://airtable.com/apperYvVD82ti3021/pagdArwI0TxJQpiVW/form). General inquiries can be directed to research@cbtn.org.';
+
 /**
  * Generate and write locally.
  */
@@ -71,6 +74,11 @@ export default async function generateFiles(
                         if ((row as any).study.note) {
                             readmeContents.push(`### ${study_code} - ${(row as any).study.study_name}`);
                             readmeContents.push(`${(row as any).study.note}`);
+
+                            // TODO remove this part when instructions will be in FHIR for CBTN.
+                        } else if (study_code === 'CBTN') {
+                            readmeContents.push(`### ${study_code} - ${(row as any).study.study_name}`);
+                            readmeContents.push(cbtn_instructions_mock);
                         }
                     }
 
