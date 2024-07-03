@@ -34,11 +34,11 @@ const getFilesFromSqon = async (
     const query = buildQuery({ nestedFields, filters: newSqon });
     const esQuery = { query, _source: fieldsWanted, sort: reportConfig.sort };
 
-    const allHits: any[] = [];
+    const results: any[] = [];
 
     await executeSearchAfterQuery(es, esFileIndex, esQuery, {
         onPageFetched: (pageHits) => {
-            allHits.push(...pageHits);
+            results.push(...pageHits);
         },
         onFinish: (total) => {
             console.log(`Finished fetching all pages in getFilesFromSqon. Total hits: ${total}`);
@@ -46,7 +46,7 @@ const getFilesFromSqon = async (
         pageSize: Number(env.ES_PAGESIZE),
     });
 
-    return allHits;
+    return results;
 };
 
 export default getFilesFromSqon;
