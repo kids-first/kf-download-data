@@ -2,9 +2,13 @@
 import { Request, Response } from 'express';
 
 import EsInstance from '../../ElasticSearchClientInstance';
+import { PROJECT } from '../../env';
 import { reportGenerationErrorHandler } from '../../errors';
+import { ProjectType } from '../types';
 import getFamilyIds from '../utils/getFamilyIds';
 import getFilesFromSqon from '../utils/getFilesFromSqon';
+import configInclude from './configInclude';
+import configKf from './configKf';
 
 interface IFileByDataType {
     key: string;
@@ -21,12 +25,28 @@ const fileManifestStats = async (req: Request, res: Response): Promise<void> => 
     const userId = req['kauth']?.grant?.access_token?.content?.sub;
     const accessToken = req.headers.authorization;
 
+    let reportConfig;
+    const p = PROJECT.toLowerCase().trim();
+    if (p === ProjectType.include) {
+        reportConfig = configInclude;
+    } else {
+        reportConfig = configKf;
+    }
+
     const wantedFields = ['file_id', 'data_type', 'size', 'participants.participant_id'];
 
     const esClient = EsInstance.getInstance();
 
     try {
-        const files = await getFilesFromSqon(esClient, projectId, sqon, userId, accessToken, wantedFields);
+        const files = await getFilesFromSqon(
+            esClient,
+            reportConfig,
+            projectId,
+            sqon,
+            userId,
+            accessToken,
+            wantedFields,
+        );
 
         const newFiles = withFamily
             ? await getFamilyIds(

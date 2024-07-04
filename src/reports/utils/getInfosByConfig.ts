@@ -1,8 +1,9 @@
 import { Client } from '@elastic/elasticsearch';
 import get from 'lodash/get';
+import noop from 'lodash/noop';
 
-import { ES_QUERY_MAX_SIZE } from '../../env';
-import { executeSearch } from '../../utils/esUtils';
+import { ES_PAGESIZE } from '../../env';
+import { executeSearchAfterQuery } from '../../utils/esUtils';
 import { SheetConfig } from '../types';
 
 /** this recursive func allow you to find nested array values */
@@ -28,12 +29,17 @@ const getInfosByConfig = async (
         query: { bool: { must: [{ terms: { [idField]: ids, boost: 0 } }] } },
         _source: [...config.columns.map((e) => e.field), ...(extraFields || [])],
         sort: config.sort,
-        size: ES_QUERY_MAX_SIZE,
     };
-    const results = await executeSearch(es, esIndex, esRequest);
-    const hits = results?.body?.hits?.hits || [];
-    const sources = hits.map((hit) => hit._source);
-    return sources.map((source) =>
+    const sources: any[] = [];
+    await executeSearchAfterQuery(es, esIndex, esRequest, {
+        onPageFetched: (pageHits) => {
+            sources.push(...pageHits);
+        },
+        onFinish: noop,
+        pageSize: ES_PAGESIZE,
+    });
+
+    return (sources as any).map((source) =>
         config.columns.reduce((data, column) => {
             const field = column.field;
             /** default case example: field = 'file_id' */

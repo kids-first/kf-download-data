@@ -1,11 +1,13 @@
 import { buildQuery } from '@arranger/middleware';
 import { Client } from '@elastic/elasticsearch';
+import noop from 'lodash/noop';
 
-import { ES_QUERY_MAX_SIZE, esFileAlias, esFileIndex } from '../../env';
+import { ES_PAGESIZE, esFileAlias, esFileIndex } from '../../env';
 import { getExtendedConfigs, getNestedFields } from '../../utils/arrangerUtils';
-import { executeSearch } from '../../utils/esUtils';
+import { executeSearchAfterQuery } from '../../utils/esUtils';
 import { Sqon } from '../../utils/setsTypes';
 import { resolveSetsInSqon } from '../../utils/sqonUtils';
+import { SheetConfig } from '../types';
 
 /**
  * Generate a sqon from the family_id of all the participants in the given `sqon`.
@@ -19,6 +21,7 @@ import { resolveSetsInSqon } from '../../utils/sqonUtils';
  */
 const getFilesFromSqon = async (
     es: Client,
+    reportConfig: SheetConfig,
     projectId: string,
     sqon: Sqon,
     userId: string,
@@ -29,10 +32,19 @@ const getFilesFromSqon = async (
     const nestedFields = getNestedFields(extendedConfig);
     const newSqon = await resolveSetsInSqon(sqon, userId, accessToken);
     const query = buildQuery({ nestedFields, filters: newSqon });
-    const results = await executeSearch(es, esFileIndex, { query, size: ES_QUERY_MAX_SIZE, _source: fieldsWanted });
-    const hits = results?.body?.hits?.hits || [];
-    const sources = hits.map((hit) => hit._source);
-    return sources;
+    const esQuery = { query, _source: fieldsWanted, sort: reportConfig.sort };
+
+    const results: any[] = [];
+
+    await executeSearchAfterQuery(es, esFileIndex, esQuery, {
+        onPageFetched: (pageHits) => {
+            results.push(...pageHits);
+        },
+        onFinish: noop,
+        pageSize: ES_PAGESIZE,
+    });
+
+    return results;
 };
 
 export default getFilesFromSqon;

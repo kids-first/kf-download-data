@@ -1,7 +1,8 @@
 import { Client } from '@elastic/elasticsearch';
+import noop from 'lodash/noop';
 
-import { ES_QUERY_MAX_SIZE, esFileIndex } from '../../env';
-import { executeSearch } from '../../utils/esUtils';
+import { ES_PAGESIZE, ES_QUERY_MAX_SIZE, esFileIndex } from '../../env';
+import { executeSearch, executeSearchAfterQuery } from '../../utils/esUtils';
 
 interface IFileInfo {
     data_type: string;
@@ -14,11 +15,16 @@ const getFilesInfo = async (fileIds: string[], es: Client): Promise<IFileInfo[]>
         query: { bool: { must: [{ terms: { file_id: fileIds, boost: 0 } }] } },
         _source: ['file_id', 'data_type', 'participants.families_id'],
         sort: [{ data_type: { order: 'asc' } }],
-        size: ES_QUERY_MAX_SIZE,
     };
-    const results = await executeSearch(es, esFileIndex, esRequest);
-    const hits = results?.body?.hits?.hits || [];
-    const sources = hits.map((hit) => hit._source);
+    const sources: any[] = [];
+    await executeSearchAfterQuery(es, esFileIndex, esRequest, {
+        onPageFetched: (pageHits) => {
+            sources.push(...pageHits);
+        },
+        onFinish: noop,
+        pageSize: ES_PAGESIZE,
+    });
+
     const filesInfos = [];
     sources.forEach((source) => {
         source.participants &&
@@ -84,9 +90,8 @@ const getFilesIdsMatched = async (filesInfos: IFileInfo[], es: Client): Promise<
 const getFamilyIds = async (es: Client, fileIds: string[]): Promise<string[]> => {
     const filesInfos = await getFilesInfo(fileIds, es);
     const filesIdsMatched = await getFilesIdsMatched(filesInfos, es);
-    const newFileIds = [...new Set([...fileIds, ...filesIdsMatched])];
 
-    return newFileIds;
+    return [...new Set([...fileIds, ...filesIdsMatched])];
 };
 
 export default getFamilyIds;

@@ -32,14 +32,21 @@ const fileManifestReport = async (req: Request, res: Response): Promise<void> =>
     const esClient = EsInstance.getInstance();
 
     try {
-        const files = await getFilesFromSqon(esClient, projectId, sqon, userId, accessToken, wantedFields);
+        const files = await getFilesFromSqon(
+            esClient,
+            reportConfig,
+            projectId,
+            sqon,
+            userId,
+            accessToken,
+            wantedFields,
+        );
         const fileIds = files?.map((f) => f.file_id);
         const newFileIds = withFamily ? await getFamilyIds(esClient, fileIds) : fileIds;
-
         const filesInfos = await getInfosByConfig(esClient, reportConfig, newFileIds, 'file_id', esFileIndex);
 
         const path = `/tmp/${filename}.tsv`;
-        await generateTsvReport(filesInfos, path, reportConfig);
+        generateTsvReport(filesInfos, path, reportConfig);
 
         res.setHeader('Content-Disposition', `attachment; filename="${filename}.tsv"`);
         res.sendFile(path);
