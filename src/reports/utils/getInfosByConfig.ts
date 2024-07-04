@@ -1,7 +1,8 @@
 import { Client } from '@elastic/elasticsearch';
 import get from 'lodash/get';
-import { env } from 'process';
+import noop from 'lodash/noop';
 
+import { ES_PAGESIZE } from '../../env';
 import { executeSearchAfterQuery } from '../../utils/esUtils';
 import { SheetConfig } from '../types';
 
@@ -34,10 +35,8 @@ const getInfosByConfig = async (
         onPageFetched: (pageHits) => {
             sources.push(...pageHits);
         },
-        onFinish: (total) => {
-            console.log(`Finished fetching all pages in getInfosByConfig. Total hits: ${total}`);
-        },
-        pageSize: Number(env.ES_PAGESIZE),
+        onFinish: noop,
+        pageSize: ES_PAGESIZE,
     });
 
     return (sources as any).map((source) =>

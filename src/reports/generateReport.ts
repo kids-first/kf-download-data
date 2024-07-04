@@ -4,9 +4,10 @@ import { Client } from '@elastic/elasticsearch';
 import xl from 'excel4node';
 import { Response } from 'express';
 import flattenDeep from 'lodash/flattenDeep';
+import noop from 'lodash/noop';
 import uniq from 'lodash/uniq';
 
-import * as env from '../env';
+import { ES_PAGESIZE } from '../env';
 import {
     findValueInField,
     generateColumnsForProperty,
@@ -149,8 +150,8 @@ export default async function generateReport(
                             wrapper.rowIndex += 1;
                         });
                     },
-                    onFinish: () => {},
-                    pageSize: env.ES_PAGESIZE,
+                    onFinish: noop,
+                    pageSize: ES_PAGESIZE,
                 });
                 console.timeEnd(`executeSearchAfterQuery ${sheetConfig.sheetName}`);
             } catch (err) {

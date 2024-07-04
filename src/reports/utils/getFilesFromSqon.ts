@@ -1,8 +1,8 @@
 import { buildQuery } from '@arranger/middleware';
 import { Client } from '@elastic/elasticsearch';
-import { env } from 'process';
+import noop from 'lodash/noop';
 
-import { esFileAlias, esFileIndex } from '../../env';
+import { ES_PAGESIZE, esFileAlias, esFileIndex } from '../../env';
 import { getExtendedConfigs, getNestedFields } from '../../utils/arrangerUtils';
 import { executeSearchAfterQuery } from '../../utils/esUtils';
 import { Sqon } from '../../utils/setsTypes';
@@ -40,10 +40,8 @@ const getFilesFromSqon = async (
         onPageFetched: (pageHits) => {
             results.push(...pageHits);
         },
-        onFinish: (total) => {
-            console.log(`Finished fetching all pages in getFilesFromSqon. Total hits: ${total}`);
-        },
-        pageSize: Number(env.ES_PAGESIZE),
+        onFinish: noop,
+        pageSize: ES_PAGESIZE,
     });
 
     return results;

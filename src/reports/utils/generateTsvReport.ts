@@ -2,7 +2,7 @@ import fs from 'fs';
 
 import { SheetConfig } from '../types';
 
-const generateTsvReport = async (data: { key: string }[], path: string, config: SheetConfig): Promise<void> => {
+const generateTsvReport = (data: { key: string }[], path: string, config: SheetConfig): void => {
     let tsvContent = config.columns.map((c) => c.header).join('\t') + '\n';
 
     for (const row of data) {
@@ -10,7 +10,7 @@ const generateTsvReport = async (data: { key: string }[], path: string, config: 
         tsvContent += values.join('\t') + '\n';
     }
 
-    await fs.writeFileSync(path, tsvContent);
+    fs.writeFileSync(path, tsvContent);
 };
 
 export default generateTsvReport;

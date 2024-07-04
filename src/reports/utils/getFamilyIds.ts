@@ -1,7 +1,7 @@
 import { Client } from '@elastic/elasticsearch';
-import { env } from 'process';
+import noop from 'lodash/noop';
 
-import { ES_QUERY_MAX_SIZE, esFileIndex } from '../../env';
+import { ES_PAGESIZE, ES_QUERY_MAX_SIZE, esFileIndex } from '../../env';
 import { executeSearch, executeSearchAfterQuery } from '../../utils/esUtils';
 
 interface IFileInfo {
@@ -21,10 +21,8 @@ const getFilesInfo = async (fileIds: string[], es: Client): Promise<IFileInfo[]>
         onPageFetched: (pageHits) => {
             sources.push(...pageHits);
         },
-        onFinish: (total) => {
-            console.log(`Finished fetching all pages in getFilesInfo. Total hits: ${total}`);
-        },
-        pageSize: Number(env.ES_PAGESIZE),
+        onFinish: noop,
+        pageSize: ES_PAGESIZE,
     });
 
     const filesInfos = [];
@@ -91,9 +89,7 @@ const getFilesIdsMatched = async (filesInfos: IFileInfo[], es: Client): Promise<
  */
 const getFamilyIds = async (es: Client, fileIds: string[]): Promise<string[]> => {
     const filesInfos = await getFilesInfo(fileIds, es);
-    console.log('filesInfos: ', filesInfos.length);
     const filesIdsMatched = await getFilesIdsMatched(filesInfos, es);
-    console.log('filesIdsMatched: ', filesIdsMatched.length);
 
     return [...new Set([...fileIds, ...filesIdsMatched])];
 };

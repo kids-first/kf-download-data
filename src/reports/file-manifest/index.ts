@@ -42,15 +42,11 @@ const fileManifestReport = async (req: Request, res: Response): Promise<void> =>
             wantedFields,
         );
         const fileIds = files?.map((f) => f.file_id);
-        console.log('OriginalFileIds: ', fileIds);
         const newFileIds = withFamily ? await getFamilyIds(esClient, fileIds) : fileIds;
-        console.log('New unique file ids: ', newFileIds.length);
-
         const filesInfos = await getInfosByConfig(esClient, reportConfig, newFileIds, 'file_id', esFileIndex);
-        console.log('filesInfos: ', filesInfos.length);
 
         const path = `/tmp/${filename}.tsv`;
-        await generateTsvReport(filesInfos, path, reportConfig);
+        generateTsvReport(filesInfos, path, reportConfig);
 
         res.setHeader('Content-Disposition', `attachment; filename="${filename}.tsv"`);
         res.sendFile(path);

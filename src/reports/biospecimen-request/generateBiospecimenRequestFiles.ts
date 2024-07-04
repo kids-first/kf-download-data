@@ -2,8 +2,8 @@ import { buildQuery } from '@arranger/middleware';
 import { Client } from '@elastic/elasticsearch';
 import xl from 'excel4node';
 import noop from 'lodash/noop';
-import { env } from 'process';
 
+import { ES_PAGESIZE } from '../../env';
 import { getExtendedConfigs, getNestedFields } from '../../utils/arrangerUtils';
 import { executeSearchAfterQuery } from '../../utils/esUtils';
 import ExtendedReportConfigs from '../../utils/extendedReportConfigs';
@@ -15,7 +15,8 @@ import generateTxtFile from '../utils/generateTxtFile';
 import { addConditionAvailableInSqon } from '../utils/getAvailableBiospecimensFromSqon';
 
 // eslint-disable-next-line max-len
-const cbtn_instructions_mock = 'To request biospecimens from CBTN, please use the request form (https://airtable.com/apperYvVD82ti3021/pagdArwI0TxJQpiVW/form). General inquiries can be directed to research@cbtn.org.';
+const cbtn_instructions_mock =
+    'To request biospecimens from CBTN, please use the request form (https://airtable.com/apperYvVD82ti3021/pagdArwI0TxJQpiVW/form). General inquiries can be directed to research@cbtn.org.';
 
 /**
  * Generate and write locally.
@@ -90,7 +91,7 @@ export default async function generateFiles(
                 }
             },
             onFinish: noop,
-            pageSize: Number(env.ES_PAGESIZE),
+            pageSize: ES_PAGESIZE,
         });
     } catch (err) {
         console.error(`Error while fetching the data for biospecimen request`);
