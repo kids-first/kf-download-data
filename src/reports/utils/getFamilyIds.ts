@@ -1,8 +1,9 @@
 import { Client } from '@elastic/elasticsearch';
 import noop from 'lodash/noop';
 
-import { ES_PAGESIZE, ES_QUERY_MAX_SIZE, esFileIndex } from '../../env';
+import { ES_PAGESIZE, ES_QUERY_MAX_SIZE } from '../../env';
 import { executeSearch, executeSearchAfterQuery } from '../../utils/esUtils';
+import { esFileIndex } from '../../esVars';
 
 interface IFileInfo {
     data_type: string;

@@ -1,4 +1,4 @@
-import { esBiospecimenIndex } from '../../env';
+import { esBiospecimenIndex } from '../../esVars';
 import { QueryConfig, ReportConfig, SheetConfig } from '../types';
 
 const biospecimens: SheetConfig = {
@@ -22,14 +22,11 @@ const biospecimens: SheetConfig = {
         { field: 'volume_unit', header: 'Volume Unit' },
         { field: 'collection_method_of_sample_procurement', header: 'Method of Sample Procurement' },
         { field: 'diagnoses.mondo_display_term', header: 'Histological Diagnosis (MONDO)' },
-        { field: 'diagnoses.diagnosis_ncit', header: 'Histological Diagnosis (NCIT)' },
+        { field: 'diagnoses.ncit_display_term', header: 'Histological Diagnosis (NCIT)' },
         { field: 'diagnoses.source_text', header: 'Histological Diagnosis (Source Text)' },
         { field: 'diagnoses.source_text_tumor_location', header: 'Tumor Location (Source Text)' },
-        //FIXME { field: '', header: 'Tumor Descriptor (Source Text)' },
-        { field: 'collection_ncit_anatomy_site_id', header: 'Anatomical Site (NCIT)' },
+        { field: 'collection_ncit_anatomy_site', header: 'Anatomical Site (NCIT)' },
         { field: 'collection_anatomy_site', header: 'Anatomical Site (Source Text)' },
-        // TODO: Add this back when it's ready { field: 'ncit_id_tissue_type', header: 'Tissue Type (NCIT)' },
-        // TODO: Add this back when it's ready { field: 'tissue_type_source_text', header: 'Tissue Type (Source Text)' },
         { field: 'consent_type', header: 'Consent Type' },
         { field: 'dbgap_consent_code', header: 'dbGaP Consent Code' },
         { field: 'files.sequencing_experiment.sequencing_center_id', header: 'Sequencing Center ID' },

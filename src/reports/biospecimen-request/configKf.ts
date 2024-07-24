@@ -1,4 +1,4 @@
-import { esBiospecimenIndex } from '../../env';
+import { esBiospecimenIndex } from '../../esVars';
 import { BioRequestConfig, QueryConfig, ReportConfig, SheetConfig } from '../types';
 
 const contact: SheetConfig = {
@@ -41,10 +41,10 @@ const generateStudyTab: (study_code: string) => SheetConfig = (study_code) =>
             { field: 'volume_unit', header: 'Volume Unit' },
             { field: 'collection_method_of_sample_procurement', header: 'Method of Sample Procurement' },
             { field: 'diagnoses.mondo_display_term', header: 'Histological Diagnosis (MONDO)' },
-            { field: 'diagnoses.diagnosis_ncit', header: 'Histological Diagnosis (NCIT)' },
+            { field: 'diagnoses.ncit_display_term', header: 'Histological Diagnosis (NCIT)' },
             { field: 'diagnoses.source_text', header: 'Histological Diagnosis (Source Text)' },
             { field: 'diagnoses.source_text_tumor_location', header: 'Tumor Location (Source Text)' },
-            { field: 'collection_ncit_anatomy_site_id', header: 'Anatomical Site (NCIT)' },
+            { field: 'collection_ncit_anatomy_site', header: 'Anatomical Site (NCIT)' },
             { field: 'collection_anatomy_site', header: 'Anatomical Site (Source Text)' },
         ],
         sort: [
@@ -90,10 +90,10 @@ const wantedFields = [
     'volume_unit',
     'collection_method_of_sample_procurement',
     'diagnoses.mondo_display_term',
-    'diagnoses.diagnosis_ncit',
+    'diagnoses.ncit_display_term',
     'diagnoses.source_text',
     'diagnoses.source_text_tumor_location',
-    'collection_ncit_anatomy_site_id',
+    'collection_ncit_anatomy_site',
     'collection_anatomy_site',
 ];
 

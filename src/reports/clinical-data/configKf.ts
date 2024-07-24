@@ -70,18 +70,11 @@ const diagnoses: SheetConfig = {
         { field: 'external_id', header: 'External Participant ID' },
         { field: 'families_id', header: 'Family ID' },
         { field: 'is_proband', header: 'Proband' },
-        //TODO { field: '?', header: 'Diagnosis Category' },
-
         { field: 'diagnosis.mondo_display_term', header: 'Diagnosis (MONDO)' },
-
         {
             field: 'diagnosis.ncit_display_term',
-            additionalFields: ['diagnosis.ncit_code'],
             header: 'Diagnosis (NCIT)',
-            transform: (displayTerm: string, row: { diagnosis: { ncit_code: string } }) =>
-                displayTerm || row?.diagnosis?.ncit_code || '',
         },
-
         { field: 'diagnosis.source_text', header: 'Diagnosis (Source Text)' },
         { field: 'diagnosis.age_at_event_days', header: 'Age at Diagnosis (Days)' },
         { field: 'diagnosis.source_text_tumor_location', header: 'Tumor Location (Source Text)' },
@@ -113,7 +106,7 @@ const familyRelationship: SheetConfig = {
 
 export const queryConfigs: QueryConfig = {
     indexName: 'participant',
-    alias: 'next_participant_centric',
+    alias: 'participant_centric',
 };
 
 export const sheetConfigs: SheetConfig[] = [participants, phenotypes, diagnoses, familyRelationship];

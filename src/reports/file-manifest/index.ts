@@ -2,7 +2,7 @@
 import { Request, Response } from 'express';
 
 import EsInstance from '../../ElasticSearchClientInstance';
-import { esFileIndex, PROJECT } from '../../env';
+import { PROJECT } from '../../env';
 import { reportGenerationErrorHandler } from '../../errors';
 import { ProjectType } from '../types';
 import generateTsvReport from '../utils/generateTsvReport';
@@ -11,6 +11,7 @@ import getFilesFromSqon from '../utils/getFilesFromSqon';
 import getInfosByConfig from '../utils/getInfosByConfig';
 import configInclude from './configInclude';
 import configKf from './configKf';
+import { esFileIndex } from '../../esVars';
 
 const fileManifestReport = async (req: Request, res: Response): Promise<void> => {
     console.time('fileManifestReport');

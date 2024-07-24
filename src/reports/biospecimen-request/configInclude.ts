@@ -1,4 +1,4 @@
-import { esBiospecimenIndex } from '../../env';
+import { esBiospecimenIndex } from '../../esVars';
 import { BioRequestConfig, QueryConfig, ReportConfig, SheetConfig } from '../types';
 
 const contact: SheetConfig = {
