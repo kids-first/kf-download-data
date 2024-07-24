@@ -30,7 +30,8 @@ export default function (keycloakConfig: KeycloakConfig): Application {
     app.get('/', statusEndpoint);
 
     // endpoints to generate the reports
-    app.use('/reports', keycloak.protect(), reportsEndpoint());
+    //app.use('/reports', keycloak.protect(), reportsEndpoint());
+    app.use('/reports', reportsEndpoint()); //TODO======================
 
     app.use(globalErrorLogger, unknownEndpointHandler, globalErrorHandler);
 

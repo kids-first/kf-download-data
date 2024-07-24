@@ -2,7 +2,8 @@ import { buildQuery } from '@arranger/middleware';
 import { Client } from '@elastic/elasticsearch';
 import noop from 'lodash/noop';
 
-import { ES_PAGESIZE, esFileAlias, esFileIndex } from '../../env';
+import { ES_PAGESIZE, esFileAlias } from '../../env';
+import { esFileIndex } from '../../esVars';
 import { getExtendedConfigs, getNestedFields } from '../../utils/arrangerUtils';
 import { executeSearchAfterQuery } from '../../utils/esUtils';
 import { Sqon } from '../../utils/setsTypes';

@@ -1,11 +1,12 @@
 import { buildQuery } from '@arranger/middleware';
 import { Client } from '@elastic/elasticsearch';
 
-import { ES_QUERY_MAX_SIZE, esBiospecimenIndex } from '../../env';
+import { ES_QUERY_MAX_SIZE } from '../../env';
 import { getExtendedConfigs, getNestedFields } from '../../utils/arrangerUtils';
 import { executeSearch } from '../../utils/esUtils';
 import { Sqon } from '../../utils/setsTypes';
 import { resolveSetsInSqon } from '../../utils/sqonUtils';
+import { esBiospecimenIndex } from '../../esVars';
 
 /**
  * Retrieve all available biospecimen from a sqon of a list of biospecimen ids.

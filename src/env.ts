@@ -17,10 +17,7 @@ export const ES_QUERY_MAX_SIZE: number = Number(process.env.ES_QUERY_MAX_SIZE) |
 // Project
 export const PROJECT: string = process.env.PROJECT || 'kids-first';
 
-export const esFileIndex = process.env.ES_FILE_INDEX || 'file_centric';
 export const esFileAlias = process.env.ES_FILE_ALIAS || 'file';
-
-export const esBiospecimenIndex = process.env.ES_BIOSPECIMEN_INDEX || 'biospecimen_centric';
 
 // Keycloak configs
 export const KEYCLOAK_URL = process.env.KEYCLOAK_URL || 'https://kf-keycloak-qa.kf-strides.org/auth';

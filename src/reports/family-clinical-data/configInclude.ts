@@ -99,7 +99,7 @@ const diagnoses: SheetConfig = {
         { field: 'participant_id', header: 'Participant ID' },
         { field: 'external_id', header: 'External Participant ID' },
         { field: 'families_id', header: 'Family ID' },
-        { field: 'diagnosis.mondo_id_diagnosis', header: ' Diagnosis (MONDO)' },
+        { field: 'diagnosis.mondo_display_term', header: ' Diagnosis (MONDO)' },
         { field: 'diagnosis.source_text', header: 'Condition (Source Text)' },
         {
             field: 'diagnosis.age_at_event_days',
